@@ -1,5 +1,5 @@
 <h1 align="center">
-  Laravel 9 with vue js
+  Laravel 8 with vue js
   <br>
 </h1>
 
@@ -7,7 +7,7 @@
 
 ```bash
 # install laravel 9
-$ composer create-project laravel/laravel:^9.0 "System Name"
+$ composer create-project laravel/laravel:^8.0 "System Name"
 
 # Install dependencies
 $ npm install
@@ -18,26 +18,15 @@ $ npm install --save vue@next && npm install --save-dev vue-loader@next
 # Install Bootstrap
 $ npm install bootstrap
 
-# Install vite
-$ npm i @vitejs/plugin-vue
-
 # Install Router
 $ npm install vue-router@4
 
-# Install Sanctum
-$ composer require laravel/sanctum
-$ php artisan vendor:publish -- // provider="Laravel\Sanctum\SanctumServiceProvider"
-
-# Install Pinia & Plugin
-$ npm install pinia
-$ npm i pinia-plugin-persistedstate-2
 
 #install Admin-LTE
 $ npm install admin-lte@^3.2 --save 
 
-#install PRIMEVUE and ICONS
+#install PRIMEVUE
 $ npm install primevue
-$ npm install primeicons
 ```
 
 > **Note**

@@ -14,8 +14,6 @@ use App\Http\Controllers\UserController;
 |
 */
 
-Route::get('/', function () {
+Route::get('/{any}', function () {
     return view('welcome');
-});
-
-Route::get('get_user', [UserController::class, 'get_user']);
+})->where('any', '.*');

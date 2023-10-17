@@ -1,33 +1,42 @@
 // require('./bootstrap');
 import './bootstrap';
-
 import { createApp } from 'vue'
-// import test from './App.vue';
+import AppTemplate from './layout/index.vue';
+import router from './router/router';
 import 'admin-lte/dist/js/adminlte.min.js';
 
-// import PrimeVue from 'primevue/config';
+// * PRIME VUE
+import PrimeVue from 'primevue/config';
+// import "primevue/resources/themes/lara-light-indigo/theme.css";
+// import "primevue/resources/themes/bootstrap4-dark-blue/theme.css";
+import "primevue/resources/themes/bootstrap4-light-blue/theme.css";
+import Button from "primevue/button"
+import DataTable from 'primevue/datatable';
+import Column from 'primevue/column';
+import InputText from 'primevue/inputtext';
+import Dropdown from 'primevue/dropdown';
+import Listbox from 'primevue/listbox';
+import Paginator from 'primevue/paginator';
+import ProgressSpinner from 'primevue/progressspinner';
 
-// // import "primevue/resources/themes/lara-light-indigo/theme.css";
-// // import "primevue/resources/themes/bootstrap4-dark-blue/theme.css";
 
-// import "primevue/resources/themes/bootstrap4-light-blue/theme.css";
+// * Fontawesome
+import { library } from '@fortawesome/fontawesome-svg-core'
+import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
+import { far } from '@fortawesome/free-regular-svg-icons';
+import { fas } from '@fortawesome/free-solid-svg-icons';
+library.add(far, fas);
 
-// import Button from "primevue/button"
-// import DataTable from 'primevue/datatable';
-// import Column from 'primevue/column';
-// import InputText from 'primevue/inputtext';
-// import Dropdown from 'primevue/dropdown';
-// import Listbox from 'primevue/listbox';
-
-
-const app = createApp({})
-// createApp(AppTemplate)
-// app.component('component-test', test)
-// app.component('Button', Button)
-// app.component('DataTable', DataTable)
-// app.component('Column', Column)
-// app.component('InputText', InputText)
-// app.component('Dropdown', Dropdown)
-// app.component('Listbox', Listbox)
-// app.use(PrimeVue);
-app.mount('#app')
+createApp(AppTemplate)
+.component('Button', Button)
+.component('DataTable', DataTable)
+.component('Column', Column)
+.component('InputText', InputText)
+.component('Dropdown', Dropdown)
+.component('Listbox', Listbox)
+.component('Paginator', Paginator)
+.component('ProgressSpinner', ProgressSpinner)
+.use(PrimeVue)
+.component('icons', FontAwesomeIcon)
+.use(router)
+.mount('#app')
