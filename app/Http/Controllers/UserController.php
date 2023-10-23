@@ -13,7 +13,7 @@ class UserController extends Controller
 {
     public function get_user_login(Request $request){
         // return "qwe";
-        session_start();
+        // session_start();
         return $_SESSION;
         // return $request->session()->get('id');
         // $data = $request->session()->get('rapidx_user_accesses');
@@ -33,4 +33,6 @@ class UserController extends Controller
         //     return response()->json(['msg' => 'User Dont Have Access'], 401);
         // }
     }
+
+  
 }

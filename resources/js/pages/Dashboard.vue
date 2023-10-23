@@ -32,7 +32,7 @@
 
     const validateUser = () => {
         // console.log('qwe');
-        api.get('get_user_login').then((result) => {
+        api.get('api/get_user_login').then((result) => {
                 // console.log(result);
         }).catch((err) => { 
                 

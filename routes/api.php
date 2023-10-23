@@ -24,7 +24,6 @@ use App\Http\Controllers\CutoffController;
 Route::middleware('CheckSessionExist')->group(function(){
     Route::get('get_cutoff', [CutoffController::class, 'get_cutoff']);
     Route::post('save_cutoff', [CutoffController::class, 'save_cutoff']);
-    Route::get('get_user_login', [UserController::class, 'get_user_login']);
 
 });
     
