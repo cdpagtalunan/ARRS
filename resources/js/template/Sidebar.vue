@@ -9,16 +9,20 @@
 
         <!-- Sidebar -->
         <div class="sidebar">
-            <div class="user-panel mt-3 pb-3 mb-3 d-flex justify-content-center">
-                <!-- <div class="image">
-        </div> -->
+            <!-- <div class="user-panel mt-3 pb-3 mb-3 d-flex justify-content-center">
                 <div class="info text-center">
                     <h6 class="d-block text-white text-capitalize"></h6>
                 </div>
-            </div>
+            </div> -->
             <!-- Sidebar Menu -->
             <nav class="mt-3">
                 <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
+                    <li class="nav-item has-treeview">
+                        <a href="../RapidX/" class="nav-link">
+                            <icons icon="fas fa-arrow-left" class="nav-icon"></icons>
+                            <p>Go to Rapidx</p>
+                        </a>
+                    </li>
                     <li class="nav-item has-treeview">
                         <router-link :to="{ name: 'Dashboard' }" class="nav-link">
                             <icons icon="fas fa-gauge" class="nav-icon"></icons>
@@ -37,6 +41,13 @@
 
                             <icons icon="fas fa-cog" class="nav-icon"></icons>
                             Cut-off
+                        </router-link>
+                    </li>
+                    <li class="nav-item">
+                        <router-link :to="{ name: 'SettingsUser' }" class="nav-link">
+
+                            <icons icon="fas fa-user" class="nav-icon"></icons>
+                            User
                         </router-link>
                     </li>
                 </ul>

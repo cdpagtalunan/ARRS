@@ -1,9 +1,7 @@
 <template>
-   <DataTable :value="users" tableStyle="min-width: 50rem" showGridlines paginator stripedRows
+   <DataTable :value="values" tableStyle="min-width: 50rem" showGridlines paginator stripedRows
     v-model:rows="selected" class="p-datatable-sm" v-model:filters="filters" :globalFilterFields="globalFilter"
-    removableSort :loading="loading">
-    <!--  -->
-    <!-- :globalFilterFields="['id', 'firstname']" -->
+    removableSort :loading="loading" >
         <template #header>
             <div class="d-flex justify-content-between">
                 <div>
@@ -30,20 +28,6 @@
                     animationDuration=".5s" fill="var(--surface-ground)"/>
         </template>
         <slot name="columns"></slot>
-        
-        <!-- <Column field="id" header="ID" sortable></Column> -->
-        <!-- <Column field="firstname" header="Name" sortable></Column>
-        <Column field="id">
-            <template #header>
-                Action
-            </template>
-            <template #body="{ data, field }">
-                <label class="w-100 text-center">
-                    <Button @click="test(data[field])" class="btn btn-info btn-sm" style="margin-right: .5em"><icons icon="fas fa-edit" class="fa-sm"></icons></Button>
-                    <Button class="btn btn-danger btn-sm"><icons icon="fas fa-trash" class="fa-sm"></icons></Button>
-                </label>
-            </template>
-        </Column> -->
     </DataTable>
 </template>
 <style>
@@ -56,16 +40,11 @@
     import { FilterMatchMode } from 'primevue/api';
 
     defineProps({
-        users: {type:Array, default: null},
+        values: {type:Array, default: null},
         filters: {type: Object, default:null},
         globalFilter: {type: Array, default: null},
         loading: {type: Boolean, default: false}
     });
 
     const selected = ref(10);
-    // const filters = ref({
-    //     global: { value: null, matchMode: FilterMatchMode.CONTAINS },
-    //     id: { value: null, matchMode: FilterMatchMode.IN },
-    //     status: { value: null, matchMode: FilterMatchMode.IN },
-    // });
 </script>

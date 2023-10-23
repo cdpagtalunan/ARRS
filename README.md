@@ -27,6 +27,9 @@ $ npm install admin-lte@^3.2 --save
 
 #install PRIMEVUE
 $ npm install primevue
+
+#install Sanctum
+$ composer require laravel/sanctum
 ```
 
 > **Note**

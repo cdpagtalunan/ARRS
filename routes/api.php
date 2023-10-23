@@ -3,6 +3,7 @@
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\CutoffController;
 
 /*
 |--------------------------------------------------------------------------
@@ -19,5 +20,15 @@ use App\Http\Controllers\UserController;
 //     return $request->user();
 // });
 
-Route::get('get_user', [UserController::class, 'get_user']);
+// Route::group(['middleware' => ['auth:sanctum']], function () {
+Route::middleware('CheckSessionExist')->group(function(){
+    Route::get('get_cutoff', [CutoffController::class, 'get_cutoff']);
+    Route::post('save_cutoff', [CutoffController::class, 'save_cutoff']);
+    Route::get('get_user_login', [UserController::class, 'get_user_login']);
+
+});
+    
+    
+// });
+
 

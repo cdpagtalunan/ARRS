@@ -1,6 +1,8 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use Illuminate\Http\Request;
+
 use App\Http\Controllers\UserController;
 
 /*
@@ -13,7 +15,17 @@ use App\Http\Controllers\UserController;
 | contains the "web" middleware group. Now create something great!
 |
 */
+// Route::get('/get_user_login', [UserController::class, 'get_user_login']);
+Route::middleware('CheckSessionExist')->group(function(){
+    Route::get('/{any}', function (Request $request) {
+    // Route::get('/', function () {
+        return view('welcome');
+    })->where('any', '.*');
+});
 
-Route::get('/{any}', function () {
-    return view('welcome');
-})->where('any', '.*');
+// });
+// Route::get('/', function () {
+//     return view('welcome');
+// });
+
+

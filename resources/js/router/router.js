@@ -4,6 +4,10 @@ import Dashboard from '../pages/Dashboard.vue';
 
 // ^ Setting Pages
 import CuttoffSettings from '../pages/Settings/CutoffSettings.vue';
+import UserSettings from '../pages/Settings/UserSettings.vue';
+
+// ^ Interceptors Page
+import Unauthorized from '../pages/Interceptors/Unauthorized.vue';
 const routes = [
     {
         path: "/ARRS/",
@@ -20,9 +24,25 @@ const routes = [
                 name: 'SettingsCutoff',
                 component: CuttoffSettings
             },
+            {
+                path: 'user_settings',
+                name: 'SettingsUser',
+                component: UserSettings
+            },
            
         ]
-    }
+    },
+    {
+        path: '/ARRS/',
+        component: '',
+        children:  [
+            {
+                path: 'unauthorized',
+                name: 'Unauthorized',
+                component: Unauthorized
+            },
+        ]
+    },
 ];
 
 const router = createRouter({

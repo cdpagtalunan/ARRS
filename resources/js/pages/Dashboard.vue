@@ -17,11 +17,26 @@
 
     <section class="content mt-2">
         <div class="container-fluid">
+            <input type="text">
         </div>
     </section>
 </template>
 
 <script setup>
-    import { ref } from 'vue';
-    console.log('asdsad');
+    import { onMounted, ref, onBeforeMount } from 'vue';
+    // import axios from 'axios'
+    import api from '../axios';
+    onBeforeMount( () => {
+        validateUser();
+    });
+
+    const validateUser = () => {
+        // console.log('qwe');
+        api.get('get_user_login').then((result) => {
+                // console.log(result);
+        }).catch((err) => { 
+                
+        });
+    }
+   
 </script>
