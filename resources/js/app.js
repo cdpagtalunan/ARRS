@@ -1,8 +1,9 @@
-// require('./bootstrap');
-import './bootstrap';
+require('./bootstrap');
+// import './bootstrap';
 // import 'bootstrap';
 
 import { createApp } from 'vue'
+
 import AppTemplate from './layout/index.vue';
 import router from './router/router';
 import 'admin-lte/dist/js/adminlte.min.js';
@@ -21,12 +22,54 @@ import Listbox from 'primevue/listbox';
 import Paginator from 'primevue/paginator';
 import ProgressSpinner from 'primevue/progressspinner';
 
-
+// import "@fortawesome/fontawesome-free/css/all.min.css";
 // * Fontawesome
 import { library } from '@fortawesome/fontawesome-svg-core'
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
 import { far } from '@fortawesome/free-regular-svg-icons';
 import { fas } from '@fortawesome/free-solid-svg-icons';
+
+// * Components
+import Card from './components/Card.vue';
+import Breadcrumb from './components/Breadcrumb.vue';
+import PrimeVueDatatable from './components/PrimeVueDatatable.vue';
+import Modal from './components/Modal.vue';
+
+// * SweetAlert
+import Swal from 'sweetalert2';
+const Toast = Swal.mixin({
+    toast: true,
+    position: 'top-end',
+    showConfirmButton: false,
+    timer: 3000,
+    timerProgressBar: true,
+    didOpen: (toast) => {
+        toast.addEventListener('mouseenter', Swal.stopTimer)
+        toast.addEventListener('mouseleave', Swal.resumeTimer)
+    }
+})
+
+// * Toastr
+import toastr from 'toastr';
+toastr.options = {
+    "closeButton": false,
+    "debug": false,
+    "newestOnTop": true,
+    "progressBar": true,
+    "positionClass": "toast-top-right",
+    "preventDuplicates": false,
+    "onclick": null,
+    "showDuration": "300",
+    "hideDuration": "3000",
+    "timeOut": "3000",
+    "extendedTimeOut": "3000",
+    "showEasing": "swing",
+    "hideEasing": "linear",
+    "showMethod": "fadeIn",
+    "hideMethod": "fadeOut",
+}
+
+
 library.add(far, fas);
 
 createApp(AppTemplate)
@@ -40,5 +83,12 @@ createApp(AppTemplate)
 .component('ProgressSpinner', ProgressSpinner)
 .use(PrimeVue)
 .component('icons', FontAwesomeIcon)
+.component('Card', Card)
+.component('Breadcrumb', Breadcrumb)
+.component('PrimeVueDatatable', PrimeVueDatatable)
+.component('Modal', Modal)
+.provide('Swal',Swal)
+.provide('Toast',Toast)
+.provide('toastr',toastr)
 .use(router)
 .mount('#app')

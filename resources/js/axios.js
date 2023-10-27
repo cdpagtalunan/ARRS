@@ -33,10 +33,6 @@ axios.interceptors.response.use(
             // Router.push({name: 'NotFound'})
             console.log('302');
         }
-        if(error.response && error.response.status === 422){
-            // Router.push({name: 'NotFound'})
-            console.log('422');
-        }
         return Promise.reject(error)
     }
 )

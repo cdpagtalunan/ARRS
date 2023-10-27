@@ -34,6 +34,13 @@
                     
                     <!-- <div class="nav-item has-treeview" id="ppc-id">
                     </div> -->
+                    <li class="nav-item  has-treeview">
+                        <router-link :to="{ name: 'SettingsUser' }" class="nav-link">
+
+                            <icons icon="fas fa-user" class="nav-icon"></icons>
+                            User Management
+                        </router-link>
+                    </li>
                     <li class="nav-header font-weight-bold" style="font-size: 1rem">Configuration</li>
 
                     <li class="nav-item">
@@ -43,13 +50,7 @@
                             Cut-off
                         </router-link>
                     </li>
-                    <li class="nav-item">
-                        <router-link :to="{ name: 'SettingsUser' }" class="nav-link">
-
-                            <icons icon="fas fa-user" class="nav-icon"></icons>
-                            User
-                        </router-link>
-                    </li>
+                    
                 </ul>
             </nav>
             <!-- /.sidebar-menu -->

@@ -30,6 +30,9 @@ $ npm install primevue
 
 #install Sanctum
 $ composer require laravel/sanctum
+
+#install multi-select
+$ npm install vue-multiselect@next
 ```
 
 > **Note**
@@ -46,3 +49,4 @@ This software uses the following open source packages:
 
 - [Node.js](https://nodejs.org/)
 - [AdminLTE](https://adminlte.io/)
+- [vue-multiselect](https://vue-multiselect.js.org/)

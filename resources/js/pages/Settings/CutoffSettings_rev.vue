@@ -50,7 +50,7 @@
 <script setup>
     import { ref, onMounted, watch, nextTick } from 'vue';
     import Breadcrumb from '../../components/Breadcrumb.vue';
-    import Card from '../../components/Card.vue';
+    // import Card from '../../components/Card.vue';
     import axios from 'axios';
 
     import DataTable from 'datatables.net-vue3';

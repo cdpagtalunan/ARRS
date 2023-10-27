@@ -26,17 +26,6 @@
     import { onMounted, ref, onBeforeMount } from 'vue';
     // import axios from 'axios'
     import api from '../axios';
-    onBeforeMount( () => {
-        validateUser();
-    });
-
-    const validateUser = () => {
-        // console.log('qwe');
-        api.get('api/get_user_login').then((result) => {
-                // console.log(result);
-        }).catch((err) => { 
-                
-        });
-    }
+   
    
 </script>

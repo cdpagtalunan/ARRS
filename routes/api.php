@@ -3,7 +3,8 @@
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\UserController;
-use App\Http\Controllers\CutoffController;
+use App\Http\Controllers\AdminController;
+use App\Http\Controllers\ConfigController;
 
 /*
 |--------------------------------------------------------------------------
@@ -22,9 +23,15 @@ use App\Http\Controllers\CutoffController;
 
 // Route::group(['middleware' => ['auth:sanctum']], function () {
 Route::middleware('CheckSessionExist')->group(function(){
-    Route::get('get_cutoff', [CutoffController::class, 'get_cutoff']);
-    Route::post('save_cutoff', [CutoffController::class, 'save_cutoff']);
+    // CUT-OFF ROUTE
+    Route::get('get_cutoff', [ConfigController::class, 'get_cutoff']);
+    Route::post('save_cutoff', [ConfigController::class, 'save_cutoff']);
 
+    // USER ROUTE
+    Route::get('get_user', [AdminController::class, 'get_user']);
+    Route::post('save_user', [AdminController::class, 'save_user']);
+    Route::get('get_rapidx_employee', [AdminController::class, 'get_rapidx_employee']);
+    Route::get('get_user_details', [AdminController::class, 'get_user_details']);
 });
     
     

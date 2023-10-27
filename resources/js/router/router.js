@@ -4,13 +4,28 @@ import Dashboard from '../pages/Dashboard.vue';
 
 // ^ Setting Pages
 import CuttoffSettings from '../pages/Settings/CutoffSettings.vue';
-import UserSettings from '../pages/Settings/UserSettings.vue';
+import UserSettings from '../pages/AdminManagement/UserSettings.vue';
 
 // ^ Interceptors Page
 import Unauthorized from '../pages/Interceptors/Unauthorized.vue';
 
 import api from '../axios';
 
+// function isLoggedIn(to, from, next) { // * TO VALIDATE IF SESSION STILL EXIST
+//     api.get('check_user').then((result) => {
+//         if(result.data == 1){
+//             // return true;
+//             next();
+//         }
+//         else{
+//             // return window.location.href = '/RapidX';
+//             next({
+//                 path: '/RapidX',
+//                 replace: true
+//             });
+//         }
+//     });
+// }
 const isLoggedIn = async () => { // * TO VALIDATE IF SESSION STILL EXIST
     await api.get('check_user').then((result) => {
         if(result.data == 1){
@@ -21,13 +36,14 @@ const isLoggedIn = async () => { // * TO VALIDATE IF SESSION STILL EXIST
         }
     });
 }
+
 const hasAccess = async () => { // * TO VALIDATE USER HAS ACCESS ON SYSTEM
     await api.get('check_access').then((result) => {
-        
     }).catch((err) => {
         
     });
 }
+
 const routes = [
     {
         path: "/ARRS/",

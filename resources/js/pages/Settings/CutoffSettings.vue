@@ -12,7 +12,7 @@
                 <div class="col">
                     <Card :card-body="true">
                         <template #body>
-                            <button type="button" class="btn btn-success float-right" @click="openModal('Add Cut-off')" data-bs-toggle="modal" data-bs-target="#exampleModal"><icons icon="fas fa-plus"></icons> Add Cut-off</button><br><br>
+                            <button type="button" class="btn btn-success float-right" @click="openModal('Add Cut-off')" data-bs-toggle="modal" data-bs-target="#modalComponentId"><icons icon="fas fa-plus"></icons> Add Cut-off</button><br><br>
                             <!-- <button type="button" class="btn btn-success float-right" data-bs-toggle="modal" data-bs-target="#exampleModal"><icons icon="fas fa-plus"></icons> Add Cut-off</button><br><br> -->
                             <PrimeVueDatatable 
                             :values="dataTableProps.values" 
@@ -40,7 +40,7 @@
                 </div>
             </div>
         </div>
-        <Modal :title="modalDetails.title" @save-event="saveCutoff">
+        <Modal :title="modalDetails.title"  @save-event="saveCutoff">
             <template #body>
                 <!-- {{ formCutoff }} -->
                 <input type="hidden" v-model="formCutoff.id">
@@ -90,17 +90,17 @@
 </style> -->
 <script setup>
     import { ref, onMounted, reactive, markRaw } from 'vue';
-    import Breadcrumb from '../../components/Breadcrumb.vue';
-    import Card from '../../components/Card.vue';
+    // import Breadcrumb from '../../components/Breadcrumb.vue';
+    // import Card from '../../components/Card.vue';
     import axios from 'axios';
     import { FilterMatchMode } from 'primevue/api'; // * This is for datatable search
-    import PrimeVueDatatable from '../../components/PrimeVueDatatable.vue';
-    import Modal from '../../components/Modal.vue';
+    // import PrimeVueDatatable from '../../components/PrimeVueDatatable.vue';
+    // import Modal from '../../components/Modal.vue';
 
     const modalDetails = reactive({
         title : '',
     });
-    let formCutoff = reactive({
+    let formCutoff = ref({
     });
 
     onMounted(() => {
@@ -125,10 +125,8 @@
     }
    
     const saveCutoff = async () => {
-        formCutoff.csrf = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
-        await axios.post('api/save_cutoff', formCutoff).then((res) => {
-
-            console.log(res);
+        await axios.post('api/save_cutoff', formCutoff.value).then((res) => {
+            formCutoff = {};
         }).catch((err) => {
             
         });
