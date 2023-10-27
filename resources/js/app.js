@@ -22,7 +22,7 @@ import Listbox from 'primevue/listbox';
 import Paginator from 'primevue/paginator';
 import ProgressSpinner from 'primevue/progressspinner';
 
-// import "@fortawesome/fontawesome-free/css/all.min.css";
+// import '../../public/fonts/vendor/fontawesome/css/all.min.css';
 // * Fontawesome
 import { library } from '@fortawesome/fontawesome-svg-core'
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'

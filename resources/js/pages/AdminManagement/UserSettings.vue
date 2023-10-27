@@ -36,6 +36,7 @@
                                 :columns="columns"
                                 ajax="api/get_user"
                                 ref="table"
+                                :options="options"
                             />
                         </template>
                     </Card>
@@ -97,9 +98,8 @@
 .multiselect.invalid .multiselect__tags {
   border: 1px solid #f86c6b !important;
 }
-</style>
-<!-- <style src="vue-multiselect/dist/vue-multiselect.css"></style> -->
 
+</style>
 <script setup>
     import { ref, onMounted, reactive, inject } from 'vue';
     import api from '../../axios';
@@ -114,6 +114,10 @@
     let dt;
     const table = ref();
     const modals = ref();
+    const Swal = inject('Swal');
+    const Toast = inject('Toast');
+    const toastr = inject('toastr');
+
     const columns = [
         {
             data: 'action',
@@ -121,23 +125,47 @@
             orderable: false,
             searchable: false,
             createdCell(cell) {
-
-                cell.querySelector('.actionEditSystemDevelopment').addEventListener('click', function(){
-                    let id = this.getAttribute('dev-id');
-                    // console.log(id);
+                cell.querySelector('.actionEditUser').addEventListener('click', function(){
+                    let id = this.getAttribute('data-id');
                     getUserDetails(id);
-
-
+                });
+                cell.querySelector('.actionDelUser').addEventListener('click', function(){
+                    let id = this.getAttribute('data-id');
+                    let name = this.getAttribute('data-name');
+                    var title;
+                    if(name == 0){
+                        title = "activate";
+                    }
+                    else{
+                        title = "deactivate";
+                    }
+                    Swal.fire({
+                        title: `Are you sure you want to ${title} this account?`,
+                        // text: "You won't be able to revert this!",
+                        icon: 'question',
+                        showCancelButton: true,
+                        confirmButtonColor: '#3085d6',
+                        cancelButtonColor: '#d33',
+                        confirmButtonText: 'Yes'
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            updateUserStat(id, name);
+                        }
+                    })
                 });
             },
         },
+        { data: 'status', title: 'Status', orderable: false,searchable: false},
         { data: 'rapidx_user_details.name', title: 'Name' },
-        { data: 'user_type', title: 'Type' }
+        { data: 'rapidx_user_details.email', title: 'Email' },
+        { data: 'user_type', title: 'Type' },
+        { data: 'category', title: 'Assigned Category' }
         
     ];
-    const Swal = inject('Swal');
-    const Toast = inject('Toast');
-    const toastr = inject('toastr');
+    const options = {
+        responsive: true,
+        serverSide: true
+    };
     const modalDetails = reactive({
         title : ""
     });
@@ -230,6 +258,17 @@
             formData.value.uType = data.userData.user_type;
             formData.value.uCat = data.userData.category_id;
             modals.value.show();
+        }).catch((err) => {
+
+        });
+    }
+    
+    const updateUserStat = async (id, fnName) => {
+        await api.post('api/update_user_stat', { emp:id, fn_name: fnName }).then((res) => {
+            let response = res.data;
+            toastr.success(response.msg);
+            dt.ajax.reload();
+            
         }).catch((err) => {
 
         });

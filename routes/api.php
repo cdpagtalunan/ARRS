@@ -32,6 +32,7 @@ Route::middleware('CheckSessionExist')->group(function(){
     Route::post('save_user', [AdminController::class, 'save_user']);
     Route::get('get_rapidx_employee', [AdminController::class, 'get_rapidx_employee']);
     Route::get('get_user_details', [AdminController::class, 'get_user_details']);
+    Route::post('update_user_stat', [AdminController::class, 'update_user_stat']);
 });
     
     
