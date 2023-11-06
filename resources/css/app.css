@@ -3,4 +3,10 @@
 @import 'datatables.net-bs5';
 @import 'toastr/build/toastr.min.css';
 @import 'vue-multiselect/dist/vue-multiselect.css';
+@import 'bootstrap';
 
+
+.multiselect.invalid .multiselect__tags {
+    border: 1px solid #f86c6b !important;
+  }
+  

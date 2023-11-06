@@ -10,4 +10,6 @@ class UserCategory extends Model
     use HasFactory;
     protected $table = "user_categories";
     protected $connection = "mysql";
+    protected $hidden = ['id'];
+
 }

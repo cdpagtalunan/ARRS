@@ -4,7 +4,10 @@ import Dashboard from '../pages/Dashboard.vue';
 
 // ^ Setting Pages
 import CuttoffSettings from '../pages/Settings/CutoffSettings.vue';
-import UserSettings from '../pages/AdminManagement/UserSettings.vue';
+import CategorySettings from '../pages/Settings/CategorySettings.vue';
+
+// ^ Admin Pages
+import UserManagement from '../pages/AdminManagement/UserManagement.vue';
 
 // ^ Interceptors Page
 import Unauthorized from '../pages/Interceptors/Unauthorized.vue';
@@ -56,6 +59,14 @@ const routes = [
                 beforeEnter: isLoggedIn,
                 component: Dashboard
             },
+            // Admin Management
+            {
+                path: 'user_management',
+                name: 'UserManagement',
+                beforeEnter: isLoggedIn,
+                component: UserManagement
+            },
+            // SETTINGS
             {
                 path: 'cutoff_settings',
                 name: 'SettingsCutoff',
@@ -63,10 +74,10 @@ const routes = [
                 component: CuttoffSettings
             },
             {
-                path: 'user_settings',
-                name: 'SettingsUser',
+                path: 'category_settings',
+                name: 'SettingsCategory',
                 beforeEnter: isLoggedIn,
-                component: UserSettings
+                component: CategorySettings
             },
            
         ]

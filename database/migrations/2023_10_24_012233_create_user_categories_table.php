@@ -15,9 +15,10 @@ class CreateUserCategoriesTable extends Migration
     {
         Schema::create('user_categories', function (Blueprint $table) {
             $table->id();
-            $table->string('name');
+            $table->string('classification')->nullable();
+            $table->string('department')->nullable();
             $table->string('created_by');
-            $table->string('updated_by');
+            $table->string('updated_by')->nullable();
             $table->timestamps();
             $table->softDeletes();
         });

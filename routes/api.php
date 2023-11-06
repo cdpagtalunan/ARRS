@@ -23,9 +23,23 @@ use App\Http\Controllers\ConfigController;
 
 // Route::group(['middleware' => ['auth:sanctum']], function () {
 Route::middleware('CheckSessionExist')->group(function(){
-    // CUT-OFF ROUTE
+    /*
+        * START SETTINGS ROUTES
+    */
+
+    // ^ CUT-OFF ROUTE
     Route::get('get_cutoff', [ConfigController::class, 'get_cutoff']);
     Route::post('save_cutoff', [ConfigController::class, 'save_cutoff']);
+
+    // ^ USER CATEGORY ROUTE
+    Route::get('get_category', [ConfigController::class, 'get_category']);
+    Route::post('save_cat', [ConfigController::class, 'save_cat']);
+    Route::get('get_dropdown_data', [ConfigController::class, 'get_dropdown_data']);
+    Route::get('get_category_details', [ConfigController::class, 'get_category_details']);
+    Route::post('update_cat_status', [ConfigController::class, 'update_cat_status']);
+    /*
+        ! END SETTINGS ROUTES
+    */
 
     // USER ROUTE
     Route::get('get_user', [AdminController::class, 'get_user']);
@@ -33,6 +47,7 @@ Route::middleware('CheckSessionExist')->group(function(){
     Route::get('get_rapidx_employee', [AdminController::class, 'get_rapidx_employee']);
     Route::get('get_user_details', [AdminController::class, 'get_user_details']);
     Route::post('update_user_stat', [AdminController::class, 'update_user_stat']);
+    
 });
     
     

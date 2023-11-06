@@ -2,7 +2,7 @@
     <!-- Main Sidebar Container -->
     <aside class="main-sidebar sidebar-dark-primary" style="height: 100%;">
         <!-- Brand Logo -->
-        <a href="" class="brand-link text-center">
+        <a href="" class="brand-link text-center text-decoration-none">
             <!-- <img src="../assets/img/AdminLTELogo.png" alt="AdminLTE Logo" class="brand-image img-circle elevation-3" style="opacity: .8"> -->
             <span class="brand-text font-weight-light">ARRS</span>
         </a>
@@ -35,7 +35,7 @@
                     <!-- <div class="nav-item has-treeview" id="ppc-id">
                     </div> -->
                     <li class="nav-item  has-treeview">
-                        <router-link :to="{ name: 'SettingsUser' }" class="nav-link">
+                        <router-link :to="{ name: 'UserManagement' }" class="nav-link">
 
                             <icons icon="fas fa-user" class="nav-icon"></icons>
                             User Management
@@ -48,6 +48,13 @@
 
                             <icons icon="fas fa-cog" class="nav-icon"></icons>
                             Cut-off
+                        </router-link>
+                    </li>
+                    <li class="nav-item">
+                        <router-link :to="{ name: 'SettingsCategory' }" class="nav-link">
+
+                            <icons icon="fas fa-cog" class="nav-icon"></icons>
+                            User Category
                         </router-link>
                     </li>
                     

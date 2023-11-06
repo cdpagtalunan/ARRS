@@ -1,9 +1,7 @@
 window._ = require('lodash');
-import 'bootstrap';
+// import 'bootstrap';
 import { Modal } from 'bootstrap';
-
 // import 'admin-lte/dist/css/adminlte.css'
-
 /**
  * We'll load the axios HTTP library which allows us to easily issue requests
  * to our Laravel back-end. This library automatically handles sending the
