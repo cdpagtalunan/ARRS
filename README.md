@@ -1,7 +1,11 @@
-<h1 align="center">
-  Laravel 8 with vue js
-  <br>
-</h1>
+<div align="center">
+
+  <h1 align="center">Auto Generation of Reconciliation Report System</h1>
+
+  <p align="center">
+    Laravel 8 and Vue 3
+  </p>
+</div>
 
 ## Installation and Dependencies
 
