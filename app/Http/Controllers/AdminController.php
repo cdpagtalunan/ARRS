@@ -19,7 +19,8 @@ class AdminController extends Controller
 {
     public function get_user(Request $request){
         $user_data = UserAccess::with([
-            'rapidx_user_details'
+            'rapidx_user_details',
+            'category_details'
         ])
         ->get(); 
 
@@ -55,7 +56,14 @@ class AdminController extends Controller
         })
         ->addColumn('category', function($user_data){
             $result = "";
-            $result .= $user_data->category_id;
+            // $result .= $user_data->category_id;
+            if($user_data->category_id == 0){
+                $result .= "Admin";
+            }
+            else{
+                $result .= $user_data->category_details->classification."-".$user_data->category_details->department;
+
+            }
             return $result;
         })
         ->addColumn('status', function($user_data){
@@ -162,5 +170,14 @@ class AdminController extends Controller
             return $e;
         }
         
+    }
+
+    public function get_cat(Request $request){
+        $cat = DB::connection('mysql')->table('user_categories')
+        ->whereNull('deleted_at')
+        ->select('id', 'classification', 'department')
+        ->get();
+
+        return $cat;
     }
 }

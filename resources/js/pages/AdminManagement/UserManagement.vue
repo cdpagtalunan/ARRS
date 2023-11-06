@@ -79,10 +79,12 @@
                         v-model="formData.uCat"
                         id="selUCat"
                     >
-                        <option value="1">Admin</option>
+                    <option value="0">Admin</option>
+                    <option v-for="selectCatOption in selectCatOptions" :key="selectCatOption.id" :value="selectCatOption.id">{{ selectCatOption.classification + "-" + selectCatOption.department}}</option>
+                        <!-- 
                         <option value="2">RMI-TS-PPC</option>
                         <option value="3">RMI-CN-PPC</option>
-                        <option value="4">RMI-YF-PPC</option>
+                        <option value="4">RMI-YF-PPC</option> -->
                     </select>
                 </template>
                 <template #footerButton>
@@ -169,11 +171,14 @@
     const formData = ref({
     });
     const selectOptions = ref([]);
+    const selectCatOptions = ref();
+
     const empMultSel = ref(false)
 
     onMounted(() => {
         // getUser();
         getRapidxEmpDetails();
+        getDropdownCatValues();
 
         modals.value = new Modal(document.querySelector('#modalComponentId'), {});
         document.getElementById("modalComponentId").addEventListener('hidden.bs.modal', event => {
@@ -270,4 +275,13 @@
         });
     }
 
+    const getDropdownCatValues = async () => {
+        await api.get('api/get_cat').then((result) => {
+            // console.log(result);
+            selectCatOptions.value = result.data;
+            console.log(selectCatOptions.value);
+        }).catch((err) => {
+            
+        });
+    }
 </script>
