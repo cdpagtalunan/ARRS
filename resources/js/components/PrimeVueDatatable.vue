@@ -6,12 +6,14 @@
             <div class="d-flex justify-content-between">
                 <div>
                     <label class="d-flex flex-row mt-2"> Show 
-                        <select class="custom-select custom-select-sm form-control form-control-sm ml-1 mr-1" v-model.number="selected">
+                        <select class="form-control-sm ml-1 mr-1" v-model.number="selected">
                             <option>10</option>
                             <option>25</option>
                             <option>50</option>
                             <option>100</option>
-                        </select> entries</label>
+                        </select> 
+                        entries
+                    </label>
                 </div>
                 <div>
                     <span class="p-input-icon-left">

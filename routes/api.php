@@ -30,6 +30,8 @@ Route::middleware('CheckSessionExist')->group(function(){
     // ^ CUT-OFF ROUTE
     Route::get('get_cutoff', [ConfigController::class, 'get_cutoff']);
     Route::post('save_cutoff', [ConfigController::class, 'save_cutoff']);
+    Route::get('get_cutoff_details', [ConfigController::class, 'get_cutoff_details']);
+    Route::post('update_status', [ConfigController::class, 'update_status']);
 
     // ^ USER CATEGORY ROUTE
     Route::get('get_category', [ConfigController::class, 'get_category']);

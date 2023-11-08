@@ -10,26 +10,76 @@ use App\Models\UserCategory;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use App\Models\EprpoClassification;
+use App\Http\Requests\CutoffRequest;
 use App\Http\Requests\CategoryRequest;
 
 class ConfigController extends Controller
 {
     public function get_cutoff(Request $request){
         $cutoff_data = CutOff::all();
-
+        
         return response()->json(['data' => $cutoff_data]);
     }
-    public function save_cutoff(Request $request){
-        // return $request->all();
-        CutOff::insert([
-            'day_from' => 1,
-            'day_to' => 1,
-            'cut_off' => 1,
-            'day_email' => 1
-        ]);
+    public function save_cutoff(CutoffRequest $request){
+        date_default_timezone_set('Asia/Manila');
+        $fields = $request->validated();
+
+        DB::beginTransaction();
+        try{
+
+            $cutoff_array = array(
+                'day_from'      => $request->froms,
+                'day_to'        => $request->to,
+                'cut_off'       => $request->cutoff,
+                'day_email'     => $request->dateEmail
+            );
+            if(isset($request->id)){ // EDIT
+                $cutoff_array['updated_at'] = NOW();
+                DB::connection('mysql')->table('cut_offs')
+                ->update($cutoff_array);
+                DB::commit();
+                return response()->json([
+                    'result'    => 1,
+                    'msg'       => 'Successfully Added!'
+                ]);
+            }
+            else{  // ADD
+                $cutoff_array['created_at'] = NOW();
+                if(!CutOff::whereNull('deleted_at')->find($request->cutoff)){
+                    DB::connection('mysql')->table('cut_offs')
+                    ->insert($cutoff_array);
+                    DB::commit();
+                    return response()->json([
+                        'result'    => 1,
+                        'msg'       => 'Successfully Added!'
+                    ]);
+                }
+                else{
+                    return response()->json([
+                        'msg'       => 'Cutoff already exist!'
+                    ],405);
+                }
+            }
+        }
+        catch(Exception $e){
+            DB::rollback();
+            return $e;
+        }
+
+        // CutOff::insert([
+        //     'day_from' => 1,
+        //     'day_to' => 1,
+        //     'cut_off' => 1,
+        //     'day_email' => 1
+        // ]);
         return response()->json(['test' => 1]);
     }
-    
+    public function get_cutoff_details(Request $request){
+        $cutoff_details = DB::connection('mysql')->table('cut_offs')->where('id', $request->id)
+        ->first();
+
+        return response()->json(['cutoffDetails' => $cutoff_details]);
+    }
     public function get_category(Request $request){
         // $user_cat_details = DB::connection('mysql')->table('user_categories')
         // ->select('*');
@@ -168,6 +218,34 @@ class ConfigController extends Controller
                 'msg'       => 'Successfully Updated!'
             ]);
                 
+        }catch(Exception $e){
+            DB::rollback();
+            return $e;
+        }
+    }
+
+    public function update_status(Request $request){
+        date_default_timezone_set('Asia/Manila');
+        DB::beginTransaction();
+        try{
+            if($request->func == 0){
+                DB::connection('mysql')->table('cut_offs')
+                ->where('id', $request->id)
+                ->update([
+                    'deleted_at' => NOW()
+                ]);
+            }
+            else{
+                DB::connection('mysql')->table('cut_offs')
+                ->where('id', $request->id)
+                ->update([
+                    'deleted_at' => null
+                ]);
+            }
+            DB::commit();
+            return response()->json([
+                'msg' => 'Successfully Updated!'
+            ]);
         }catch(Exception $e){
             DB::rollback();
             return $e;
