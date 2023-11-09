@@ -7,6 +7,8 @@ import { createApp } from 'vue'
 import AppTemplate from './layout/index.vue';
 import router from './router/router';
 import 'admin-lte/dist/js/adminlte.min.js';
+import { pinia } from './stores/index';
+
 
 // * PRIME VUE
 import PrimeVue from 'primevue/config';
@@ -92,5 +94,6 @@ createApp(AppTemplate)
 .provide('Swal',Swal)
 .provide('Toast',Toast)
 .provide('toastr',toastr)
+.use(pinia)
 .use(router)
 .mount('#app')

@@ -1,9 +1,10 @@
 <?php
 
-use Illuminate\Support\Facades\Route;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Route;
 
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\CommonController;
 
 /*
 |--------------------------------------------------------------------------
@@ -37,12 +38,13 @@ Route::middleware('CheckSessionExist')->group(function(){
         ! THIS ROUTE WILL BE ACCESS FIRST AND WILL CHECK IF USER HAS ACCESS ON THIS MODULE
         ! IF USER DONT HAVE ACCESS ON THE SYSTEM, EDI WALA 
     */
-    Route::get('check_access', function (Request $request) {
-        $found_key = array_search('32', array_column($_SESSION['rapidx_user_accesses'], 'module_id')); // * 32 is the id of this module on RAPIDX
-        if($found_key == ""){
-            return response()->json(['msg' => 'User Dont Have Access'], 401);
-        }
-    });
+    // Route::get('check_access', function (Request $request) {
+    //     $found_key = array_search('32', array_column($_SESSION['rapidx_user_accesses'], 'module_id')); // * 32 is the id of this module on RAPIDX
+    //     if($found_key == ""){
+    //         return response()->json(['msg' => 'User Dont Have Access'], 401);
+    //     }
+    // });
+    Route::get('check_access', [CommonController::class, 'check_access']);
 
     /*
         * THIS WILL ACCEPT ANY KIND OF URL

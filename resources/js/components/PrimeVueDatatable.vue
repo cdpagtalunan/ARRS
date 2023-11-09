@@ -1,6 +1,7 @@
 <template>
+    <!-- v-model:filters="filters" :globalFilterFields="globalFilter" -->
    <DataTable :value="values" tableStyle="min-width: 50rem" showGridlines paginator stripedRows
-    v-model:rows="selected" class="p-datatable-sm" v-model:filters="filters" :globalFilterFields="globalFilter"
+    v-model:rows="selected" class="p-datatable-sm" 
     removableSort :loading="loading" >
         <template #header>
             <div class="d-flex justify-content-between">
@@ -15,12 +16,12 @@
                         entries
                     </label>
                 </div>
-                <div>
+                <!-- <div>
                     <span class="p-input-icon-left">
                         <icons icon="fas fa-magnifying-glass"></icons>
                         <InputText size="small" v-model="filters['global'].value" placeholder="Keyword Search" />
                     </span>
-                </div>
+                </div> -->
                 
             </div>
         </template> 
@@ -43,8 +44,8 @@
 
     defineProps({
         values: {type:Array, default: null},
-        filters: {type: Object, default:null},
-        globalFilter: {type: Array, default: null},
+        // filters: {type: Object, default:null},
+        // globalFilter: {type: Array, default: null},
         loading: {type: Boolean, default: false}
     });
 

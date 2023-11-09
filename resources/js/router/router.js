@@ -40,18 +40,34 @@ const isLoggedIn = async () => { // * TO VALIDATE IF SESSION STILL EXIST
     });
 }
 
-const hasAccess = async () => { // * TO VALIDATE USER HAS ACCESS ON SYSTEM
-    await api.get('check_access').then((result) => {
-    }).catch((err) => {
+// const hasAccess = async () => { // * TO VALIDATE USER HAS ACCESS ON SYSTEM
+//     await api.get('check_access').then((result) => {
         
-    });
+//     }).catch((err) => {
+        
+//     });
+// }
+
+import { useSessionStore } from "../stores/index";
+
+const hasAccess =  () => { // * TO VALIDATE USER HAS ACCESS ON SYSTEM
+    const sessionStore = useSessionStore();     
+    console.log('beforeEnter');
+
+    sessionStore.checkSession();
+}
+
+const removeAll = () => {
+    const sessionStore = useSessionStore();     
+    sessionStore.removeSession();
+
 }
 
 const routes = [
     {
         path: "/ARRS/",
         component: AdminLayout,
-        beforeEnter: hasAccess, 
+        beforeEnter: hasAccess,
         children: [
             {
                 path: '',

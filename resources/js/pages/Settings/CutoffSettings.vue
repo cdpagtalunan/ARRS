@@ -33,7 +33,7 @@
                                             </div>
                                         </template>
                                     </Column>
-                                    <Column class="border border-2" sortable>
+                                    <Column class="border border-2">
                                         <template #header>
                                             Status
                                         </template>
@@ -46,7 +46,7 @@
                                         </template>
                                     </Column>
 
-                                    <Column class="border border-2" sortable>
+                                    <Column class="border border-2">
                                         <template #header>
                                             Cut-off
                                         </template>
@@ -160,12 +160,12 @@
     });
     const dataTableProps = reactive({
         values : [],
-        filters: {
-            global: { value: null, matchMode: FilterMatchMode.CONTAINS },
-            id: { value: null, matchMode: FilterMatchMode.IN },
-            fullname: { value: null, matchMode: FilterMatchMode.IN },
-        },
-        globalFilter: ['id','fullname'],
+        // filters: {
+        //     global: { value: null, matchMode: FilterMatchMode.CONTAINS },
+        //     froms: { value: null, matchMode: FilterMatchMode.IN },
+        //     // to: { value: null, matchMode: FilterMatchMode.IN },
+        // },
+        // globalFilter: ['id','fullname'],
         loading: true
     })
     const openModal = (title) => {

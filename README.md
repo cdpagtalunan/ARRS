@@ -37,6 +37,10 @@ $ composer require laravel/sanctum
 
 #install multi-select
 $ npm install vue-multiselect@next
+
+#install pinia and dependencies
+$ npm i pinia
+$ npm i pinia-plugin-persistedstate-2 
 ```
 
 > **Note**
