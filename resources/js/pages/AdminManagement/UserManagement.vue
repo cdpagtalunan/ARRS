@@ -45,9 +45,8 @@
 
             <Modal :title="modalDetails.title" backdrop="static">
                 <template #body>
+                    <!-- {{ formData }} -->
                     <input type="hidden" v-model="formData.id"> 
-                    <!-- {{formData}} -->
-
                     <label class="form-label">Employee</label>
                     <VueMultiselect 
                         :class="{'invalid': empMultSel}"
@@ -74,18 +73,25 @@
                         <option value="2">User</option>
                     </select>
                     <label>User Category</label>
-                    <select 
+                    <!-- <select 
                         class="form-control"  
                         v-model="formData.uCat"
                         id="selUCat"
                     >
                     <option value="0">Admin</option>
                     <option v-for="selectCatOption in selectCatOptions" :key="selectCatOption.id" :value="selectCatOption.id">{{ selectCatOption.classification + "-" + selectCatOption.department}}</option>
-                        <!-- 
-                        <option value="2">RMI-TS-PPC</option>
-                        <option value="3">RMI-CN-PPC</option>
-                        <option value="4">RMI-YF-PPC</option> -->
-                    </select>
+                     
+                    </select> -->
+
+                    <VueMultiselect 
+                        :class="{'invalid': CatMultSel}"
+
+                        v-model="formData.uCat" 
+                        placeholder="Search Category" 
+                        :custom-label="labelValue => selectCatOptions.find(x => x.id == labelValue).classification +'-'+selectCatOptions.find(x => x.id == labelValue).department" 
+                        :options="selectCatOptions.map(option => option.id)"
+                        :multiple="true">
+                    </VueMultiselect>
                 </template>
                 <template #footerButton>
                     <button type="button" class="btn btn-success" @click="saveUser">Save</button>
@@ -171,9 +177,10 @@
     const formData = ref({
     });
     const selectOptions = ref([]);
-    const selectCatOptions = ref();
-
+    // const selectCatOptions = ref();
+    var selectCatOptions = []
     const empMultSel = ref(false)
+    const CatMultSel = ref(false)
 
     onMounted(() => {
         // getUser();
@@ -183,6 +190,10 @@
         modals.value = new Modal(document.querySelector('#modalComponentId'), {});
         document.getElementById("modalComponentId").addEventListener('hidden.bs.modal', event => {
             formData.value = {};
+            empMultSel.value = false
+            document.querySelector('#selUType').classList.remove('is-invalid');
+            CatMultSel.value = false
+
         });
         dt = table.value.dt;
 
@@ -211,6 +222,7 @@
             // console.log(err.response.data.errors.uType);
             if(err.response.data.errors.empDetails != undefined){
                 empMultSel.value = true
+                toastr.error(err.response.data.errors.empDetails);
             }
             else{
                 empMultSel.value = false
@@ -227,13 +239,13 @@
                 
             }
             if(err.response.data.errors.uCat != undefined){
-                // formDataErr.uCatError = true
-                document.querySelector('#selUCat').classList.add('is-invalid');
+                CatMultSel.value = true
+                // document.querySelector('#selUCat').classList.add('is-invalid');
                
             }
             else{
-                // formDataErr.uCatError = false
-                document.querySelector('#selUCat').classList.remove('is-invalid');
+                CatMultSel.value = false
+                // document.querySelector('#selUCat').classList.remove('is-invalid');
                 
             }
 
@@ -257,7 +269,7 @@
             formData.value.id = data.emp;
             formData.value.empDetails = data.userData.rapidx_user_details;
             formData.value.uType = data.userData.user_type;
-            formData.value.uCat = data.userData.category_id;
+            formData.value.uCat = data.forSelCat;
             modals.value.show();
         }).catch((err) => {
 
@@ -277,9 +289,11 @@
 
     const getDropdownCatValues = async () => {
         await api.get('api/get_cat').then((result) => {
-            // console.log(result);
-            selectCatOptions.value = result.data;
-            console.log(selectCatOptions.value);
+            console.log(result);
+            // selectCatOptions.value = result.data;
+            // selectCatOptions.push(result.data);
+            selectCatOptions = result.data;
+            selectCatOptions.push({'id':0, 'classification' : 'Admin', 'department' : ''});
         }).catch((err) => {
             
         });

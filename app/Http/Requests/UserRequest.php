@@ -29,4 +29,10 @@ class UserRequest extends FormRequest
             'uType'         => 'required'
         ];
     }
+
+    public function messages(){
+        return [
+            'empDetails.unique' => "Employee already exist"
+        ];
+    }
 }

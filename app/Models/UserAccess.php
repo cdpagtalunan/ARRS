@@ -18,9 +18,9 @@ class UserAccess extends Model
         return $this->hasOne(RapidxUser::class, 'id', 'rapidx_emp_no');
     }
 
-    public function category_details(){
-        return $this->hasOne(UserCategory::class, 'id', 'category_id');
+    // public function category_details(){
+    //     return $this->hasOne(UserCategory::class, 'id', 'category_id');
 
-    }
+    // }
 
 }

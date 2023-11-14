@@ -19,8 +19,7 @@ class AdminController extends Controller
 {
     public function get_user(Request $request){
         $user_data = UserAccess::with([
-            'rapidx_user_details',
-            'category_details'
+            'rapidx_user_details'
         ])
         ->get(); 
 
@@ -55,16 +54,30 @@ class AdminController extends Controller
             return $result;
         })
         ->addColumn('category', function($user_data){
-            $result = "";
+            // $result = "";
+            $result = array();
             // $result .= $user_data->category_id;
             if($user_data->category_id == 0){
-                $result .= "Admin";
-            }
-            else{
-                $result .= $user_data->category_details->classification."-".$user_data->category_details->department;
+                // $result .= "Admin";
+                array_push($result, "Admin");
 
             }
-            return $result;
+            // else{
+                $cat_details = DB::connection('mysql')->table('user_categories')
+                ->whereIn('id', explode(",",$user_data->category_id))
+                ->select('*')
+                ->get();
+                for($x = 0; $x < count($cat_details); $x++){
+                    // $result .= $cat_details[$x]->classification."-".$cat_details[$x]->department;
+                    array_push($result, $cat_details[$x]->classification."-".$cat_details[$x]->department);
+
+                }
+
+                // $result .= $user_data->category_details->classification."-".$user_data->category_details->department;
+
+            // }
+            $results = implode("<br>", $result);
+            return $results;
         })
         ->addColumn('status', function($user_data){
             $result = "";
@@ -91,9 +104,10 @@ class AdminController extends Controller
         try{
             $user_access_array = array(
                 'rapidx_emp_no'   => $request->empDetails['id'],
-                'category_id'     => $request->uCat,
+                'category_id'     => implode(",",$request->uCat),
                 'user_type'       => $request->uType
             );
+            
             if(isset($request->id)){ // UPDATE
                 $user_access_array['updated_by'] = $_SESSION['rapidx_username'];
                 $decrypted_id = Helpers::decryptId($request->id);
@@ -105,12 +119,23 @@ class AdminController extends Controller
                 return response()->json(['result' => 2, 'msg' => 'User Successfully Edited!']);
             }
             else{ // CREATE
-                $user_access_array['created_by'] = $_SESSION['rapidx_username'];
-                $user_access_array['created_at'] = NOW();
-                UserAccess::insert($user_access_array);
-                DB::commit();
+                // return UserAccess::whereNull('deleted_at')->where('rapidx_emp_no',$request->empDetails['id'])->exists();
+                if(!UserAccess::whereNull('deleted_at')->where('rapidx_emp_no',$request->empDetails['id'])->exists()){
+                    // return "test";
+                    $user_access_array['created_by'] = $_SESSION['rapidx_username'];
+                    $user_access_array['created_at'] = NOW();
+                    UserAccess::insert($user_access_array);
+                    DB::commit();
 
-                return response()->json(['result' => 1, 'msg' => "User Successfully Created!"]);
+                    // return $user_access_array;
+                    return response()->json(['result' => 1, 'msg' => "User Successfully Created!"]);
+                }
+                else{
+                    return response()->json([
+                        'msg'       => 'User already exist!'
+                    ],405);
+                }
+              
             }
         }
         catch(Exception $e){
@@ -135,8 +160,8 @@ class AdminController extends Controller
         ->where('id', $decrypted_id)
         ->select('*')
         ->first();
-        
-        return response()->json(['userData' => $user_data, 'emp' => $request->emp]);
+        $for_sel_cat = array_map('intval',explode(",",$user_data->category_id));
+        return response()->json(['userData' => $user_data, 'forSelCat' => $for_sel_cat, 'emp' => $request->emp]);
     }
 
     public function update_user_stat(Request $request){
@@ -177,7 +202,7 @@ class AdminController extends Controller
         ->whereNull('deleted_at')
         ->select('id', 'classification', 'department')
         ->get();
-
         return $cat;
+        // return response()->json(['res' => $cat]);
     }
 }

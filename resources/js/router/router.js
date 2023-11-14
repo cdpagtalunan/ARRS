@@ -49,11 +49,8 @@ const isLoggedIn = async () => { // * TO VALIDATE IF SESSION STILL EXIST
 // }
 
 import { useSessionStore } from "../stores/index";
-
 const hasAccess =  () => { // * TO VALIDATE USER HAS ACCESS ON SYSTEM
-    const sessionStore = useSessionStore();     
-    console.log('beforeEnter');
-
+    const sessionStore = useSessionStore();
     sessionStore.checkSession();
 }
 

@@ -22,6 +22,7 @@
             <li class="nav-item">
                 <a class="nav-link" style="cursor: pointer;">
                     <icons icon="fas fa-user" class="nav-icon"></icons>
+                    {{ username }}
                     <!-- <font-awesome-icon :icon="['far', 'user']" class="nav-icon"></font-awesome-icon> -->
                     <!-- Logout -->
 
@@ -64,4 +65,7 @@
     </div> -->
 </template>
 <script setup>
+    defineProps({
+        username: {type: String, default: ''}
+    })
 </script>

@@ -18,11 +18,15 @@ class CommonController extends Controller
             ->where('rapidx_emp_no', $_SESSION['rapidx_user_id'])
             ->whereNull('deleted_at')
             ->select('*')
-            ->get();
-            if(count($user_system_access_check) > 0){
+            ->first();
+
+            $exploded_category =  explode(",", $user_system_access_check->category_id);
+            // return $user_system_access_check;
+
+            if(count($exploded_category) > 0){
                 $uAccessArray = [];
-                for ($i=0; $i <count($user_system_access_check) ; $i++) { 
-                    array_push($uAccessArray, $user_system_access_check[$i]->category_id);
+                for ($i=0; $i <count($exploded_category) ; $i++) { 
+                    array_push($uAccessArray, $exploded_category[$i]);
                 }
 
                 return response()->json(['uAccess' => $uAccessArray, 'uName' => $_SESSION['rapidx_name']]);
