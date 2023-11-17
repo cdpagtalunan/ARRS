@@ -5,6 +5,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\ConfigController;
+use App\Http\Controllers\ReconciliationController;
 
 /*
 |--------------------------------------------------------------------------
@@ -51,6 +52,9 @@ Route::middleware('CheckSessionExist')->group(function(){
     Route::post('update_user_stat', [AdminController::class, 'update_user_stat']);
     Route::get('get_cat', [AdminController::class, 'get_cat']);
     
+    // RECONCILIATION ROUTE
+    Route::get('get_category_of_user', [ReconciliationController::class, 'get_category_of_user']);
+    Route::get('get_eprpo_data', [ReconciliationController::class, 'get_eprpo_data']);
 });
     
     

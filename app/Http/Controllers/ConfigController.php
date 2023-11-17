@@ -134,7 +134,7 @@ class ConfigController extends Controller
         // return $classArray;
         // return $classification_data;
         $sect_dept = DB::connection('mysql_eprpo')->table('section_department')
-        ->where('status', 'ACTIVE')
+        // ->where('status', 'ACTIVE')
         ->select('section_department_code')
         ->get();
 
@@ -159,8 +159,12 @@ class ConfigController extends Controller
             if(isset($request->catId)){ // EDIT
                 $cat_array['updated_by'] = $_SESSION['rapidx_username'];
                 $cat_array['updated_at'] = NOW();
+                $encrypted_id = Helpers::decryptId($request->catId);
+
                 DB::connection('mysql')->table('user_categories')
+                ->where('id', $encrypted_id)
                 ->update($cat_array);
+                
                 DB::commit();
                 return response()->json(['result' => 1, 'msg' => 'Successfully Edited!']);
 

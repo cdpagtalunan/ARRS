@@ -23,10 +23,18 @@
                             <p>Go to Rapidx</p>
                         </a>
                     </li>
+
                     <li class="nav-item has-treeview">
                         <router-link :to="{ name: 'Dashboard' }" class="nav-link">
                             <icons icon="fas fa-gauge" class="nav-icon"></icons>
                             <p>Dasboard</p>
+                        </router-link>
+                    </li>
+
+                    <li class="nav-item has-treeview">
+                        <router-link :to="{ name: 'Reconciliation' }" class="nav-link">
+                            <icons icon="fab fa-steam-symbol" class="nav-icon"></icons>
+                            <p>Reconciliation</p>
                         </router-link>
                     </li>
 

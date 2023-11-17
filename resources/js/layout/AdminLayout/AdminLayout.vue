@@ -18,8 +18,10 @@
     import Header from '../../template/Header.vue';
     import Footer from '../../template/Footer.vue';
     import { useSessionStore } from '../../stores/useSessionStore.js'
-
+    
     const store = useSessionStore();
+    provide('store', store);
+
     const beforeUnloadHandler = (event) => {
         // Recommended
         // * this will serve as alert before exiting the system

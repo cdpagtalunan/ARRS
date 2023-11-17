@@ -58,7 +58,9 @@
                 selectLabel=""
                 deselectLabel=""
                 :searchable="true"
-                :allow-empty="false">
+                :allow-empty="false"
+                :taggable="true"
+                @tag="addTag">
                 <template #noResult>
                     No department found in EPRPO.
                 </template>
@@ -216,6 +218,17 @@
         }).catch((err) => {
             
         });
+    }
+
+    const addTag = (newTag) => {
+    //   const tag = {
+    //     name: newTag,
+    //     code: newTag.substring(0, 2) + Math.floor((Math.random() * 10000000))
+    //   }
+        const tag = newTag;
+        selectOptionsDept.value.push(tag);
+    //   this.value.push(tag)
+        formCat.value.department = tag;
     }
 
 </script>

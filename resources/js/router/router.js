@@ -1,6 +1,7 @@
 import {createRouter, createWebHistory} from 'vue-router';
 import AdminLayout from '../layout/AdminLayout/AdminLayout.vue' // ^ Main Template
 import Dashboard from '../pages/Dashboard.vue';
+import Reconciliation from '../pages/Reconciliation.vue';
 
 // ^ Setting Pages
 import CuttoffSettings from '../pages/Settings/CutoffSettings.vue';
@@ -71,6 +72,12 @@ const routes = [
                 name: 'Dashboard',
                 beforeEnter: isLoggedIn,
                 component: Dashboard
+            },
+            {
+                path: 'recon',
+                name: 'Reconciliation',
+                beforeEnter: isLoggedIn,
+                component: Reconciliation
             },
             // Admin Management
             {
