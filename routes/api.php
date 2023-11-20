@@ -55,6 +55,8 @@ Route::middleware('CheckSessionExist')->group(function(){
     // RECONCILIATION ROUTE
     Route::get('get_category_of_user', [ReconciliationController::class, 'get_category_of_user']);
     Route::get('get_eprpo_data', [ReconciliationController::class, 'get_eprpo_data']);
+    Route::get('get_recon', [ReconciliationController::class, 'get_recon']);
+    Route::get('get_recon_details', [ReconciliationController::class, 'get_recon_details']);
 });
     
     

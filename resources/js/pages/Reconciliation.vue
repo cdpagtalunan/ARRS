@@ -22,37 +22,36 @@
                                     </div>
                                 </div>
                                 <div class="col-3">
-                                    <button type="button" class="btn btn-sm btn-info" @click="loadDataEPRPO(1)">test</button>
-                                    <button type="button" class="btn btn-sm btn-info" @click="loadDataEPRPO(2)">test</button>
+                                    <button type="button" class="btn btn-sm btn-info" @click="loadDataEPRPO(1)">Load 1st cutoff</button>
+                                    <button type="button" class="btn btn-sm btn-info" @click="loadDataEPRPO(2)">Load 2nd cutoff</button>
 
                                     <strong>Status:</strong>
                                 </div>
                             </div>
                         </template>
                         <template #body>
-                            <!-- {{ cutOffOptions }} -->
                             <ul class="nav nav-tabs">
                                 <li class="nav-item" v-for="cutOffOption in cutOffOptions" :key="cutOffOption.id">
-                                    <a class="nav-link" data-bs-toggle="tab" :href="'#'+cutOffOption.id" role="tab" aria-selected="true">{{ `${cutOffOption.classification}-${cutOffOption.department}` }}</a>
+                                    <a class="nav-link" data-bs-toggle="tab" href="#reconDataTable" role="tab" aria-selected="true" @click="loadDataTable(cutOffOption.classification,cutOffOption.department)">{{ `${cutOffOption.classification}-${cutOffOption.department}` }}</a>
                                 </li>
-                                <!-- <li class="nav-item">
-                                    <a class="nav-link active" data-bs-toggle="tab" href="#MH-checking" role="tab" aria-controls="MH-checking" aria-selected="true">Active</a>
-                                </li>
-                                <li class="nav-item">
-                                    <a class="nav-link" data-bs-toggle="tab" href="#MH-inspector" role="tab" aria-controls="MH-inspector" aria-selected="true">Link</a>
-                                </li> -->
                             </ul>
-
                             <div class="tab-content">
-                                <!-- <div v-for="cutOffOption in cutOffOptions" :key="cutOffOption.id"> -->
-                                    <div class="tab-pane fade" v-for="cutOffOption in cutOffOptions" :key="cutOffOption.id" :id="cutOffOption.id" role="tabpanel" aria-labelledby="MH-checking-tab">
-                                        {{ cutOffOption.id }}
+                                <div class="tab-pane fade" id="reconDataTable" role="tabpanel" aria-labelledby="reconDataTable-tab">
+                                    <div class="mt-3">
+                                        <DataTable
+                                            class="table table-sm table-bordered table-hover wrap display"
+                                            :columns="columns"
+                                            :ajax="{
+                                                url: 'api/get_recon',
+                                                data: function (param){
+                                                    param.param = dtParams;
+                                                }
+                                            }"
+                                            ref="table"
+                                            :options="options"
+                                        />
                                     </div>
-                                <!-- </div> -->
-                               
-                                <!-- <div class="tab-pane fade" id="MH-inspector" role="tabpanel" aria-labelledby="MH-inspector-tab">
-                                    ellos
-                                </div> -->
+                                </div>
                             </div>
                         </template>
                     </Card>
@@ -60,13 +59,61 @@
             </div>
         </div>
     </section>
+    <Modal title="test" backdrop="true">
+    </Modal>
+
 </template>
 
 <script setup>
-    import { ref, reactive, inject, onBeforeMount } from 'vue';
+    import { ref, reactive, inject, onBeforeMount, onMounted } from 'vue';
     import api from '../axios';
     
+    import DataTable from 'datatables.net-vue3';
+    import DataTablesCore from 'datatables.net-bs5';
+    DataTable.use(DataTablesCore);
+
     const cutOffOptions = ref();
+    const columns = [
+        {
+            data: 'action',
+            title: 'Action',
+            orderable: false,
+            searchable: false,
+            createdCell(cell) {
+                cell.querySelector('.btnOpenReconDetails').addEventListener('click', function(){
+                    let id = this.getAttribute('data-id');
+                    getReconDetails(id);
+                });
+            },
+        },
+        { data: 'po_num', title: 'PO Number'},
+        { data: 'pr_num', title: 'PR Number'},
+        { data: 'prod_code', title: 'Code'},
+        { data: 'prod_name', title: 'Name'},
+        { data: 'prod_desc', title: 'Description'},
+        { data: 'supplier', title: 'Supplier'},
+        { data: 'received_date', title: 'Received Date'},
+        { data: 'classification', title: 'Classification'},
+        
+    ];
+    const options = {
+        responsive: true,
+        serverSide: true
+    };
+    let dt;
+    const table = ref();
+    const dtParams = reactive({
+        'classification'    : 'null',
+        'department'        : 'null'
+    });
+    let modals
+// import { Modal } from 'bootstrap';
+
+    onMounted(() => {
+        dt = table.value.dt;
+        modals = new Modal(document.querySelector('#modalComponentId'));
+
+    });
 
     onBeforeMount(async () => {
         let injectSess = inject('store');
@@ -86,7 +133,19 @@
             
         });
     }
-    // console.log(cutOffOptions.value);
-
+    const loadDataTable = async (classification, department) => {
+        // console.log(id);
+        // dtParams.value = id;
+        dtParams.classification = classification;
+        dtParams.department = department;
+        dt.ajax.reload();
+    }
+    const getReconDetails = async (id) => {
+        api.get('api/get_recon_details', { params:{ recon:id }}).then((result) => {
+            modals.show();
+        }).catch((err) => {
+            
+        });
+    }
     
 </script>

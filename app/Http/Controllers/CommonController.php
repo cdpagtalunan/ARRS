@@ -20,10 +20,11 @@ class CommonController extends Controller
             ->select('*')
             ->first();
 
-            $exploded_category =  explode(",", $user_system_access_check->category_id);
             // return $user_system_access_check;
 
-            if(count($exploded_category) > 0){
+            if($user_system_access_check != ""){
+                $exploded_category =  explode(",", $user_system_access_check->category_id);
+
                 $uAccessArray = [];
                 for ($i=0; $i <count($exploded_category) ; $i++) { 
                     array_push($uAccessArray, $exploded_category[$i]);

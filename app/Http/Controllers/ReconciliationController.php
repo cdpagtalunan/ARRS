@@ -2,12 +2,14 @@
 
 namespace App\Http\Controllers;
 
+use DataTables;
+use Carbon\Carbon;
 use App\Models\CutOff;
+use Helpers;;
 use App\Models\UserCategory;
 use Illuminate\Http\Request;
 use App\Models\Reconciliation;
 use Illuminate\Support\Facades\DB;
-use Carbon\Carbon;
 
 class ReconciliationController extends Controller
 {
@@ -234,5 +236,44 @@ class ReconciliationController extends Controller
 
         $full_name = "$query->first_name $query->middle_name $query->last_name";
         return $full_name;
+    }
+
+    public function get_recon(Request $request){
+        // return $request->param['classification'];
+        // return $request->param['department'];
+        // $recon_data = DB::connection('mysql')->table('reconciliations')
+        $recon_data = Reconciliation::whereNull('deleted_at')
+        ->where('pr_num', 'LIKE', "%".$request->param['department']."%")
+        ->where('classification', $request->param['classification'])
+        ->select('*');
+
+        return DataTables::of($recon_data)
+        ->addColumn('action', function($recon_data){
+            
+            $encrypt_id = Helpers::encryptId($recon_data->id);
+
+            $result = "";
+            $result .= "<center>";
+            $result .= "<button class='btn btn-primary btn-sm btnOpenReconDetails' data-id='$encrypt_id'><i class='fas fa-eye'></i></button>";
+            $result .= "</center>";
+
+            return $result;
+
+        })
+        ->rawColumns(['action'])
+        ->make(true);
+    }
+
+    public function get_recon_details(Request $request){
+        // return $request->all();
+        $decrypt_id = Helpers::decryptId($request->recon);
+
+        // return $decrypt_id;
+        $recon_details = DB::connection('mysql')->table('reconciliations')
+        ->where('id', $decrypt_id)
+        ->select('*')
+        ->first();
+
+        return response()->json(['reconDetails' => $recon_details]);
     }
 }

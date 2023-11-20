@@ -10,4 +10,5 @@ class Reconciliation extends Model
     use HasFactory;
     protected $connection = "mysql";
     protected $table = "reconciliations";
+    protected $hidden = ['id'];
 }
