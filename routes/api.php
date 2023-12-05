@@ -57,6 +57,10 @@ Route::middleware('CheckSessionExist')->group(function(){
     Route::get('get_eprpo_data', [ReconciliationController::class, 'get_eprpo_data']);
     Route::get('get_recon', [ReconciliationController::class, 'get_recon']);
     Route::get('get_recon_details', [ReconciliationController::class, 'get_recon_details']);
+    Route::post('save_recon', [ReconciliationController::class, 'save_recon']);
+    Route::post('request_remove_recon', [ReconciliationController::class, 'request_remove_recon']);
+    Route::get('get_recon_for_add', [ReconciliationController::class, 'get_recon_for_add']);
+    Route::post('request_for_addition', [ReconciliationController::class, 'request_for_addition']);
 });
     
     

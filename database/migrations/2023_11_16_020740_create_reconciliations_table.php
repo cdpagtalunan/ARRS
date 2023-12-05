@@ -15,6 +15,8 @@ class CreateReconciliationsTable extends Migration
     {
         Schema::create('reconciliations', function (Blueprint $table) {
             $table->id();
+            $table->integer('recon_status')->default(0)->comment = "0-not yet reconciled, 1-done reconcile";
+            $table->string('ctrl_num')->nullable();
             $table->string('po_date')->nullable();
             $table->string('po_num')->nullable();
             $table->string('pr_num')->nullable();
@@ -37,6 +39,12 @@ class CreateReconciliationsTable extends Migration
             $table->string('allocation')->nullable();
             $table->longText('po_remarks')->nullable();
             $table->longText('hold_remarks')->nullable();
+            $table->string('recon_invoice_no')->nullable();
+            $table->string('recon_received_qty')->nullable();
+            $table->string('recon_amount')->nullable();
+            $table->string('recon_date_from')->nullable();
+            $table->string('recon_date_to')->nullable();
+            $table->string('recon_remove_remarks')->nullable();
             $table->timestamps();
             $table->softDeletes();
         });

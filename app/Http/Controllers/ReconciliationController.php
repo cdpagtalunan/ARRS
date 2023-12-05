@@ -2,14 +2,18 @@
 
 namespace App\Http\Controllers;
 
+use Helpers;;
 use DataTables;
 use Carbon\Carbon;
 use App\Models\CutOff;
-use Helpers;;
+use App\Models\ReconRequest;
 use App\Models\UserCategory;
 use Illuminate\Http\Request;
 use App\Models\Reconciliation;
+use App\Models\ReconciliationDate;
 use Illuminate\Support\Facades\DB;
+use App\Http\Requests\UserReconRequest;
+use App\Http\Requests\RemoveReconRequest;
 
 class ReconciliationController extends Controller
 {
@@ -24,29 +28,54 @@ class ReconciliationController extends Controller
 
     public function get_eprpo_data(Request $request){
 
-        $cut_off = CutOff::where('cut_off', $request->cutoff)
-        ->whereNull('deleted_at')
-        ->first();
+        // $cut_off = CutOff::where('cut_off', $request->cutoff)
+        // ->whereNull('deleted_at')
+        // ->first();
 
         $mutable = Carbon::today();
-        $date_to = $mutable->format('Y-m')."-".$cut_off->day_to;
-        $date_from = $mutable->subMonth()->format('Y-m')."-".$cut_off->day_from;
+        $current_year = $mutable->format('Y');
+        $month_today = $mutable->format('m');
 
+        // $date_to = $mutable->format('Y-m')."-".$cut_off->day_to;
+        // // $month = $mutable->format('M'); // this is for reconciliation_dates
+
+        // $date_from = $mutable->subMonth()->format('Y-m')."-".$cut_off->day_from;
+        // $from_date = $mutable->format('M').". ".$cut_off->day_from; // this is for reconciliation_dates
+        // $date_range = "$from_date - $to_date"; // this is for reconciliation_dates
+        // return;
+        if($request->cutoff == 1){
+            $day_to = 15;
+            $day_from = 26;
+            $date_to = $mutable->format('Y-m')."-".$day_to;
+            $date_from = $mutable->subMonth()->format('Y-m')."-".$day_from;
+
+        }
+        else{
+            $day_to = 25;
+            $day_from = 16;
+            $date_to = $mutable->format('Y-m')."-".$day_to;
+            $date_from = $mutable->format('Y-m')."-".$day_from;
+        }
+
+        $recon_date = ReconciliationDate::firstOrCreate(
+            ['month' => $month_today],
+            ['year' => $current_year]
+        );
+        
         $categories = DB::connection('mysql')->table('user_categories')
         ->whereNull('deleted_at')
         ->get();
 
         $distinct_cat = collect($categories)->unique('classification')->flatten(0);
       
-        // return $distinct_cat;
-
         $cat_array = array();
         for($x = 0; $x < count($distinct_cat); $x++){
             // $result .= $cat_details[$x]->classification."-".$cat_details[$x]->department;
             array_push($cat_array, $distinct_cat[$x]->classification);
         }
-        // return $cat_array;
-        $eprpo_test = DB::connection('mysql_eprpo')
+
+        // return;
+        $eprpo_data = DB::connection('mysql_eprpo')
         ->select('
             SELECT 
             item.item_name as item_name1,
@@ -85,9 +114,9 @@ class ReconciliationController extends Controller
             AND date(received_date) BETWEEN "'.$date_from.'" AND "'.$date_to.'"
         ');
 
-        $collection = collect($eprpo_test)->whereIn('classification_code', $cat_array)->flatten(0);
+        $collection = collect($eprpo_data)->whereIn('classification_code', $cat_array)->flatten(0);
 
-        // return $collection;
+
         for ($i=0; $i < count($collection); $i++) { 
             $po_number      = $this->getRefReqNum($collection[$i]->reference_po_number);
             $allocation     = $this->getAllocation($po_number);
@@ -97,7 +126,6 @@ class ReconciliationController extends Controller
             $item_name = $collection[$i]->item_name == '' ? $collection[$i]->item_name1 : $collection[$i]->item_name;
             $long_description = $collection[$i]->long_description == '' ? $collection[$i]->long_description1 : $collection[$i]->long_description;
 			$po_balance = ( $collection[$i]->po_balance - $collection[$i]->quantity_received );
-            
 
             Reconciliation::insert([
                 'po_date'           => $po_date,
@@ -122,9 +150,12 @@ class ReconciliationController extends Controller
                 'classification'    => $collection[$i]->classification_code,
                 'allocation'        => $allocation,
                 'po_remarks'        => $collection[$i]->po_remarks,
-                'hold_remarks'      => $collection[$i]->hold_remarks
+                'hold_remarks'      => $collection[$i]->hold_remarks,
+
+                'recon_date_from'   => $date_from,
+                'recon_date_to'     => $date_to
             ]);
-            // return;
+
         }
         return response()->json([
             'query1' => $collection,
@@ -169,7 +200,7 @@ class ReconciliationController extends Controller
             WHERE purchase_requisition_allocation.requisition_number = '$prnumber'
         ");
         if(count($query) > 0){
-            $allocation .= $query[0]->allocation.' ('.$query[0]->percentage.' %)<br>';
+            $allocation .= $query[0]->allocation.' ('.$query[0]->percentage.' %)'.PHP_EOL;
         }
         return $allocation;
     }
@@ -253,14 +284,40 @@ class ReconciliationController extends Controller
             $encrypt_id = Helpers::encryptId($recon_data->id);
 
             $result = "";
+            // $result .= "<div class='d-flex flex-row'>";
             $result .= "<center>";
             $result .= "<button class='btn btn-primary btn-sm btnOpenReconDetails' data-id='$encrypt_id'><i class='fas fa-eye'></i></button>";
+            if($recon_data->recon_status == 0){
+                $result .= "<button class='btn btn-warning btn-sm btnReconcileData ml-1' data-id='$encrypt_id'><i class='fas fa-plus'></i></button>";
+
+                $result .= "<button class='btn btn-danger btn-sm btnRemoveData ml-1' data-id='$encrypt_id'><i class='fas fa-xmark'></i></button>";
+            }
+            else if($recon_data->recon_status == 1){
+                $result .= "<button class='btn btn-secondary btn-sm btnEditReconcileData ml-1' data-id='$encrypt_id'><i class='fas fa-pen-to-square'></i></button>";
+            }
             $result .= "</center>";
+            // $result .= "</div>";
 
             return $result;
 
         })
-        ->rawColumns(['action'])
+        ->addColumn('status', function($recon_data){
+            $result = "";
+            $result .= "<center>";
+            if($recon_data->recon_status == 0){
+                $result .= "<span class='badge rounded-pill text-bg-warning'>Pending</span>";
+            }
+            else if($recon_data->recon_status == 2){
+                $result .= "<span class='badge rounded-pill text-bg-danger'>For Removal</span>";
+                $result .= "<br><span class='badge rounded-pill text-bg-info'>Waiting for logistics<br> Approval</span>";
+            }
+            else{
+                $result .= "<span class='badge rounded-pill text-bg-success'>Done</span>";
+            }
+            $result .= "</center>";
+            return $result;
+        })
+        ->rawColumns(['action', 'status'])
         ->make(true);
     }
 
@@ -269,11 +326,268 @@ class ReconciliationController extends Controller
         $decrypt_id = Helpers::decryptId($request->recon);
 
         // return $decrypt_id;
-        $recon_details = DB::connection('mysql')->table('reconciliations')
-        ->where('id', $decrypt_id)
-        ->select('*')
-        ->first();
+        // $recon_details = DB::connection('mysql')->table('reconciliations')
+        // ->where('id', $decrypt_id)
+        // ->select('*')
+        // ->first();
+        $recon_details = Reconciliation::where('id', $decrypt_id)->first();
+        // $encrypt_id = Helpers::encryptId($request->recon);
 
-        return response()->json(['reconDetails' => $recon_details]);
+
+        return response()->json(['reconDetails' => $recon_details, 'recon' => $request->recon]);
+    }
+
+    public function save_recon(UserReconRequest $request){
+        $fields = $request->validated();
+        DB::beginTransaction();
+
+        $decrypt_id = Helpers::decryptId($request->recon);
+        try{
+            $selected_recon_data = DB::table('reconciliations')
+            ->where('id', $decrypt_id)
+            ->select('*')
+            ->first();
+            // return $decrypt_id;
+            $user_recon_array = array(
+                'recon_amount'          => $request->amount,
+                'recon_invoice_no'      => $request->invoiceNum,
+                'recon_received_qty'    => $request->receivedQty
+            );
+            if($selected_recon_data->recon_status == 0){
+                $user_recon_array['recon_status'] = 1;
+
+                Reconciliation::where('id', $decrypt_id)
+                ->update($user_recon_array);
+                // DB::table('reconciliations')
+                // ->where('id', $decrypt_id)
+                // ->update($user_recon_array);
+
+                DB::commit();
+                return response()->json(['result' => 1, 'msg' => 'Successfully reconcile this data.']);
+            }
+            else{
+                // return "edit";
+                Reconciliation::where('id', $decrypt_id)
+                ->update($user_recon_array);
+
+                DB::commit();
+                return response()->json(['result' => 1, 'msg' => 'Successfully Edited Data.']);
+            }
+        }
+        catch(Exception $e){
+            DB::rollback();
+            return $e;
+        }
+    }
+
+    public function request_remove_recon(RemoveReconRequest $request){
+        $request->validated();
+
+        DB::beginTransaction();
+        try{
+            $decrypt_id = Helpers::decryptId($request->reconId);
+
+            Reconciliation::where('id', $decrypt_id)
+            ->update([
+                'recon_remove_remarks' => $request->reasons,
+                'recon_status' => 2
+            ]);
+            DB::commit();
+
+            return response()->json([
+                'result' => 1,
+                'msg'    => 'Successfully Requested'
+            ]);
+            
+        }catch(Exemption $e){
+            DB::rollback();
+            return $e;
+        }
+    }
+
+    public function get_recon_for_add(Request $request){
+        $eprpo_data = DB::connection('mysql_eprpo')
+        ->select('
+            SELECT 
+            item.item_name as item_name1,
+            item.long_description as long_description1,
+            receiving_details.item_name,
+            receiving_details.long_description,
+            receiving_details.receiving_number,
+            receiving_header.received_date,
+            receiving_header.received_by,
+            receiving_header.actual_delivery_date,
+            supplier_name,
+            item_code,
+            receiving_details.unit_price,
+            receiving_details.quantity_received,
+            currency_code,
+            reference_po_number,
+            other_reference,
+            unit_of_measure_id,
+            unit_of_measure_code,
+
+            (SELECT purchase_order_details.`classification_code` FROM `purchase_order_details` WHERE purchase_order_details.`order_number` = receiving_header.reference_po_number AND purchase_order_details.item_id= receiving_details.item_id LIMIT 0,1 ) as classification_code,
+            (SELECT purchase_order_header.`po_remarks` FROM `purchase_order_header` WHERE purchase_order_header.`order_number` = receiving_header.reference_po_number LIMIT 0,1) as po_remarks,
+            (SELECT purchase_order_details.`quantity` 
+            FROM `purchase_order_details` 
+            WHERE purchase_order_details.`order_number` = receiving_header.reference_po_number and 
+            receiving_header.receiving_number = receiving_details.receiving_number and
+            receiving_details.item_id = purchase_order_details.item_id LIMIT 0,1) as po_balance,
+            (SELECT hold_invoice_remarks.`remarks` FROM `hold_invoice_remarks` WHERE hold_invoice_remarks.`reference_po_number` = receiving_header.reference_po_number LIMIT 0,1) as hold_remarks
+
+            FROM receiving_header, receiving_details, item, supplier, currency, unit_of_measure
+            WHERE receiving_header.receiving_number=receiving_details.receiving_number
+            AND supplier.id=receiving_header.supplier_id 
+            AND receiving_header.currency=currency.id
+            AND item.id=receiving_details.item_id 
+            AND item.unit_of_measure_id=unit_of_measure.id
+            AND reference_po_number = "'.$request->po_number.'"
+        ');
+
+        for ($i=0; $i < count($eprpo_data) ; $i++) {
+            // $test = $eprpo_data[$i]->item_name1;
+            // return $test;
+
+            $eprpo_data[$i]->po_number = $this->getRefReqNum($eprpo_data[$i]->reference_po_number);
+            $eprpo_data[$i]->po_date = $this->getPoDate($eprpo_data[$i]->reference_po_number);
+            $eprpo_data[$i]->received_by = $this->getPoAssignedTo($eprpo_data[$i]->reference_po_number);
+            $eprpo_data[$i]->description = $eprpo_data[$i]->long_description == '' ? $eprpo_data[$i]->long_description1 : $eprpo_data[$i]->long_description;
+            $eprpo_data[$i]->allocation     = $this->getAllocation($eprpo_data[$i]->po_number);
+
+            // return $eprpo_data[$i];
+        }
+        // $collection = collect($eprpo_data)->where('classification_code', $request->param['classification'])
+        // ->flatten(0);
+
+        $collection = collect($eprpo_data)->filter(
+            function($item) use ($request){
+                return ($item->classification_code == $request->param['classification'] && str_contains($item->po_number, $request->param['department']));
+            })
+        ->flatten(0);
+
+        // ->where('pr_num', 'LIKE', "%".$request->param['department']."%")
+        // ->where('classification', $request->param['classification'])
+
+        
+
+        return DataTables::of($collection)
+        ->addColumn('action', function($collection){
+            $result = "";
+            $result .= "<input type='checkbox' class='checkedRecon' data-eprpo='".json_encode($collection)."'>";
+            return $result;
+        })
+        // ->addColumn('po_number', function($collection){
+        //     return $this->getRefReqNum($collection->reference_po_number);
+        // })
+        // // ->addColumn('allocation', function($collection){
+        // //     return $this->getAllocation($po_number);
+        // // })
+        // ->addColumn('po_date', function($collection){
+        //     return $this->getPoAssignedTo($collection->reference_po_number);
+        // })
+        // ->addColumn('received_by', function($collection){
+        //     return $this->getPoAssignedTo($collection->reference_po_number);
+        // })
+        // ->addColumn('description', function($collection){
+        //     $long_description = "";
+        //     $long_description = $collection->long_description == '' ? $collection->long_description1 : $collection->long_description;
+        //     return $long_description;
+        //     // return $this->getPoAssignedTo($collection->reference_po_number);
+        // })
+        ->rawColumns(['action'])
+        ->make(true);
+
+    }
+
+    public function request_for_addition(Request $request){
+        $recon_control = ReconRequest::orderBy('ctrl_num_ext', 'DESC')->first();
+        
+        $control = $request->reconClassification['department'] . "-" . $request->reconClassification['classification'];
+
+        DB::beginTransaction();
+        try{
+            if(isset($recon_control)){
+                $control_ext = $recon_control->ctrl_num_ext + 1;
+    
+                for ($i=0; $i < count($request->data); $i++) { 
+                    $jsn_decoded_recon_req = json_decode($request->data[$i]);
+                    // return $jsn_decoded_recon_req;
+                    ReconRequest::insert([
+                        'ctrl_num'           => $control,
+                        'ctrl_num_ext'       => $control_ext,
+                        'po_date'            => $jsn_decoded_recon_req->po_date,
+                        'po_num'             => $jsn_decoded_recon_req->reference_po_number,
+                        'pr_num'             => $jsn_decoded_recon_req->po_number,
+                        'prod_code'          => $jsn_decoded_recon_req->item_code,
+                        'prod_name'          => $jsn_decoded_recon_req->item_name,
+                        'prod_desc'          => $jsn_decoded_recon_req->long_description,
+                        'supplier'           => $jsn_decoded_recon_req->supplier_name,
+                        'currency'           => $jsn_decoded_recon_req->currency_code,
+                        'uom'                => $jsn_decoded_recon_req->unit_of_measure_code,
+                        'unit_price'         => $jsn_decoded_recon_req->unit_price,
+                        'received_qty'       => $jsn_decoded_recon_req->quantity_received,
+                        'po_balance'         => $jsn_decoded_recon_req->po_balance,
+                        'pic'                => $jsn_decoded_recon_req->item_code,
+                        'received_date'      => $jsn_decoded_recon_req->received_date,
+                        'delivery_date'      => $jsn_decoded_recon_req->actual_delivery_date,
+                        'received_by'        => $jsn_decoded_recon_req->received_by,
+                        'invoice_no'         => $jsn_decoded_recon_req->other_reference,
+                        'rcv_no'             => $jsn_decoded_recon_req->receiving_number,
+                        'classification'     => $jsn_decoded_recon_req->classification_code,
+                        'allocation'         => $jsn_decoded_recon_req->allocation,
+                        'po_remarks'         => $jsn_decoded_recon_req->po_remarks,
+                        'hold_remarks'       => $jsn_decoded_recon_req->hold_remarks
+                    ]);
+                    DB::commit();
+                }
+                return response()->json([
+                    'result' => 1,
+                    'msg' => 'Successfully Requested'
+                ]);
+            }
+            else{
+                $control_ext = 1;
+                for ($i=0; $i < count($request->data); $i++) { 
+                    $jsn_decoded_recon_req = json_decode($request->data[$i]);
+                    // return $jsn_decoded_recon_req;
+                    ReconRequest::insert([
+                        'ctrl_num'           => $control,
+                        'ctrl_num_ext'       => $control_ext,
+                        'po_date'            => $jsn_decoded_recon_req->po_date,
+                        'po_num'             => $jsn_decoded_recon_req->reference_po_number,
+                        'pr_num'             => $jsn_decoded_recon_req->po_number,
+                        'prod_code'          => $jsn_decoded_recon_req->item_code,
+                        'prod_name'          => $jsn_decoded_recon_req->item_name,
+                        'prod_desc'          => $jsn_decoded_recon_req->long_description,
+                        'supplier'           => $jsn_decoded_recon_req->supplier_name,
+                        'currency'           => $jsn_decoded_recon_req->currency_code,
+                        'uom'                => $jsn_decoded_recon_req->unit_of_measure_code,
+                        'unit_price'         => $jsn_decoded_recon_req->unit_price,
+                        'received_qty'       => $jsn_decoded_recon_req->quantity_received,
+                        'po_balance'         => $jsn_decoded_recon_req->po_balance,
+                        'pic'                => $jsn_decoded_recon_req->item_code,
+                        'received_date'      => $jsn_decoded_recon_req->received_date,
+                        'delivery_date'      => $jsn_decoded_recon_req->actual_delivery_date,
+                        'received_by'        => $jsn_decoded_recon_req->received_by,
+                        'invoice_no'         => $jsn_decoded_recon_req->other_reference,
+                        'rcv_no'             => $jsn_decoded_recon_req->receiving_number,
+                        'classification'     => $jsn_decoded_recon_req->classification_code,
+                        'allocation'         => $jsn_decoded_recon_req->allocation,
+                        'po_remarks'         => $jsn_decoded_recon_req->po_remarks,
+                        'hold_remarks'       => $jsn_decoded_recon_req->hold_remarks
+                    ]);
+                    DB::commit();
+                }
+                return response()->json([
+                    'result' => 1,
+                    'msg' => 'Successfully Requested'
+                ]);
+            }
+        }
+        catch(Exemption $e){
+            DB::rollback();
+            return $e;
+        }
     }
 }

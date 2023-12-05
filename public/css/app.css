@@ -65903,5 +65903,9 @@ textarea.form-control-lg {
 
 .multiselect.invalid .multiselect__tags {
     border: 1px solid #f86c6b !important;
-  }
-  
+}
+
+/* body {
+  font-family: 'Poppins', sans-serif !important;
+} */
+

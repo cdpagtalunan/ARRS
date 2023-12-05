@@ -1,6 +1,6 @@
 <template>
     <div class="modal fade" id="modalComponentId" tabindex="-1" :data-bs-backdrop="backdrop" aria-labelledby="modalComponentIdLabel" aria-hidden="true">
-        <div class="modal-dialog">
+        <div class="modal-dialog" :class="modalSize" :style="styleSize">
             <!-- <form v-if="form" method="post" @click.prevent="$emit('someEvent')"> -->
             <form @submit.prevent="$emit('saveEvent')" method="post" >
                 <div class="modal-content">
@@ -35,5 +35,13 @@
             type: String,
             default: '',
         },
+        modalSize: {
+            type: String,
+            default: '',
+        },
+        styleSize: {
+            type: String,
+            default: ''
+        }
     });
 </script>

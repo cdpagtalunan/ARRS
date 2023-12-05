@@ -25,7 +25,7 @@
                                     <button type="button" class="btn btn-sm btn-info" @click="loadDataEPRPO(1)">Load 1st cutoff</button>
                                     <button type="button" class="btn btn-sm btn-info" @click="loadDataEPRPO(2)">Load 2nd cutoff</button>
 
-                                    <strong>Status:</strong>
+                                    <strong>Status: {{ catStatus }}</strong>
                                 </div>
                             </div>
                         </template>
@@ -37,7 +37,10 @@
                             </ul>
                             <div class="tab-content">
                                 <div class="tab-pane fade" id="reconDataTable" role="tabpanel" aria-labelledby="reconDataTable-tab">
-                                    <div class="mt-3">
+                                    <div class="mt-3 overflow-x-auto">
+                                        <button type="button" class="btn btn-primary float-end" @click="btnAddRecon(dtParams)"><icons icon="fas fa-plus"></icons> Add Recon</button>
+                                        <br>
+                                        <br>
                                         <DataTable
                                             class="table table-sm table-bordered table-hover wrap display"
                                             :columns="columns"
@@ -59,7 +62,226 @@
             </div>
         </div>
     </section>
-    <Modal title="test" backdrop="true">
+    <Modal :title="modalData.title" :backdrop="modalData.backdrop" :modal-size="modalData.size" :style-size="modalData.styleSize">
+        <template #body v-if="modalData.viewing == 1 || modalData.viewing == 2 || modalData.viewing == 3">
+            <div class="row">
+                <div class="col-8">
+                    <Card :card-body="true" :card-header="true">
+                        <template #header>
+                            <h6>LOGISTICS-PURCHASING DATA (Extracted from EPRPO-Receiving Module)</h6>
+                        </template>
+                        <template #body>
+                            <div class="row">
+                                <div class="col-12">
+                                    <div class="row">
+                                        <div class="col-4">
+                                            <label for="">PO Date:</label>
+                                            <input type="text" class="form-control" v-model="reconData.poDate"
+                                                readonly>
+                                        </div>
+                                        <div class="col-4">
+                                            <label for="">PO Number:</label>
+                                            <input type="text" class="form-control" v-model="reconData.poNum"
+                                                readonly>
+                                        </div>
+                                        <div class="col-2">
+                                            <label for="">Delivery Date:</label>
+                                            <input type="text" class="form-control" v-model="reconData.delDate"
+                                                readonly>
+                                        </div>
+                                        <div class="col-2">
+                                            <label for="">Received Date:</label>
+                                            <input type="text" class="form-control" v-model="reconData.receivedDate"
+                                                readonly>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-4">
+                                            <label for="">PR Number:</label>
+                                            <input type="text" class="form-control" v-model="reconData.prNum"
+                                                readonly>
+                                        </div>
+                                        <div class="col-4">
+                                            <label for="">Received Number:</label>
+                                            <input type="text" class="form-control" v-model="reconData.receivedNum"
+                                                readonly>
+                                        </div>
+                                        <div class="col-4">
+                                            <label for="">Person In-charge:</label>
+                                            <input type="text" class="form-control" v-model="reconData.pic" readonly>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-4">
+                                            <label for="">Code:</label>
+                                            <input type="text" class="form-control" v-model="reconData.code"
+                                                readonly>
+                                        </div>
+                                        <div class="col-4">
+                                            <label for="">Name:</label>
+                                            <input type="text" class="form-control" v-model="reconData.name"
+                                                readonly>
+                                        </div>
+                                        <div class="col-4">
+                                            <label for="">Received By:</label>
+                                            <input type="text" class="form-control" v-model="reconData.receivedBy" readonly>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-4">
+                                            <label for="">Supplier:</label>
+                                            <!-- <input type="text" class="form-control" v-model="reconData.supplier" readonly> -->
+                                            <textarea class="form-control" v-model="reconData.supplier"
+                                                style="resize: none;" readonly></textarea>
+                                        </div>
+                                        <div class="col-4">
+                                            <label for="">Description:</label>
+                                            <!-- <input type="text" class="form-control" v-model="reconData.desc" readonly> -->
+                                            <textarea class="form-control" v-model="reconData.desc"
+                                                style="resize: none;" readonly></textarea>
+                                        </div>
+                                        <div class="col-4">
+                                            <label for="">Invoice No.:</label>
+                                            <textarea class="form-control" v-model="reconData.invoiceNum"
+                                                style="resize: none;" readonly></textarea>
+                                            <!-- <input type="text" class="form-control" v-model="reconData.invoiceNum" readonly> -->
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-4">
+                                            <label for="">Unit Price:</label>
+                                            <input type="text" class="form-control" v-model="reconData.uPrice"
+                                                readonly>
+                                        </div>
+                                        <div class="col-4">
+                                            <label for="">Currency:</label>
+                                            <input type="text" class="form-control" v-model="reconData.currency"
+                                                readonly>
+                                        </div>
+                                        <div class="col-4">
+                                            <label for="">Classification Code:</label>
+                                            <input type="text" class="form-control" v-model="reconData.class" readonly>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-2">
+                                            <label for="">Received Qty:</label>
+                                            <input type="text" class="form-control" v-model="reconData.receivedQty"
+                                                readonly>
+                                        </div>
+                                        <div class="col-2">
+                                            <label for="">UOM:</label>
+                                            <input type="text" class="form-control" v-model="reconData.uom"
+                                                readonly>
+                                        </div>
+                                        <div class="col-4">
+                                            <label for="">PO Balance:</label>
+                                            <input type="text" class="form-control" v-model="reconData.poBal"
+                                                readonly>
+                                        </div>
+                                        <div class="col-4">
+                                            <label for="">Allocation:</label>
+                                            <input type="text" class="form-control" v-model="reconData.alloc" readonly>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </template>
+                    </Card>
+                </div>
+                <div class="col-4">
+                    <Card :card-body="true" :card-header="true">
+                        <template #header>
+                            <h6>Reconciliation by User</h6>
+                        </template>
+                        <template #body>
+                            <form autocomplete="off">
+                                <input type="hidden" v-model="uReconData.recon">
+                                <label for="">Invoice Number:</label>
+                                <input type="text" class="form-control" id="txtInvoiceNum" v-model="uReconData.invoiceNum" :readonly="modalData.viewing == 1">
+
+                                <label for="">Received Quantity:</label>
+                                <input type="number" class="form-control" id="txtReceivedQty" v-model="uReconData.receivedQty" :readonly="modalData.viewing == 1">
+
+                                <label for="">Amount:</label>
+                                <input type="number" class="form-control" id="txtAmount" v-model="uReconData.amount" :readonly="modalData.viewing == 1">
+                            </form>
+                        </template>
+                    </Card>
+                </div>
+            </div>
+        </template>
+        <template #body v-else-if="modalData.viewing == 4">
+            <input type="hidden" v-model="removeReconData.reconId">
+            <!-- {{ removeReconData }}
+            <label>Select Option:</label>
+            <select class="form-control" v-model="removeReconData.selection">
+                <option value="1">Remove Reconciliation</option>
+                <option value="2">Change date of reconciliation</option>
+            </select> -->
+
+            <!-- <div v-if="removeReconData.selection == 1">
+                <label>Reasons:</label>
+                <textarea rows="5" class="form-control"></textarea>
+            </div>
+            <div v-else-if="removeReconData.selection == 2">
+                <label>Select </label>
+                <label>Reasonsssss:</label>
+                <textarea rows="5" class="form-control"></textarea>
+            </div> -->
+
+            <div>
+                <label>Reasons:</label>
+                <textarea id="txtRemoveReasons" rows="5" class="form-control" v-model="removeReconData.reasons" required></textarea>
+            </div>
+        </template>
+        <template #body v-else-if="modalData.viewing == 5">
+            <div class="row justify-content-center">
+                <div class="col-4"> 
+                    <!-- <label>PO Number:</label> -->
+                    <!-- <input type="text" class="form-control"> -->
+                    <!-- <div class="input-group input-group-sm">
+                        <div class="input-group-prepend w-50">
+                            <span class="input-group-text w-100" id="basic-addon1" style="background-color: #17a2b8; color: white;">PO Number:</span>
+                        </div>
+                        <input type="text" class="form-control" autocomplete="off" v-model="addReconData.poNumber">
+                    </div>    -->
+
+                    <div class="input-group">
+                        <span class="input-group-text" style="background-color: #17a2b8; color: white;">PO Number:</span>
+                        <input type="text" class="form-control" v-model="addReconData.poNumber" @keyup.enter="reloadDt()">
+                        <button class="btn btn-success" type="button" @click="reloadDt()"><icons icon="fas fa-magnifying-glass"></icons></button>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-12">
+                    <DataTable
+                        class="table table-sm table-bordered table-hover wrap display"
+                        :columns="columnsAdd"
+                        :ajax="{
+                            url: 'api/get_recon_for_add',
+                            data: function (param){
+                                param.param = dtParams;
+                                param.po_number = addReconData.poNumber;
+                            }
+                        }"
+                        ref="tableAdd"
+                        :options="options1"
+                    />
+                </div>
+            </div>
+           
+        </template>
+        <template #footerButton v-if="modalData.viewing == 2 || modalData.viewing == 3">
+            <button type="button" class="btn btn-success" @click="saveReconData()">Save</button>
+        </template>
+        <template #footerButton v-else-if="modalData.viewing == 4">
+            <button type="button" class="btn btn-success" @click="requestForRemove()">Send</button>
+        </template>
+        <template #footerButton v-else-if="modalData.viewing == 5">
+            <button type="button" class="btn btn-success" @click="requestForAddition()">Send</button>
+        </template>
     </Modal>
 
 </template>
@@ -73,6 +295,7 @@
     DataTable.use(DataTablesCore);
 
     const cutOffOptions = ref();
+    const catStatus = ref();
     const columns = [
         {
             data: 'action',
@@ -80,12 +303,41 @@
             orderable: false,
             searchable: false,
             createdCell(cell) {
+                // * Button View
                 cell.querySelector('.btnOpenReconDetails').addEventListener('click', function(){
                     let id = this.getAttribute('data-id');
-                    getReconDetails(id);
+                    getReconDetails(id, 1);
                 });
+
+                // * Button Add Reconcile
+                if(cell.querySelector('.btnReconcileData')){
+                    cell.querySelector('.btnReconcileData').addEventListener('click', function(){
+                        let id = this.getAttribute('data-id');
+                        getReconDetails(id, 2);
+                    });
+                }
+                // *  Button Edit Reconcile
+                if(cell.querySelector('.btnEditReconcileData')){
+                    cell.querySelector('.btnEditReconcileData').addEventListener('click', function(){
+                        let id = this.getAttribute('data-id');
+                        getReconDetails(id, 3);
+                    });
+                }
+                // *  Button Removing of Reconcile
+                if(cell.querySelector('.btnRemoveData')){
+                    cell.querySelector('.btnRemoveData').addEventListener('click', function(){
+                        let id = this.getAttribute('data-id');
+                        modalData.viewing = 4;
+                        modalData.styleSize = '';
+                        modalData.title = 'Request for Removal';
+                        removeReconData.value.reconId = id;
+                        modals.show();
+                        // console.log(id);
+                    });
+                }
             },
         },
+        { data: 'status', title: 'Recon Status'},
         { data: 'po_num', title: 'PO Number'},
         { data: 'pr_num', title: 'PR Number'},
         { data: 'prod_code', title: 'Code'},
@@ -96,23 +348,133 @@
         { data: 'classification', title: 'Classification'},
         
     ];
+
+    const addEprpoDataInitialState = {
+        'data' : [],
+        'reconClassification' : ""
+    }
+    const addEprpoData = reactive({...addEprpoDataInitialState});
+
+    // const modalInitialState = {
+    //     title : "",
+    //     backdrop: "true",
+    //     viewing: 0, // 0-none, 1-viewing, 2-add recon data, 3-update, 4-remove, 5- add data from eprpo
+    //     size: "",
+    //     styleSize: "max-width: 1750px !important; min-width: 1100px;"
+    // };
+    // const modalData = reactive({...modalInitialState});
+
+    const columnsAdd = [
+        // { data: 'action', title: 'Action'},
+        {
+            data: 'action',
+            title: 'Action',
+            orderable: false,
+            searchable: false,
+            createdCell(cell) {
+                // * Button View
+                cell.querySelector('input[type="checkbox"]').addEventListener('click', function(){
+                    let eprpoData = this.getAttribute('data-eprpo');
+                    // addEprpoData.value.push(eprpoData);
+                    // console.log(addEprpoData.value);
+
+                    addEprpoData.data.push(eprpoData);
+                    addEprpoData.reconClassification = dtParams;
+                    console.log(addEprpoData.data);
+                });
+            },
+        },
+        { data: 'reference_po_number', title: 'PO Number'},
+        { data: 'po_number', title: 'PR Number'},
+        { data: 'other_reference', title: 'Invoice Number'},
+        { data: 'item_code', title: 'Code'},
+        { data: 'item_name', title: 'Name'},
+        { data: 'description', title: 'Description'},
+        { data: 'supplier_name', title: 'Supplier'},
+        { data: 'classification_code', title: 'Classification'},
+        
+    ];
     const options = {
         responsive: true,
-        serverSide: true
+        serverSide: true,
+        processing: true,
+        'drawCallback': function( settings ) {
+            let dtApi = this.api();
+            let dtDatas = dtApi.rows( {page:'current'} ).data();
+            let dtArray = [];
+            if(dtDatas.length>0){
+                for(let x = 0; x < dtDatas.length; x++){
+                    dtArray.push(dtDatas[x]['recon_status'])
+                }
+
+                console.log('dtArray', dtArray)
+                let index = dtArray.indexOf(0);
+
+                console.log('idex', index);
+                if(index == -1){
+                    catStatus.value = "Complete";
+
+                }
+                else{
+                    catStatus.value = "Pending";
+
+                }
+
+            }
+
+        }
+    };
+
+    const options1 = {
+        searching: false,
+        ordering:  false,
+        serverSide: true,
+        processing: true,
+        info: false
     };
     let dt;
+    let dtAdd;
     const table = ref();
+    const tableAdd = ref();
     const dtParams = reactive({
         'classification'    : 'null',
         'department'        : 'null'
     });
+    const modalInitialState = {
+        title : "",
+        backdrop: "true",
+        viewing: 0, // 0-none, 1-viewing, 2-add recon data, 3-update, 4-remove, 5- add data from eprpo
+        size: "",
+        styleSize: "max-width: 1750px !important; min-width: 1100px;"
+    };
+    const modalData = reactive({...modalInitialState});
     let modals
-// import { Modal } from 'bootstrap';
+
+    const removeReconData = ref({});
+    const addReconData = ref({});
+
+    const reconData = ref({});
+    const uReconData = ref({});
+    const toastr = inject('toastr');
 
     onMounted(() => {
         dt = table.value.dt;
-        modals = new Modal(document.querySelector('#modalComponentId'));
+        // console.log(table);
+        // console.log(tableAdd);
 
+        // dtAdd = tableAdd.value.dtAdd;
+
+        modals = new Modal(document.querySelector('#modalComponentId'));
+        document.getElementById("modalComponentId").addEventListener('hidden.bs.modal', event => {
+            
+            console.log('modal is closed');
+            Object.assign(modalData, modalInitialState); // * assign default value
+            reconData.value = {}; // * Reset reconData ref data
+            uReconData.value = {}; // * Reset uReconData ref data
+            removeReconData.value = {}; // * Reset removeReconData ref data
+            addReconData.value = {};
+            Object.assign(addEprpoData, addEprpoDataInitialState); // * assign default value
+        });
     });
 
     onBeforeMount(async () => {
@@ -134,16 +496,146 @@
         });
     }
     const loadDataTable = async (classification, department) => {
-        // console.log(id);
-        // dtParams.value = id;
+
         dtParams.classification = classification;
         dtParams.department = department;
+        
         dt.ajax.reload();
     }
-    const getReconDetails = async (id) => {
+    const getReconDetails = async (id, btnFunction) => {
         api.get('api/get_recon_details', { params:{ recon:id }}).then((result) => {
+            // console.log(result.data.reconDetails);
+            let reconDetails = result.data.reconDetails;
+
+            modalData.title = "Reconciliation"; // Title of modal
+            modalData.viewing = btnFunction;
+            
+            uReconData.value.recon = result.data.recon; // Hash ID
+
+            reconData.value.poDate = reconDetails.po_date;
+            reconData.value.poNum = reconDetails.po_num;
+            reconData.value.prNum = reconDetails.pr_num;
+            reconData.value.receivedNum = reconDetails.rcv_no;
+            reconData.value.code = reconDetails.prod_code;
+            reconData.value.name = reconDetails.prod_name;
+            reconData.value.supplier = reconDetails.supplier;
+            reconData.value.desc = reconDetails.prod_desc;
+            reconData.value.uPrice = reconDetails.unit_price;
+            reconData.value.currency = reconDetails.currency;
+            reconData.value.receivedQty = reconDetails.received_qty;
+            reconData.value.uom = reconDetails.uom;
+            reconData.value.poBal = reconDetails.po_balance;
+            reconData.value.delDate = reconDetails.delivery_date;
+            reconData.value.receivedDate = reconDetails.received_date;
+            reconData.value.receivedBy = reconDetails.received_by;
+            reconData.value.invoiceNum = reconDetails.invoice_no;
+            reconData.value.class = reconDetails.classification;
+            reconData.value.alloc = reconDetails.allocation;
+
+            if(btnFunction != 2){
+                uReconData.value.invoiceNum   = reconDetails.recon_invoice_no
+                uReconData.value.receivedQty  = reconDetails.recon_received_qty
+                uReconData.value.amount       = reconDetails.recon_amount
+            }
             modals.show();
+
         }).catch((err) => {
+            
+        });
+    }
+
+    const saveReconData = async () => {
+        await api.post('api/save_recon', uReconData.value).then((result) => {
+            document.querySelector('#txtAmount').classList.remove('is-invalid');
+            document.querySelector('#txtInvoiceNum').classList.remove('is-invalid');
+            document.querySelector('#txtReceivedQty').classList.remove('is-invalid');
+
+            let results = result.data;
+
+            if(results.result == 1){
+                toastr.success(`${results.msg}`);
+                modals.hide();
+                dt.ajax.reload();
+            }
+
+
+        }).catch((err) => {
+            // console.log(err.response);
+            if(err.response.data.errors.amount != undefined){
+                document.querySelector('#txtAmount').classList.add('is-invalid');
+
+            }
+            else{
+                document.querySelector('#txtAmount').classList.remove('is-invalid');
+
+            }
+
+            if(err.response.data.errors.invoiceNum != undefined){
+                document.querySelector('#txtInvoiceNum').classList.add('is-invalid');
+
+            }
+            else{
+                document.querySelector('#txtInvoiceNum').classList.remove('is-invalid');
+
+            }
+
+            if(err.response.data.errors.receivedQty != undefined){
+                document.querySelector('#txtReceivedQty').classList.add('is-invalid');
+                
+            }
+            else{
+                document.querySelector('#txtReceivedQty').classList.remove('is-invalid');
+                
+            }
+            
+            toastr.error('Please fill-up required fields.')
+        });
+    }
+    
+    const requestForRemove = async () => {
+        await api.post('api/request_remove_recon', removeReconData.value).then((result) => {
+            document.querySelector('#txtRemoveReasons').classList.remove('is-invalid');
+            
+        }).catch((err) => {
+            // console.log(err.response.data);
+            if(err.response.data.errors.reasons != undefined){
+                document.querySelector('#txtRemoveReasons').classList.add('is-invalid');
+            }
+            else{
+                document.querySelector('#txtRemoveReasons').classList.remove('is-invalid');
+            }
+            toastr.error('Please fill-up required fields.')
+
+        });
+    }
+
+    const btnAddRecon = async (params) => {
+        modalData.viewing = 5;
+        modalData.styleSize = '';
+        modalData.size = 'modal-xl';
+        modalData.backdrop = 'static';
+        modalData.title = `Add Reconciliation Data for ${dtParams.classification}-${dtParams.department}`;
+
+        setTimeout(() => {
+            dtAdd = tableAdd.value.dt;
+        }, 500);
+
+        modals.show();
+    }
+    
+    const reloadDt = () => {
+        dtAdd.ajax.reload();
+    }
+
+    const requestForAddition = async () => {
+        await api.post('api/request_for_addition', addEprpoData).then((result) => {
+            let res = result.data;
+
+            toastr.success(`${res.msg}`);
+            modals.hide();
+
+        }).catch((err) => {
+            toastr.error(`something went wrong!`);
             
         });
     }

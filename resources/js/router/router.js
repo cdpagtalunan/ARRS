@@ -43,9 +43,9 @@ const isLoggedIn = async () => { // * TO VALIDATE IF SESSION STILL EXIST
 
 // const hasAccess = async () => { // * TO VALIDATE USER HAS ACCESS ON SYSTEM
 //     await api.get('check_access').then((result) => {
-        
+
 //     }).catch((err) => {
-        
+
 //     });
 // }
 
@@ -56,7 +56,7 @@ const hasAccess =  () => { // * TO VALIDATE USER HAS ACCESS ON SYSTEM
 }
 
 const removeAll = () => {
-    const sessionStore = useSessionStore();     
+    const sessionStore = useSessionStore();
     sessionStore.removeSession();
 
 }
@@ -99,7 +99,7 @@ const routes = [
                 beforeEnter: isLoggedIn,
                 component: CategorySettings
             },
-           
+
         ]
     },
     {

@@ -23,7 +23,7 @@ class ConfigController extends Controller
     public function save_cutoff(CutoffRequest $request){
         date_default_timezone_set('Asia/Manila');
         $fields = $request->validated();
-
+        // return $request->all();
         DB::beginTransaction();
         try{
 
@@ -35,7 +35,9 @@ class ConfigController extends Controller
             );
             if(isset($request->id)){ // EDIT
                 $cutoff_array['updated_at'] = NOW();
+
                 DB::connection('mysql')->table('cut_offs')
+                ->where('id', $request->id)
                 ->update($cutoff_array);
                 DB::commit();
                 return response()->json([
