@@ -236,7 +236,7 @@
             </div>
         </template>
         <template #body v-else-if="modalData.viewing == 5">
-            <div class="row justify-content-center">
+            <div class="row justify-content-center mb-2">
                 <div class="col-4"> 
                     <!-- <label>PO Number:</label> -->
                     <!-- <input type="text" class="form-control"> -->
@@ -255,20 +255,37 @@
                 </div>
             </div>
             <div class="row">
-                <div class="col-12">
-                    <DataTable
-                        class="table table-sm table-bordered table-hover wrap display"
-                        :columns="columnsAdd"
-                        :ajax="{
-                            url: 'api/get_recon_for_add',
-                            data: function (param){
-                                param.param = dtParams;
-                                param.po_number = addReconData.poNumber;
-                            }
-                        }"
-                        ref="tableAdd"
-                        :options="options1"
-                    />
+                <div class="col-9">
+                    <Card :card-body="true" :card-header="true">
+                        <template #header>
+                            Reconciliation List
+                        </template>
+                        <template #body>
+                            <DataTable
+                                class="table table-sm table-bordered table-hover wrap display"
+                                :columns="columnsAdd"
+                                :ajax="{
+                                    url: 'api/get_recon_for_add',
+                                    data: function (param){
+                                        param.param = dtParams;
+                                        param.po_number = addReconData.poNumber;
+                                    }
+                                }"
+                                ref="tableAdd"
+                                :options="options1"
+                            />
+                        </template>
+                    </Card>
+                </div>
+                <div class="col-3">
+                    <Card :card-body="true" :card-header="true">
+                        <template #header>
+                            Remarks
+                        </template>
+                        <template #body>
+                            <textarea class="form-control" cols="30" rows="10" id="userRemarks" v-model="addEprpoData.userRemarks"></textarea>
+                        </template>
+                    </Card>
                 </div>
             </div>
            
@@ -351,7 +368,8 @@
 
     const addEprpoDataInitialState = {
         'data' : [],
-        'reconClassification' : ""
+        'reconClassification' : "",
+        'userRemarks': ""
     }
     const addEprpoData = reactive({...addEprpoDataInitialState});
 
@@ -456,6 +474,7 @@
     const reconData = ref({});
     const uReconData = ref({});
     const toastr = inject('toastr');
+    const Swal = inject('Swal');
 
     onMounted(() => {
         dt = table.value.dt;
@@ -605,17 +624,17 @@
                 document.querySelector('#txtRemoveReasons').classList.remove('is-invalid');
             }
             toastr.error('Please fill-up required fields.')
-
+            
         });
     }
 
     const btnAddRecon = async (params) => {
         modalData.viewing = 5;
-        modalData.styleSize = '';
-        modalData.size = 'modal-xl';
+        modalData.styleSize = 'max-width: 1750px !important; min-width: 1100px;';
+        modalData.size = '';
         modalData.backdrop = 'static';
         modalData.title = `Add Reconciliation Data for ${dtParams.classification}-${dtParams.department}`;
-
+        
         setTimeout(() => {
             dtAdd = tableAdd.value.dt;
         }, 500);
@@ -626,18 +645,38 @@
     const reloadDt = () => {
         dtAdd.ajax.reload();
     }
-
+    
     const requestForAddition = async () => {
-        await api.post('api/request_for_addition', addEprpoData).then((result) => {
-            let res = result.data;
+        if(addEprpoData.userRemarks == ""){
+            toastr.error('Please fill required field!');
+            document.querySelector('#userRemarks').classList.add('is-invalid');
+            return;
+        }
+        else{
+            document.querySelector('#userRemarks').classList.remove('is-invalid');
 
-            toastr.success(`${res.msg}`);
-            modals.hide();
+            await Swal.fire({
+                title: `Are you sure you want to proceed this request?`,
+                text: "Request will go to logistics for approval.",
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Yes'
+            }).then((result) => {
+                api.post('api/request_for_addition', addEprpoData).then((result) => {
+                    let res = result.data;
 
-        }).catch((err) => {
-            toastr.error(`something went wrong!`);
-            
-        });
+                    toastr.success(`${res.msg}`);
+                    modals.hide();
+
+                }).catch((err) => {
+                    toastr.error(`something went wrong!`);
+                    
+                });
+            })
+        }
+        
     }
     
 </script>

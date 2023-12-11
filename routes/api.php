@@ -5,6 +5,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\ConfigController;
+use App\Http\Controllers\RequestController;
 use App\Http\Controllers\ReconciliationController;
 
 /*
@@ -61,6 +62,13 @@ Route::middleware('CheckSessionExist')->group(function(){
     Route::post('request_remove_recon', [ReconciliationController::class, 'request_remove_recon']);
     Route::get('get_recon_for_add', [ReconciliationController::class, 'get_recon_for_add']);
     Route::post('request_for_addition', [ReconciliationController::class, 'request_for_addition']);
+
+    // ADMIN USER REQUEST ROUTE
+    Route::get('get_add_request', [RequestController::class, 'get_add_request']);
+    Route::get('view_request_details', [RequestController::class, 'view_request_details']);
+    Route::post('response_request', [RequestController::class, 'response_request']);
+
+
 });
     
     

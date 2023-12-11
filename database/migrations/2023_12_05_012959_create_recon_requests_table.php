@@ -15,7 +15,7 @@ class CreateReconRequestsTable extends Migration
     {
         Schema::create('recon_requests', function (Blueprint $table) {
             $table->id();
-            $table->smallInteger('status')->default(0)->comment="0-pending approval";
+            $table->smallInteger('status')->default(0)->comment="0-pending approval, 1-approve, 2-disapprove";
             $table->smallInteger('request_type')->default(0)->comment="0-add,1-remove";
             $table->integer('recon_fkid')->nullable()->comment="For add only. fkid of reconciliations";
             $table->string('ctrl_num')->nullable();

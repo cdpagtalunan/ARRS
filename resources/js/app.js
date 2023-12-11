@@ -39,6 +39,7 @@ import Card from './components/Card.vue';
 import Breadcrumb from './components/Breadcrumb.vue';
 import PrimeVueDatatable from './components/PrimeVueDatatable.vue';
 import Modal from './components/Modal.vue';
+import ModalPrompt from './components/ModalPrompt.vue';
 
 // * SweetAlert
 import Swal from 'sweetalert2';
@@ -92,6 +93,7 @@ createApp(AppTemplate)
 .component('Breadcrumb', Breadcrumb)
 .component('PrimeVueDatatable', PrimeVueDatatable)
 .component('Modal', Modal)
+.component('ModalPrompt', ModalPrompt)
 .component('VueMultiselect', VueMultiselect)
 .provide('Swal',Swal)
 .provide('Toast',Toast)

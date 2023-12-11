@@ -8,7 +8,8 @@ import CuttoffSettings from '../pages/Settings/CutoffSettings.vue';
 import CategorySettings from '../pages/Settings/CategorySettings.vue';
 
 // ^ Admin Pages
-import UserManagement from '../pages/AdminManagement/UserManagement.vue';
+import UserManagement from '../pages/Admin/UserManagement.vue';
+import UserRequest from '../pages/Admin/UserRequest.vue';
 
 // ^ Interceptors Page
 import Unauthorized from '../pages/Interceptors/Unauthorized.vue';
@@ -79,12 +80,18 @@ const routes = [
                 beforeEnter: isLoggedIn,
                 component: Reconciliation
             },
-            // Admin Management
+            // Admin
             {
                 path: 'user_management',
                 name: 'UserManagement',
                 beforeEnter: isLoggedIn,
                 component: UserManagement
+            },
+            {
+                path: 'user_request',
+                name: 'UserRequest',
+                beforeEnter: isLoggedIn,
+                component: UserRequest
             },
             // SETTINGS
             {

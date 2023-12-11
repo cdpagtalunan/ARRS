@@ -12,6 +12,7 @@ use Illuminate\Http\Request;
 use App\Models\Reconciliation;
 use App\Models\ReconciliationDate;
 use Illuminate\Support\Facades\DB;
+use App\Models\ReconRequestRemarks;
 use App\Http\Requests\UserReconRequest;
 use App\Http\Requests\RemoveReconRequest;
 
@@ -501,6 +502,8 @@ class ReconciliationController extends Controller
     }
 
     public function request_for_addition(Request $request){
+        // return $request->all();
+
         $recon_control = ReconRequest::orderBy('ctrl_num_ext', 'DESC')->first();
         
         $control = $request->reconClassification['department'] . "-" . $request->reconClassification['classification'];
@@ -509,7 +512,12 @@ class ReconciliationController extends Controller
         try{
             if(isset($recon_control)){
                 $control_ext = $recon_control->ctrl_num_ext + 1;
-    
+                
+                ReconRequestRemarks::insert([
+                    'recon_request_ctrl_num' => $control,
+                    'recon_request_ctrl_num_ext' => $control_ext,
+                    'remarks' => $request->userRemarks
+                ]);
                 for ($i=0; $i < count($request->data); $i++) { 
                     $jsn_decoded_recon_req = json_decode($request->data[$i]);
                     // return $jsn_decoded_recon_req;
@@ -548,6 +556,11 @@ class ReconciliationController extends Controller
             }
             else{
                 $control_ext = 1;
+                ReconRequestRemarks::insert([
+                    'recon_request_ctrl_num' => $control,
+                    'recon_request_ctrl_num_ext' => $control_ext,
+                    'remarks' => $request->userRemarks
+                ]);
                 for ($i=0; $i < count($request->data); $i++) { 
                     $jsn_decoded_recon_req = json_decode($request->data[$i]);
                     // return $jsn_decoded_recon_req;

@@ -38,15 +38,21 @@
                         </router-link>
                     </li>
 
-                    <li class="nav-header font-weight-bold" style="font-size: 1rem">Admin Management</li>
+                    <li class="nav-header font-weight-bold" style="font-size: 1rem">Admin</li>
                     
                     <!-- <div class="nav-item has-treeview" id="ppc-id">
                     </div> -->
                     <li class="nav-item  has-treeview">
                         <router-link :to="{ name: 'UserManagement' }" class="nav-link">
-
                             <icons icon="fas fa-user" class="nav-icon"></icons>
                             User Management
+                        </router-link>
+                    </li>
+
+                    <li class="nav-item  has-treeview">
+                        <router-link :to="{ name: 'UserRequest' }" class="nav-link">
+                            <icons icon="fas fa-file-circle-check" class="nav-icon"></icons>
+                            User Requests
                         </router-link>
                     </li>
                     <li class="nav-header font-weight-bold" style="font-size: 1rem">Configuration</li>
