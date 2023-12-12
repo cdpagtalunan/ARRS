@@ -18,7 +18,9 @@
                                         <div class="input-group-prepend" width="50px">
                                             <span class="input-group-text w-100" id="basic-addon1" style="background-color: #3154b6; color: white;">Select Cut-off</span>
                                         </div>
-                                        <input type="text" class="form-control">
+                                        <select class="form-control" v-model="cutoffSelect.selected" @change="()=>{ dt.ajax.reload() }">
+                                            <option v-for="cutOffSelOption in cutoffSelect.option">{{ cutOffSelOption }}</option>
+                                        </select>
                                     </div>
                                 </div>
                                 <div class="col-3">
@@ -48,6 +50,7 @@
                                                 url: 'api/get_recon',
                                                 data: function (param){
                                                     param.param = dtParams;
+                                                    param.cutoff_date = cutoffSelect.selected
                                                 }
                                             }"
                                             ref="table"
@@ -312,6 +315,10 @@
     DataTable.use(DataTablesCore);
 
     const cutOffOptions = ref();
+    const cutoffSelect = reactive({
+        option: [],
+        selected: ""
+    });
     const catStatus = ref();
     const columns = [
         {
@@ -494,6 +501,7 @@
             addReconData.value = {};
             Object.assign(addEprpoData, addEprpoDataInitialState); // * assign default value
         });
+        getCutoffDate();
     });
 
     onBeforeMount(async () => {
@@ -677,6 +685,15 @@
             })
         }
         
+    }
+
+    const getCutoffDate = async () => {
+        await api.get('api/get_recon_dates').then((result) => {
+            cutoffSelect.option = result.data;
+            cutoffSelect.selected = result.data[0];
+        }).catch((err) => {
+            
+        });
     }
     
 </script>

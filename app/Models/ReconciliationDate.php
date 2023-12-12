@@ -10,5 +10,5 @@ class ReconciliationDate extends Model
     use HasFactory;
     protected $table = "reconciliation_dates";
     protected $connection = "mysql";
-    protected $fillable = ['month', 'year'];
+    protected $fillable = ['month', 'year', 'cutoff'];
 }

@@ -62,6 +62,7 @@ Route::middleware('CheckSessionExist')->group(function(){
     Route::post('request_remove_recon', [ReconciliationController::class, 'request_remove_recon']);
     Route::get('get_recon_for_add', [ReconciliationController::class, 'get_recon_for_add']);
     Route::post('request_for_addition', [ReconciliationController::class, 'request_for_addition']);
+    Route::get('get_recon_dates', [ReconciliationController::class, 'get_recon_dates']);
 
     // ADMIN USER REQUEST ROUTE
     Route::get('get_add_request', [RequestController::class, 'get_add_request']);

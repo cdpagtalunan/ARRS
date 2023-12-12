@@ -60,9 +60,14 @@ class ReconciliationController extends Controller
 
         $recon_date = ReconciliationDate::firstOrCreate(
             ['month' => $month_today],
-            ['year' => $current_year]
+            ['year' => $current_year, 'cutoff' => $request->cutoff ]
         );
-        
+        if($recon_date->cutoff != $request->cutoff){
+            ReconciliationDate::where('id', $recon_date->id)
+            ->update([
+                'cutoff' => $request->cutoff
+            ]);
+        }
         $categories = DB::connection('mysql')->table('user_categories')
         ->whereNull('deleted_at')
         ->get();
@@ -271,12 +276,27 @@ class ReconciliationController extends Controller
     }
 
     public function get_recon(Request $request){
-        // return $request->param['classification'];
-        // return $request->param['department'];
-        // $recon_data = DB::connection('mysql')->table('reconciliations')
+        $dtFrom = 0000-00-00;
+        $dtTo = 0000-00-00;
+        if($request->cutoff_date != ""){
+            $explode_date = explode('to', $request->cutoff_date);
+
+            $dtFrom = Carbon::createFromFormat('m-d-Y', trim($explode_date[0]));
+            $dtTo = Carbon::createFromFormat('m-d-Y', trim($explode_date[1]));
+            $dtFrom = $dtFrom->format('Y-m-d');
+            $dtTo = $dtTo->format('Y-m-d');
+        }
+        
+        // $dtFrom = Carbon::create($explode_date[0])->format('Y-m-d');
+        // $dtFrom = new Carbon($explode_date[0]);
+        
+      
+
         $recon_data = Reconciliation::whereNull('deleted_at')
         ->where('pr_num', 'LIKE', "%".$request->param['department']."%")
         ->where('classification', $request->param['classification'])
+        ->where('recon_date_from', '>=', $dtFrom)
+        ->where('recon_date_to', '<=', $dtTo)
         ->select('*');
 
         return DataTables::of($recon_data)
@@ -602,5 +622,31 @@ class ReconciliationController extends Controller
             DB::rollback();
             return $e;
         }
+    }
+
+    public function get_recon_dates(Request $request){
+        $recon_dates = ReconciliationDate::whereNull('deleted_at')->orderBy('id', 'desc')->get();
+        $cutoff_date_array = array();
+        for ($i=0; $i < count($recon_dates); $i++) {
+            // return $recon_dates[$i];
+            $month = $recon_dates[$i]['month'];
+            $year = $recon_dates[$i]['year'];
+            $day = 0;
+            if($recon_dates[$i]['cutoff'] == 1){
+                $day = 15;
+            }
+            else{
+                $day = 26;
+            }
+            $dtTo = Carbon::create($year, $month, $day)->format('m-d-Y');
+            $dtFrom = Carbon::create($year, $month, 26);
+            $dtSubMonth = $dtFrom->subMonth()->format('m-d-Y');
+            // return $dtTo;
+            $cutoff = $dtSubMonth." to ".$dtTo;
+            array_push($cutoff_date_array, $cutoff);
+            // return $cutoff;
+        }
+
+        return $cutoff_date_array;
     }
 }
