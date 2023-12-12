@@ -389,6 +389,7 @@
     // };
     // const modalData = reactive({...modalInitialState});
 
+    const test = ref([]);
     const columnsAdd = [
         // { data: 'action', title: 'Action'},
         {
@@ -398,15 +399,15 @@
             searchable: false,
             createdCell(cell) {
                 // * Button View
-                cell.querySelector('input[type="checkbox"]').addEventListener('click', function(){
-                    let eprpoData = this.getAttribute('data-eprpo');
-                    // addEprpoData.value.push(eprpoData);
-                    // console.log(addEprpoData.value);
+                // cell.querySelector('input[name="checking"]').addEventListener('click', function(){
+                //     let eprpoData = this.getAttribute('data-eprpo');
+                //     // addEprpoData.value.push(eprpoData);
+                //     // console.log(addEprpoData.value);
 
-                    addEprpoData.data.push(eprpoData);
-                    addEprpoData.reconClassification = dtParams;
-                    console.log(addEprpoData.data);
-                });
+                //     addEprpoData.data.push(eprpoData);
+                //     addEprpoData.reconClassification = dtParams;
+                //     // console.log(addEprpoData.data);
+                // });
             },
         },
         { data: 'reference_po_number', title: 'PO Number'},
@@ -500,6 +501,7 @@
             removeReconData.value = {}; // * Reset removeReconData ref data
             addReconData.value = {};
             Object.assign(addEprpoData, addEprpoDataInitialState); // * assign default value
+            addEprpoData.data = [];
         });
         getCutoffDate();
     });
@@ -620,23 +622,43 @@
     }
     
     const requestForRemove = async () => {
-        await api.post('api/request_remove_recon', removeReconData.value).then((result) => {
-            document.querySelector('#txtRemoveReasons').classList.remove('is-invalid');
-            
-        }).catch((err) => {
-            // console.log(err.response.data);
-            if(err.response.data.errors.reasons != undefined){
-                document.querySelector('#txtRemoveReasons').classList.add('is-invalid');
+        await Swal.fire({
+            title: `Are you sure you want to proceed this request?`,
+            text: "Request will go to logistics for approval.",
+            icon: 'question',
+            position: 'top',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Yes'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                removeReconData.value.extraParams = dtParams;
+                api.post('api/request_remove_recon', removeReconData.value).then((result) => {
+                    document.querySelector('#txtRemoveReasons').classList.remove('is-invalid');
+                    modals.hide();
+                    toastr.success(`${result.data.msg}`);
+                    dt.ajax.reload();
+                    
+                }).catch((err) => {
+                    // console.log(err.response.data);
+                    if(err.response.data.errors.reasons != undefined){
+                        document.querySelector('#txtRemoveReasons').classList.add('is-invalid');
+                    }
+                    else{
+                        document.querySelector('#txtRemoveReasons').classList.remove('is-invalid');
+                    }
+                    toastr.error('Please fill-up required fields.')
+                    
+                });
             }
-            else{
-                document.querySelector('#txtRemoveReasons').classList.remove('is-invalid');
-            }
-            toastr.error('Please fill-up required fields.')
             
-        });
+        })
+       
     }
 
     const btnAddRecon = async (params) => {
+
         modalData.viewing = 5;
         modalData.styleSize = 'max-width: 1750px !important; min-width: 1100px;';
         modalData.size = '';
@@ -655,6 +677,7 @@
     }
     
     const requestForAddition = async () => {
+
         if(addEprpoData.userRemarks == ""){
             toastr.error('Please fill required field!');
             document.querySelector('#userRemarks').classList.add('is-invalid');
@@ -662,7 +685,6 @@
         }
         else{
             document.querySelector('#userRemarks').classList.remove('is-invalid');
-
             await Swal.fire({
                 title: `Are you sure you want to proceed this request?`,
                 text: "Request will go to logistics for approval.",
@@ -672,16 +694,27 @@
                 cancelButtonColor: '#d33',
                 confirmButtonText: 'Yes'
             }).then((result) => {
-                api.post('api/request_for_addition', addEprpoData).then((result) => {
-                    let res = result.data;
-
-                    toastr.success(`${res.msg}`);
-                    modals.hide();
-
-                }).catch((err) => {
-                    toastr.error(`something went wrong!`);
-                    
-                });
+                if (result.isConfirmed) {
+                    var inputElements = document.getElementsByClassName('checkedRecon');
+                    for(var i=0; inputElements[i]; ++i){
+                        if(inputElements[i].checked){
+                            addEprpoData.data.push( inputElements[i].getAttribute('data-eprpo'));
+                        }
+                    }
+                    addEprpoData.reconClassification = dtParams;
+                    if(addEprpoData.data.length == 0){
+                        toastr.error('Error! Please select reconciliation.');
+                    }
+                    else{
+                        api.post('api/request_for_addition', { addEprpoData, cutoff_date: cutoffSelect.selected }).then((result) => {
+                            let res = result.data;
+                            toastr.success(`${res.msg}`);
+                            modals.hide();
+                        }).catch((err) => {
+                            toastr.error(`something went wrong!`);
+                        });
+                    }
+                }
             })
         }
         

@@ -402,17 +402,38 @@ class ReconciliationController extends Controller
     }
 
     public function request_remove_recon(RemoveReconRequest $request){
+       
         $request->validated();
 
         DB::beginTransaction();
         try{
+            $recon_control = ReconRequest::orderBy('ctrl_num_ext', 'DESC')->first();
+            $control_ext = 0;
+            if(isset($recon_control)){
+                $control_ext = $recon_control->ctrl_num_ext + 1;
+            }
+            else{
+                $control_ext = 1;
+            }
+            $control = $request->extraParams['department'] . "-" . $request->extraParams['classification'];
+
+
             $decrypt_id = Helpers::decryptId($request->reconId);
+    
+            ReconRequest::insert([
+                'request_type'      => 1,
+                'recon_fkid'        => $decrypt_id,
+                'ctrl_num'          => $control,
+                'ctrl_num_ext'      => $control_ext
+            ]);
 
             Reconciliation::where('id', $decrypt_id)
             ->update([
                 'recon_remove_remarks' => $request->reasons,
                 'recon_status' => 2
             ]);
+
+
             DB::commit();
 
             return response()->json([
@@ -495,7 +516,7 @@ class ReconciliationController extends Controller
         return DataTables::of($collection)
         ->addColumn('action', function($collection){
             $result = "";
-            $result .= "<input type='checkbox' class='checkedRecon' data-eprpo='".json_encode($collection)."'>";
+            $result .= "<input type='checkbox' class='checkedRecon' data-eprpo='".json_encode($collection)."' name='checking[]'>";
             return $result;
         })
         // ->addColumn('po_number', function($collection){
@@ -522,11 +543,18 @@ class ReconciliationController extends Controller
     }
 
     public function request_for_addition(Request $request){
-        // return $request->all();
 
+        $exploded_cutoff = explode('to', $request->cutoff_date);
+
+        $from = Carbon::createFromFormat('m-d-Y', trim($exploded_cutoff[0]));
+        $req_from = $from->format('Y-m-d');
+        $to = Carbon::createFromFormat('m-d-Y',  trim($exploded_cutoff[1]));
+        $req_to = $to->format('Y-m-d');
+
+        // return;
         $recon_control = ReconRequest::orderBy('ctrl_num_ext', 'DESC')->first();
         
-        $control = $request->reconClassification['department'] . "-" . $request->reconClassification['classification'];
+        $control = $request->addEprpoData['reconClassification']['department'] . "-" . $request->addEprpoData['reconClassification']['classification'];
 
         DB::beginTransaction();
         try{
@@ -536,10 +564,10 @@ class ReconciliationController extends Controller
                 ReconRequestRemarks::insert([
                     'recon_request_ctrl_num' => $control,
                     'recon_request_ctrl_num_ext' => $control_ext,
-                    'remarks' => $request->userRemarks
+                    'remarks' => $request->addEprpoData['userRemarks']
                 ]);
-                for ($i=0; $i < count($request->data); $i++) { 
-                    $jsn_decoded_recon_req = json_decode($request->data[$i]);
+                for ($i=0; $i < count($request->addEprpoData['data']); $i++) { 
+                    $jsn_decoded_recon_req = json_decode($request->addEprpoData['data'][$i]);
                     // return $jsn_decoded_recon_req;
                     ReconRequest::insert([
                         'ctrl_num'           => $control,
@@ -565,7 +593,9 @@ class ReconciliationController extends Controller
                         'classification'     => $jsn_decoded_recon_req->classification_code,
                         'allocation'         => $jsn_decoded_recon_req->allocation,
                         'po_remarks'         => $jsn_decoded_recon_req->po_remarks,
-                        'hold_remarks'       => $jsn_decoded_recon_req->hold_remarks
+                        'hold_remarks'       => $jsn_decoded_recon_req->hold_remarks,
+                        'recon_date_from'    => $req_from,
+                        'recon_date_to'      => $req_to
                     ]);
                     DB::commit();
                 }
@@ -579,10 +609,10 @@ class ReconciliationController extends Controller
                 ReconRequestRemarks::insert([
                     'recon_request_ctrl_num' => $control,
                     'recon_request_ctrl_num_ext' => $control_ext,
-                    'remarks' => $request->userRemarks
+                    'remarks' => $request->addEprpoData['userRemarks']
                 ]);
-                for ($i=0; $i < count($request->data); $i++) { 
-                    $jsn_decoded_recon_req = json_decode($request->data[$i]);
+                for ($i=0; $i < count($request->addEprpoData['data']); $i++) { 
+                    $jsn_decoded_recon_req = json_decode( $request->addEprpoData['data'][$i]);
                     // return $jsn_decoded_recon_req;
                     ReconRequest::insert([
                         'ctrl_num'           => $control,
@@ -608,7 +638,10 @@ class ReconciliationController extends Controller
                         'classification'     => $jsn_decoded_recon_req->classification_code,
                         'allocation'         => $jsn_decoded_recon_req->allocation,
                         'po_remarks'         => $jsn_decoded_recon_req->po_remarks,
-                        'hold_remarks'       => $jsn_decoded_recon_req->hold_remarks
+                        'hold_remarks'       => $jsn_decoded_recon_req->hold_remarks,
+                        'recon_date_from'    => $req_from,
+                        'recon_date_to'      => $req_to
+
                     ]);
                     DB::commit();
                 }
@@ -641,12 +674,9 @@ class ReconciliationController extends Controller
             $dtTo = Carbon::create($year, $month, $day)->format('m-d-Y');
             $dtFrom = Carbon::create($year, $month, 26);
             $dtSubMonth = $dtFrom->subMonth()->format('m-d-Y');
-            // return $dtTo;
             $cutoff = $dtSubMonth." to ".$dtTo;
             array_push($cutoff_date_array, $cutoff);
-            // return $cutoff;
         }
-
         return $cutoff_date_array;
     }
 }
