@@ -41,9 +41,6 @@ Route::middleware('CheckSessionExist')->group(function(){
     Route::get('get_dropdown_data', [ConfigController::class, 'get_dropdown_data']);
     Route::get('get_category_details', [ConfigController::class, 'get_category_details']);
     Route::post('update_cat_status', [ConfigController::class, 'update_cat_status']);
-    /*
-        ! END SETTINGS ROUTES
-    */
 
     // USER ROUTE
     Route::get('get_user', [AdminController::class, 'get_user']);
@@ -66,8 +63,10 @@ Route::middleware('CheckSessionExist')->group(function(){
 
     // ADMIN USER REQUEST ROUTE
     Route::get('get_add_request', [RequestController::class, 'get_add_request']);
+    Route::get('get_remove_request', [RequestController::class, 'get_remove_request']);
     Route::get('view_request_details', [RequestController::class, 'view_request_details']);
     Route::post('response_request', [RequestController::class, 'response_request']);
+    Route::get('get_remove_recon_details', [RequestController::class, 'get_remove_recon_details']);
 
 
 });

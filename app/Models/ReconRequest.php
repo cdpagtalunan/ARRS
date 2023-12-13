@@ -2,16 +2,23 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
+use App\Models\Reconciliation;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class ReconRequest extends Model
 {
     use HasFactory;
     protected $table = "recon_requests";
     protected $connection = "mysql";
+    protected $fillable = ['status'];
 
     public function recon_remarks(){
         return $this->hasOne(ReconRequestRemarks::class,'recon_request_ctrl_num_ext', 'ctrl_num_ext');
+    }
+
+    public function recon_details(){
+        return $this->hasOne(Reconciliation::class,'id', 'recon_fkid');
+
     }
 }

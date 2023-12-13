@@ -9,7 +9,7 @@ import CategorySettings from '../pages/Settings/CategorySettings.vue';
 
 // ^ Admin Pages
 import UserManagement from '../pages/Admin/UserManagement.vue';
-import UserRequest from '../pages/Admin/UserRequest.vue';
+import ApprovalRequest from '../pages/Admin/ApprovalRequest.vue';
 
 // ^ Interceptors Page
 import Unauthorized from '../pages/Interceptors/Unauthorized.vue';
@@ -89,9 +89,9 @@ const routes = [
             },
             {
                 path: 'user_request',
-                name: 'UserRequest',
+                name: 'ApprovalRequest',
                 beforeEnter: isLoggedIn,
-                component: UserRequest
+                component: ApprovalRequest
             },
             // SETTINGS
             {

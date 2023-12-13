@@ -66,7 +66,10 @@
         </div>
     </section>
     <Modal :title="modalData.title" :backdrop="modalData.backdrop" :modal-size="modalData.size" :style-size="modalData.styleSize">
-        <template #body v-if="modalData.viewing == 1 || modalData.viewing == 2 || modalData.viewing == 3">
+        <!-- 
+            * BODY
+        -->
+        <template #body v-if="modalData.viewing == 1 || modalData.viewing == 2 || modalData.viewing == 3"> <!--1-viewing, 2-add recon data, 3-update -->
             <div class="row">
                 <div class="col-8">
                     <Card :card-body="true" :card-header="true">
@@ -214,42 +217,16 @@
                 </div>
             </div>
         </template>
-        <template #body v-else-if="modalData.viewing == 4">
+        <template #body v-else-if="modalData.viewing == 4">  <!-- 4-remove -->
             <input type="hidden" v-model="removeReconData.reconId">
-            <!-- {{ removeReconData }}
-            <label>Select Option:</label>
-            <select class="form-control" v-model="removeReconData.selection">
-                <option value="1">Remove Reconciliation</option>
-                <option value="2">Change date of reconciliation</option>
-            </select> -->
-
-            <!-- <div v-if="removeReconData.selection == 1">
-                <label>Reasons:</label>
-                <textarea rows="5" class="form-control"></textarea>
-            </div>
-            <div v-else-if="removeReconData.selection == 2">
-                <label>Select </label>
-                <label>Reasonsssss:</label>
-                <textarea rows="5" class="form-control"></textarea>
-            </div> -->
-
             <div>
                 <label>Reasons:</label>
                 <textarea id="txtRemoveReasons" rows="5" class="form-control" v-model="removeReconData.reasons" required></textarea>
             </div>
         </template>
-        <template #body v-else-if="modalData.viewing == 5">
+        <template #body v-else-if="modalData.viewing == 5"> <!-- 5- add data from eprpo -->
             <div class="row justify-content-center mb-2">
                 <div class="col-4"> 
-                    <!-- <label>PO Number:</label> -->
-                    <!-- <input type="text" class="form-control"> -->
-                    <!-- <div class="input-group input-group-sm">
-                        <div class="input-group-prepend w-50">
-                            <span class="input-group-text w-100" id="basic-addon1" style="background-color: #17a2b8; color: white;">PO Number:</span>
-                        </div>
-                        <input type="text" class="form-control" autocomplete="off" v-model="addReconData.poNumber">
-                    </div>    -->
-
                     <div class="input-group">
                         <span class="input-group-text" style="background-color: #17a2b8; color: white;">PO Number:</span>
                         <input type="text" class="form-control" v-model="addReconData.poNumber" @keyup.enter="reloadDt()">
@@ -293,10 +270,13 @@
             </div>
            
         </template>
-        <template #footerButton v-if="modalData.viewing == 2 || modalData.viewing == 3">
+        <!-- 
+            * FOOTER
+        -->
+        <template #footerButton v-if="modalData.viewing == 2 || modalData.viewing == 3"> <!-- 2-add recon data, 3-update -->
             <button type="button" class="btn btn-success" @click="saveReconData()">Save</button>
         </template>
-        <template #footerButton v-else-if="modalData.viewing == 4">
+        <template #footerButton v-else-if="modalData.viewing == 4"> <!-- 4-remove -->
             <button type="button" class="btn btn-success" @click="requestForRemove()">Send</button>
         </template>
         <template #footerButton v-else-if="modalData.viewing == 5">

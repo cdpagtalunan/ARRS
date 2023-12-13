@@ -50,7 +50,7 @@
                     </li>
 
                     <li class="nav-item  has-treeview">
-                        <router-link :to="{ name: 'UserRequest' }" class="nav-link">
+                        <router-link :to="{ name: 'ApprovalRequest' }" class="nav-link">
                             <icons icon="fas fa-file-circle-check" class="nav-icon"></icons>
                             User Requests
                         </router-link>
