@@ -2,6 +2,7 @@ import {createRouter, createWebHistory} from 'vue-router';
 import AdminLayout from '../layout/AdminLayout/AdminLayout.vue' // ^ Main Template
 import Dashboard from '../pages/Dashboard.vue';
 import Reconciliation from '../pages/Reconciliation.vue';
+import UserRequest from '../pages/UserRequest.vue';
 
 // ^ Setting Pages
 import CuttoffSettings from '../pages/Settings/CutoffSettings.vue';
@@ -16,21 +17,6 @@ import Unauthorized from '../pages/Interceptors/Unauthorized.vue';
 
 import api from '../axios';
 
-// function isLoggedIn(to, from, next) { // * TO VALIDATE IF SESSION STILL EXIST
-//     api.get('check_user').then((result) => {
-//         if(result.data == 1){
-//             // return true;
-//             next();
-//         }
-//         else{
-//             // return window.location.href = '/RapidX';
-//             next({
-//                 path: '/RapidX',
-//                 replace: true
-//             });
-//         }
-//     });
-// }
 const isLoggedIn = async () => { // * TO VALIDATE IF SESSION STILL EXIST
     await api.get('check_user').then((result) => {
         if(result.data == 1){
@@ -41,14 +27,6 @@ const isLoggedIn = async () => { // * TO VALIDATE IF SESSION STILL EXIST
         }
     });
 }
-
-// const hasAccess = async () => { // * TO VALIDATE USER HAS ACCESS ON SYSTEM
-//     await api.get('check_access').then((result) => {
-
-//     }).catch((err) => {
-
-//     });
-// }
 
 import { useSessionStore } from "../stores/index";
 const hasAccess =  () => { // * TO VALIDATE USER HAS ACCESS ON SYSTEM
@@ -80,6 +58,12 @@ const routes = [
                 beforeEnter: isLoggedIn,
                 component: Reconciliation
             },
+            {
+                path: 'request_list',
+                name: 'UserRequest',
+                beforeEnter: isLoggedIn,
+                component: UserRequest
+            },
             // Admin
             {
                 path: 'user_management',
@@ -88,7 +72,7 @@ const routes = [
                 component: UserManagement
             },
             {
-                path: 'user_request',
+                path: 'approval_request',
                 name: 'ApprovalRequest',
                 beforeEnter: isLoggedIn,
                 component: ApprovalRequest

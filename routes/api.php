@@ -29,13 +29,13 @@ Route::middleware('CheckSessionExist')->group(function(){
         * START SETTINGS ROUTES
     */
 
-    // ^ CUT-OFF ROUTE
+    //^ CUT-OFF ROUTE
     Route::get('get_cutoff', [ConfigController::class, 'get_cutoff']);
     Route::post('save_cutoff', [ConfigController::class, 'save_cutoff']);
     Route::get('get_cutoff_details', [ConfigController::class, 'get_cutoff_details']);
     Route::post('update_status', [ConfigController::class, 'update_status']);
 
-    // ^ USER CATEGORY ROUTE
+    //^ USER CATEGORY ROUTE
     Route::get('get_category', [ConfigController::class, 'get_category']);
     Route::post('save_cat', [ConfigController::class, 'save_cat']);
     Route::get('get_dropdown_data', [ConfigController::class, 'get_dropdown_data']);
@@ -50,7 +50,7 @@ Route::middleware('CheckSessionExist')->group(function(){
     Route::post('update_user_stat', [AdminController::class, 'update_user_stat']);
     Route::get('get_cat', [AdminController::class, 'get_cat']);
     
-    // RECONCILIATION ROUTE
+    //^ RECONCILIATION ROUTE
     Route::get('get_category_of_user', [ReconciliationController::class, 'get_category_of_user']);
     Route::get('get_eprpo_data', [ReconciliationController::class, 'get_eprpo_data']);
     Route::get('get_recon', [ReconciliationController::class, 'get_recon']);
@@ -61,13 +61,15 @@ Route::middleware('CheckSessionExist')->group(function(){
     Route::post('request_for_addition', [ReconciliationController::class, 'request_for_addition']);
     Route::get('get_recon_dates', [ReconciliationController::class, 'get_recon_dates']);
 
-    // ADMIN USER REQUEST ROUTE
+    //^ ADMIN REQUEST ROUTE
     Route::get('get_add_request', [RequestController::class, 'get_add_request']);
     Route::get('get_remove_request', [RequestController::class, 'get_remove_request']);
     Route::get('view_request_details', [RequestController::class, 'view_request_details']);
     Route::post('response_request', [RequestController::class, 'response_request']);
     Route::get('get_remove_recon_details', [RequestController::class, 'get_remove_recon_details']);
 
+    //^ USER REQUEST ROUTE
+    Route::get('get_request', [RequestController::class, 'get_request']);
 
 });
     

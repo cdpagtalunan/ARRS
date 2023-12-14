@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use DataTables;
 use App\Models\ReconRequest;
+use App\Models\UserCategory;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use App\Models\ReconRequestRemarks;
@@ -252,5 +253,92 @@ class RequestController extends Controller
         ->first();
 
         return $recon_rem_details;
+    }
+
+    public function get_request(Request $request){
+        if(!isset($request->access)){
+            $requests = ReconRequest::where('id', 0)
+            ->get();
+
+            return DataTables::of($requests)
+            ->make(true);
+        }
+
+        $category_access = DB::connection('mysql')->table('user_categories')
+        ->select(DB::raw("CONCAT(department,'-',classification) AS ctrl"))
+        ->whereIn('id', $request->access)
+        ->get();
+        $category_access = collect($category_access)->pluck('ctrl');
+
+        $requests = ReconRequest::with([
+            'recon_remarks',
+            'recon_details'
+        ])
+        ->whereIn('status', $request->param)
+        ->whereIn('ctrl_num', $category_access)
+        ->whereNull('deleted_at')
+        ->orderBy('status', 'asc')
+        ->get();
+
+        return DataTables::of($requests)
+        ->addColumn('action', function($requests){
+            $result = "";
+            $result .="<center>";
+            $result .= "<button class='btn btn-sm btn-info text-light btnViewReconRequest' title='See more' 
+                        data-ctrl='$requests->ctrl_num' 
+                        data-ctrlExt='$requests->ctrl_num_ext'
+                        data-status='$requests->status'
+                        data-type='$requests->request_type'
+                        >
+                            <i class='fas fa-eye'></i>
+                        </button>";
+            $result .="</center>";
+            return $result;
+        })
+        ->addColumn('req_status', function($requests){
+            $result = "";
+            $result .= "<center>";
+            if($requests->request_type == 0){
+                $result .= "<span class='badge rounded-pill text-bg-info'>For Addition</span>";
+            }
+            else{
+                $result .= "<span class='badge rounded-pill text-bg-info'>For Removal</span>";
+            }
+
+            $result .= "<br>";
+
+            if($requests->status == 0){
+
+                $result .= "<span class='badge rounded-pill text-bg-warning'>For Approval</span>";
+            }
+            else if($requests->status == 1){
+                $result .= "<span class='badge rounded-pill text-bg-success'>Approved</span>";
+            }
+            else if($requests->status == 2){
+                $result .= "<span class='badge rounded-pill text-bg-danger'>Disapproved</span>";
+                $result .= "<br>";
+                $result .= "Remarks: $request->recon_remarks->approver_remarks";
+            }
+
+
+            $result .= "</center>";
+            
+            return $result;
+        })
+        ->addColumn('control', function($requests){
+            return "$requests->ctrl_num-$requests->ctrl_num_ext";
+        })
+        ->addColumn('po', function($requests){
+            $result = "";
+            if($requests->po_num == null){
+                $result .= $requests->recon_details->po_num;
+            }
+            else{
+                $result .= $requests->po_num;
+            }
+            return $result;
+        })
+        ->rawColumns(['action', 'req_status', 'control', 'po'])
+        ->make(true);
     }
 }

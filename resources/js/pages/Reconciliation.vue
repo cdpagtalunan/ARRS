@@ -23,11 +23,17 @@
                                         </select>
                                     </div>
                                 </div>
-                                <div class="col-3">
-                                    <button type="button" class="btn btn-sm btn-info" @click="loadDataEPRPO(1)">Load 1st cutoff</button>
-                                    <button type="button" class="btn btn-sm btn-info" @click="loadDataEPRPO(2)">Load 2nd cutoff</button>
+                                <div class="col-3 d-flex flex-row justify-content-between align-items-center">
+                                    <!-- <button type="button" class="btn btn-sm btn-info" @click="loadDataEPRPO(1)">Load 1st cutoff</button> -->
+                                    <!-- <button type="button" class="btn btn-sm btn-info" @click="loadDataEPRPO(2)">Load 2nd cutoff</button> -->
 
                                     <strong>Status: {{ catStatus }}</strong>
+                                    <!-- <router-link class="btn btn-info btn-sm" :to="{ name: 'UserRequest' }">
+                                        <p>Request List</p>
+                                    </router-link>   -->
+                                    <router-link :to="{ name: 'UserRequest' }">
+                                        <button class="btn btn-primary btn-sm"><icons icon="fas fa-clipboard-list"></icons> See Request List</button>
+                                    </router-link>   
                                 </div>
                             </div>
                         </template>
@@ -464,12 +470,10 @@
     const toastr = inject('toastr');
     const Swal = inject('Swal');
 
-    onMounted(() => {
+    onMounted( async () => {
         dt = table.value.dt;
-        // console.log(table);
-        // console.log(tableAdd);
+        console.log('mount');
 
-        // dtAdd = tableAdd.value.dtAdd;
 
         modals = new Modal(document.querySelector('#modalComponentId'));
         document.getElementById("modalComponentId").addEventListener('hidden.bs.modal', event => {
@@ -487,14 +491,18 @@
     });
 
     onBeforeMount(async () => {
+        console.log('before mount');
         let injectSess = inject('store');
 
-        await api.get('api/get_category_of_user', {params: {access: injectSess.access}} ).then((result) => {
-            cutOffOptions.value = result.data.uAccess;
-            // console.log(result.data.uAccess);
-        }).catch((err) => {
-            
-        });
+        await setTimeout( async () => {
+            await api.get('api/get_category_of_user', {params: {access: injectSess.access}} ).then((result) => {
+                cutOffOptions.value = result.data.uAccess;
+                // console.log(result.data.uAccess);
+            }).catch((err) => {
+                
+            });
+        }, 200);
+      
     });
 
     const loadDataEPRPO = async (date) => {

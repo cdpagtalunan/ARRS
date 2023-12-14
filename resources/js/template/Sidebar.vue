@@ -38,6 +38,13 @@
                         </router-link>
                     </li>
 
+                    <!-- <li class="nav-item has-treeview">
+                        <router-link :to="{ name: 'UserRequest' }" class="nav-link">
+                            <icons icon="fas fa-clipboard-list" class="nav-icon"></icons>
+                            <p>Request List</p>
+                        </router-link>
+                    </li> -->
+
                     <li class="nav-header font-weight-bold" style="font-size: 1rem">Admin</li>
                     
                     <!-- <div class="nav-item has-treeview" id="ppc-id">
