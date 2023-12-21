@@ -23,7 +23,8 @@
                                         </select>
                                     </div>
                                 </div>
-                                <div class="col-3 d-flex flex-row justify-content-between align-items-center">
+                                <!-- <div class="col-3 d-flex flex-row justify-content-between align-items-center"> -->
+                                <div class="col-3">
                                     <!-- <button type="button" class="btn btn-sm btn-info" @click="loadDataEPRPO(1)">Load 1st cutoff</button> -->
                                     <!-- <button type="button" class="btn btn-sm btn-info" @click="loadDataEPRPO(2)">Load 2nd cutoff</button> -->
 
@@ -31,7 +32,7 @@
                                     <!-- <router-link class="btn btn-info btn-sm" :to="{ name: 'UserRequest' }">
                                         <p>Request List</p>
                                     </router-link>   -->
-                                    <router-link :to="{ name: 'UserRequest' }">
+                                    <router-link :to="{ name: 'UserRequest' }" class="float-end">
                                         <button class="btn btn-primary btn-sm"><icons icon="fas fa-clipboard-list"></icons> See Request List</button>
                                     </router-link>   
                                 </div>
@@ -71,7 +72,7 @@
             </div>
         </div>
     </section>
-    <Modal :title="modalData.title" :backdrop="modalData.backdrop" :modal-size="modalData.size" :style-size="modalData.styleSize">
+    <Modal :title="modalData.title" :backdrop="modalData.backdrop" :modal-size="modalData.size" :style-size="modalData.styleSize" style="overflow: auto;">
         <!-- 
             * BODY
         -->

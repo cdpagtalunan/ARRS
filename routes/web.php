@@ -32,6 +32,7 @@ Route::get('check_user', function (Request $request) {
     }
 });
 
+
 Route::middleware('CheckSessionExist')->group(function(){
 
     /*

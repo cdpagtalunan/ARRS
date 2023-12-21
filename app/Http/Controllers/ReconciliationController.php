@@ -2,10 +2,12 @@
 
 namespace App\Http\Controllers;
 
+use Mail;
 use Helpers;;
 use DataTables;
 use Carbon\Carbon;
 use App\Models\CutOff;
+use App\Models\UserAccess;
 use App\Models\ReconRequest;
 use App\Models\UserCategory;
 use Illuminate\Http\Request;
@@ -13,6 +15,7 @@ use App\Models\Reconciliation;
 use App\Models\ReconciliationDate;
 use Illuminate\Support\Facades\DB;
 use App\Models\ReconRequestRemarks;
+
 use App\Http\Requests\UserReconRequest;
 use App\Http\Requests\RemoveReconRequest;
 
@@ -543,6 +546,7 @@ class ReconciliationController extends Controller
     }
 
     public function request_for_addition(Request $request){
+        date_default_timezone_set('Asia/Manila');
 
         $exploded_cutoff = explode('to', $request->cutoff_date);
 
@@ -595,14 +599,16 @@ class ReconciliationController extends Controller
                         'po_remarks'         => $jsn_decoded_recon_req->po_remarks,
                         'hold_remarks'       => $jsn_decoded_recon_req->hold_remarks,
                         'recon_date_from'    => $req_from,
-                        'recon_date_to'      => $req_to
+                        'recon_date_to'      => $req_to,
+                        'created_by'         => $_SESSION['rapidx_user_id'],
+                        'created_at'         => NOW()
                     ]);
                     DB::commit();
                 }
-                return response()->json([
-                    'result' => 1,
-                    'msg' => 'Successfully Requested'
-                ]);
+                // return response()->json([
+                //     'result' => 1,
+                //     'msg' => 'Successfully Requested'
+                // ]);
             }
             else{
                 $control_ext = 1;
@@ -640,16 +646,56 @@ class ReconciliationController extends Controller
                         'po_remarks'         => $jsn_decoded_recon_req->po_remarks,
                         'hold_remarks'       => $jsn_decoded_recon_req->hold_remarks,
                         'recon_date_from'    => $req_from,
-                        'recon_date_to'      => $req_to
+                        'recon_date_to'      => $req_to,
+                        'created_by'         => $_SESSION['rapidx_user_id'],
+                        'created_at'         => NOW()
 
                     ]);
                     DB::commit();
                 }
-                return response()->json([
-                    'result' => 1,
-                    'msg' => 'Successfully Requested'
-                ]);
+                // return response()->json([
+                //     'result' => 1,
+                //     'msg' => 'Successfully Requested'
+                // ]);
             }
+
+            $data = array(
+                'type' => "Addition",
+                'control' => $control."-".$control_ext, // change to $control-$control_ext
+                'add_request_data' => $request->addEprpoData['data'],
+                'user_remarks' => $request->addEprpoData['userRemarks'],
+                'cutoff_date_req' => $request->cutoff_date,
+                'requestor' => $_SESSION['rapidx_name']
+            );
+    
+            
+            
+            $get_cat = UserCategory::where('classification', $request->addEprpoData['reconClassification']['classification'])
+            ->where('department', $request->addEprpoData['reconClassification']['department'])
+            ->whereNull('deleted_at')
+            ->first('id');
+    
+            $get_all_user = UserAccess::with([
+                'rapidx_user_details'
+            ])
+            ->whereNull('deleted_at')
+            ->whereRaw('FIND_IN_SET("1", category_id)')
+            ->get();
+    
+            $admin_email = collect($get_all_user)->where('user_type', 1)->pluck('rapidx_user_details.email')->flatten(0)->toArray();
+            $user_email = collect($get_all_user)->where('user_type', 2)->pluck('rapidx_user_details.email')->flatten(0)->toArray();
+            
+            Mail::send('mail.user_request', $data, function($message) use ($request, $admin_email, $user_email){
+                $message->to($admin_email);
+                $message->cc($user_email);
+                $message->bcc('cpagtalunan@pricon.ph');
+                $message->subject("Reconciliation Request For Approval <ARRS Generated Email Do Not Reply>");
+            });
+
+            return response()->json([
+                'result' => 1,
+                'msg' => 'Successfully Requested'
+            ]);
         }
         catch(Exemption $e){
             DB::rollback();

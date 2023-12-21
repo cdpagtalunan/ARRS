@@ -44,6 +44,8 @@ class CreateReconRequestsTable extends Migration
             $table->longText('hold_remarks')->nullable();
             $table->string('recon_date_from')->nullable();
             $table->string('recon_date_to')->nullable();
+            $table->string('created_by');
+            $table->string('updated_by')->nullable();
             $table->softDeletes();
             $table->timestamps();
         });
