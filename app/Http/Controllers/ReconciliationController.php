@@ -422,7 +422,44 @@ class ReconciliationController extends Controller
 
 
             $decrypt_id = Helpers::decryptId($request->reconId);
+
+            // * For Email
+            $recon_details = Reconciliation::where('id', $decrypt_id)
+            ->first();
+            $data = array(
+                'type' => "Removal",
+                'control' => $control."-".$control_ext, // change to $control-$control_ext
+                'remove_request_data' => $recon_details,
+                'user_remarks' => $request->reasons,
+                // 'cutoff_date_req' => $request->cutoff_date,
+                'requestor' => $_SESSION['rapidx_name']
+            );
+            // return $data['remove_request_data'];
+            $get_cat = UserCategory::where('classification', $request->extraParams['classification'])
+            ->where('department', $request->extraParams['department'])
+            ->whereNull('deleted_at')
+            ->first('id');
     
+            $get_all_user = UserAccess::with([
+                'rapidx_user_details'
+            ])
+            ->whereNull('deleted_at')
+            ->whereRaw('FIND_IN_SET("'.$get_cat->id.'", category_id)')
+            ->get();
+
+            $admin_email = collect($get_all_user)->where('user_type', 1)->pluck('rapidx_user_details.email')->flatten(0)->toArray();
+            $user_email = collect($get_all_user)->where('user_type', 2)->pluck('rapidx_user_details.email')->flatten(0)->toArray();
+            
+            // return $user_email;
+            
+            Mail::send('mail.user_request', $data, function($message) use ($request, $admin_email, $user_email){
+                $message->to($admin_email);
+                $message->cc($user_email);
+                $message->bcc('cpagtalunan@pricon.ph');
+                $message->subject("Reconciliation Request For Approval <ARRS Generated Email Do Not Reply>");
+            });
+            // * End Email
+            
             ReconRequest::insert([
                 'request_type'      => 1,
                 'recon_fkid'        => $decrypt_id,
@@ -659,6 +696,7 @@ class ReconciliationController extends Controller
                 // ]);
             }
 
+            // * Mail
             $data = array(
                 'type' => "Addition",
                 'control' => $control."-".$control_ext, // change to $control-$control_ext
@@ -667,9 +705,7 @@ class ReconciliationController extends Controller
                 'cutoff_date_req' => $request->cutoff_date,
                 'requestor' => $_SESSION['rapidx_name']
             );
-    
-            
-            
+
             $get_cat = UserCategory::where('classification', $request->addEprpoData['reconClassification']['classification'])
             ->where('department', $request->addEprpoData['reconClassification']['department'])
             ->whereNull('deleted_at')
@@ -679,7 +715,7 @@ class ReconciliationController extends Controller
                 'rapidx_user_details'
             ])
             ->whereNull('deleted_at')
-            ->whereRaw('FIND_IN_SET("1", category_id)')
+            ->whereRaw('FIND_IN_SET("'.$get_cat->id.'", category_id)')
             ->get();
     
             $admin_email = collect($get_all_user)->where('user_type', 1)->pluck('rapidx_user_details.email')->flatten(0)->toArray();
