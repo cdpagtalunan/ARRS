@@ -625,9 +625,9 @@
                 removeReconData.value.extraParams = dtParams;
                 api.post('api/request_remove_recon', removeReconData.value).then((result) => {
                     document.querySelector('#txtRemoveReasons').classList.remove('is-invalid');
-                    // modals.hide();
-                    // toastr.success(`${result.data.msg}`);
-                    // dt.ajax.reload();
+                    modals.hide();
+                    toastr.success(`${result.data.msg}`);
+                    dt.ajax.reload();
                     
                 }).catch((err) => {
                     // console.log(err.response.data);

@@ -3,11 +3,14 @@
 namespace App\Http\Controllers;
 
 use DataTables;
+use App\Models\UserAccess;
 use App\Models\ReconRequest;
 use App\Models\UserCategory;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use App\Models\ReconRequestRemarks;
+
+use Mail;
 
 class RequestController extends Controller
 {
@@ -125,16 +128,37 @@ class RequestController extends Controller
         DB::beginTransaction();
 
         try{
+            // * Get Email recipient
+            $exploded_data = explode('-', $request->dtParams['ctrl_number']);
+            $get_cat = UserCategory::where('classification', $exploded_data[1])
+            ->where('department', $exploded_data[0])
+            ->whereNull('deleted_at')
+            ->first('id');
+    
+            $get_all_user = UserAccess::with([
+                'rapidx_user_details'
+            ])
+            ->whereNull('deleted_at')
+            ->whereRaw('FIND_IN_SET("'.$get_cat->id.'", category_id)')
+            ->get();
+
+            $admin_email = collect($get_all_user)->where('user_type', 1)->pluck('rapidx_user_details.email')->flatten(0)->toArray();
+            $user_email = collect($get_all_user)->where('user_type', 2)->pluck('rapidx_user_details.email')->flatten(0)->toArray();
+            // * END
+
             if($request->adminDisRemarks == "" || $request->adminDisRemarks == null){ // approve
                 if($request->dtParams['type'] == 1){ // For Adding Function
+
                     ReconRequest::with([
                         'recon_remarks'
                     ])
                     ->where('ctrl_num', $request->dtParams['ctrl_number'])
                     ->where('ctrl_num_ext', $request->dtParams['ctrl_ext'])
+                    ->whereNull('deleted_at')
                     ->update([
                         'status' => 1
                     ]);
+
 
                     /*
                         * Query that will copy the table data of recon_requests to reconciliations
@@ -158,23 +182,64 @@ class RequestController extends Controller
                         FROM recon_requests WHERE ctrl_num = "'.$request->dtParams['ctrl_number'].'" 
                         AND ctrl_num_ext = "'.$request->dtParams['ctrl_ext'].'"
                     ');
-                     /*
+                    /*
                         ! END of QUERY
                     */
 
+                    $recon_data = ReconRequest::where('status', 1)
+                    ->where('ctrl_num', $request->dtParams['ctrl_number'])
+                    ->where('ctrl_num_ext', $request->dtParams['ctrl_ext'])
+                    ->get();
+
+                    // * For Email
+                    $data = array(
+                        'type' => "Approved",
+                        'function' => 'add',
+                        'control' => $request->dtParams['ctrl_number']."-".$request->dtParams['ctrl_ext'], // change to $control-$control_ext
+                        'recon_data' => $recon_data,
+                    //  'user_remarks' => $request->reasons,
+                        // 'cutoff_date_req' => $request->cutoff_date,
+                        'requestor' => $_SESSION['rapidx_name']
+                    );
+                    
+                    Mail::send('mail.admin_response', $data, function($message) use ($request, $admin_email, $user_email){
+                        $message->to($user_email);
+                        $message->cc($admin_email);
+                        $message->bcc('cpagtalunan@pricon.ph');
+                        $message->subject("Approved Reconciliation Request <ARRS Generated Email Do Not Reply>");
+                    });
+                    // * End Email
+
                     DB::commit();
-        
+
                     return response()->json([
                         'result'    => 1,
                         'msg'       => 'Successfully Approved'
                     ]);
                 }
                 else{ // For Removing Function
-
+                    
                     $recon_remove_req = ReconRequest::with(['recon_details'])
                     ->where('ctrl_num', $request->dtParams['ctrl_number'])
                     ->where('ctrl_num_ext', $request->dtParams['ctrl_ext'])
                     ->first();
+
+                    $data = array(
+                        'type' => "Approved",
+                        'function' => 'remove',
+                        'control' => $request->dtParams['ctrl_number']."-".$request->dtParams['ctrl_ext'], // change to $control-$control_ext
+                        'remove_request_data' => $recon_remove_req,
+                    //  'user_remarks' => $request->reasons,
+                        // 'cutoff_date_req' => $request->cutoff_date,
+                        'requestor' => $_SESSION['rapidx_name']
+                    );
+                    // return $data;
+                    Mail::send('mail.admin_response', $data, function($message) use ($request, $admin_email, $user_email){
+                        $message->to($user_email);
+                        $message->cc($admin_email);
+                        $message->bcc('cpagtalunan@pricon.ph');
+                        $message->subject("Approved Reconciliation Request <ARRS Generated Email Do Not Reply>");
+                    });
 
                     $recon_remove_req->status = 1;
                     $recon_remove_req->recon_details->deleted_at = NOW();
@@ -189,7 +254,7 @@ class RequestController extends Controller
               
             }
             else{ // disapprove
-
+                // return $request->all();
                 if($request->dtParams['type'] == 1){ // For Adding Function
                     ReconRequest::with([
                         'recon_remarks'
@@ -205,13 +270,41 @@ class RequestController extends Controller
                     ->update([
                         'approver_remarks' => $request->adminDisRemarks
                     ]);
+
+                    // * For Email
+                    $recon_data = ReconRequest::with([
+                        'recon_remarks'
+                    ])
+                    ->where('status', 2)
+                    ->where('ctrl_num', $request->dtParams['ctrl_number'])
+                    ->where('ctrl_num_ext', $request->dtParams['ctrl_ext'])
+                    ->get();
+
+                    $data = array(
+                        'type' => "Disapproved",
+                        'function' => 'add',
+                        'control' => $request->dtParams['ctrl_number']."-".$request->dtParams['ctrl_ext'], // change to $control-$control_ext
+                        'recon_data' => $recon_data,
+                        'user_remarks' => $request->adminDisRemarks,
+                        // 'cutoff_date_req' => $request->cutoff_date,
+                        'requestor' => $_SESSION['rapidx_name']
+                    );
+                    
+                    Mail::send('mail.admin_response', $data, function($message) use ($request, $admin_email, $user_email){
+                        $message->to($user_email);
+                        $message->cc($admin_email);
+                        $message->bcc('cpagtalunan@pricon.ph');
+                        $message->subject("Disapproved Reconciliation Request <ARRS Generated Email Do Not Reply>");
+                    });
+
+                    // * END
         
-                    DB::commit();
+                    // DB::commit();
         
-                    return response()->json([
-                        'result'    => 1,
-                        'msg'       => 'Successfully Disapproved'
-                    ]);
+                    // return response()->json([
+                    //     'result'    => 1,
+                    //     'msg'       => 'Successfully Disapproved'
+                    // ]);
                 }
                 else{
                     $recon_remove_req = ReconRequest::with([
@@ -225,14 +318,41 @@ class RequestController extends Controller
                     $recon_remove_req->status = 2;
                     $recon_remove_req->recon_details->recon_status = 0;
                     $recon_remove_req->push();
-                    DB::commit();
 
-                    return response()->json([
-                        'result'    => 2,
-                        'msg'       => 'Successfully Approved'
-                    ]);
+                    // * For Email
+                    $data = array(
+                        'type' => "Disapproved",
+                        'function' => 'remove',
+                        'control' => $request->dtParams['ctrl_number']."-".$request->dtParams['ctrl_ext'], // change to $control-$control_ext
+                        'remove_request_data' => $recon_remove_req,
+                        'user_remarks' => $request->adminDisRemarks,
+                        // 'cutoff_date_req' => $request->cutoff_date,
+                        'requestor' => $_SESSION['rapidx_name']
+                    );
+                    
+                    Mail::send('mail.admin_response', $data, function($message) use ($request, $admin_email, $user_email){
+                        $message->to($user_email);
+                        $message->cc($admin_email);
+                        $message->bcc('cpagtalunan@pricon.ph');
+                        $message->subject("Disapproved Reconciliation Request <ARRS Generated Email Do Not Reply>");
+                    });
+
+                    // * END
+                    // DB::commit();
+
+                    // return response()->json([
+                    //     'result'    => 2,
+                    //     'msg'       => 'Successfully Disapproved'
+                    // ]);
             
                 }
+
+                DB::commit();
+
+                return response()->json([
+                    'result'    => 2,
+                    'msg'       => 'Successfully Disapproved'
+                ]);
               
             }
         }catch(Exemption $e){

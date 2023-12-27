@@ -456,7 +456,7 @@ class ReconciliationController extends Controller
                 $message->to($admin_email);
                 $message->cc($user_email);
                 $message->bcc('cpagtalunan@pricon.ph');
-                $message->subject("Reconciliation Request For Approval <ARRS Generated Email Do Not Reply>");
+                $message->subject("Reconciliation Request For Removal <ARRS Generated Email Do Not Reply>");
             });
             // * End Email
             
@@ -464,7 +464,8 @@ class ReconciliationController extends Controller
                 'request_type'      => 1,
                 'recon_fkid'        => $decrypt_id,
                 'ctrl_num'          => $control,
-                'ctrl_num_ext'      => $control_ext
+                'ctrl_num_ext'      => $control_ext,
+                'created_by'        => $_SESSION['rapidx_user_id']
             ]);
 
             Reconciliation::where('id', $decrypt_id)
@@ -642,10 +643,10 @@ class ReconciliationController extends Controller
                     ]);
                     DB::commit();
                 }
-                // return response()->json([
-                //     'result' => 1,
-                //     'msg' => 'Successfully Requested'
-                // ]);
+                return response()->json([
+                    'result' => 1,
+                    'msg' => 'Successfully Requested'
+                ]);
             }
             else{
                 $control_ext = 1;
@@ -690,10 +691,10 @@ class ReconciliationController extends Controller
                     ]);
                     DB::commit();
                 }
-                // return response()->json([
-                //     'result' => 1,
-                //     'msg' => 'Successfully Requested'
-                // ]);
+                return response()->json([
+                    'result' => 1,
+                    'msg' => 'Successfully Requested'
+                ]);
             }
 
             // * Mail
