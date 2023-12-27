@@ -127,6 +127,7 @@ class ReconciliationController extends Controller
 
 
         for ($i=0; $i < count($collection); $i++) { 
+
             $po_number      = $this->getRefReqNum($collection[$i]->reference_po_number);
             $allocation     = $this->getAllocation($po_number);
             $po_date        = $this->getPoDate($collection[$i]->reference_po_number);
@@ -136,34 +137,44 @@ class ReconciliationController extends Controller
             $long_description = $collection[$i]->long_description == '' ? $collection[$i]->long_description1 : $collection[$i]->long_description;
 			$po_balance = ( $collection[$i]->po_balance - $collection[$i]->quantity_received );
 
-            Reconciliation::insert([
-                'po_date'           => $po_date,
-                'po_num'            => $collection[$i]->reference_po_number,
-                'pr_num'            => $po_number,
-                'prod_code'         => $collection[$i]->item_code,
-                'prod_name'         => $item_name,
-                'prod_desc'         => $long_description,
-                'supplier'          => $collection[$i]->supplier_name,
-                'currency'          => $collection[$i]->currency_code,
-                'uom'               => $collection[$i]->unit_of_measure_code,
-                'unit_price'        => $collection[$i]->unit_price,
-                'received_qty'      => $collection[$i]->quantity_received,
-                'po_balance'        => $po_balance,
-                // 'pic'               => 
-                'received_date'     => $collection[$i]->received_date,
-                // 'delivery_date'     => $collection[$i]->item_code,
-                'delivery_date'     => $collection[$i]->actual_delivery_date,
-                'received_by'       => $received_by,
-                'invoice_no'        => $collection[$i]->other_reference,
-                'rcv_no'            => $collection[$i]->receiving_number,
-                'classification'    => $collection[$i]->classification_code,
-                'allocation'        => $allocation,
-                'po_remarks'        => $collection[$i]->po_remarks,
-                'hold_remarks'      => $collection[$i]->hold_remarks,
+            if(
+                !Reconciliation::where('po_num',$collection[$i]->reference_po_number)
+                ->where('pr_num', $po_number)
+                ->where('prod_code', $collection[$i]->item_code)
+                ->where('rcv_no', $collection[$i]->receiving_number)
+                ->exists()
+            ){
+                Reconciliation::insert([
+                    'po_date'           => $po_date,
+                    'po_num'            => $collection[$i]->reference_po_number,
+                    'pr_num'            => $po_number,
+                    'prod_code'         => $collection[$i]->item_code,
+                    'prod_name'         => $item_name,
+                    'prod_desc'         => $long_description,
+                    'supplier'          => $collection[$i]->supplier_name,
+                    'currency'          => $collection[$i]->currency_code,
+                    'uom'               => $collection[$i]->unit_of_measure_code,
+                    'unit_price'        => $collection[$i]->unit_price,
+                    'received_qty'      => $collection[$i]->quantity_received,
+                    'po_balance'        => $po_balance,
+                    // 'pic'               => 
+                    'received_date'     => $collection[$i]->received_date,
+                    // 'delivery_date'     => $collection[$i]->item_code,
+                    'delivery_date'     => $collection[$i]->actual_delivery_date,
+                    'received_by'       => $received_by,
+                    'invoice_no'        => $collection[$i]->other_reference,
+                    'rcv_no'            => $collection[$i]->receiving_number,
+                    'classification'    => $collection[$i]->classification_code,
+                    'allocation'        => $allocation,
+                    'po_remarks'        => $collection[$i]->po_remarks,
+                    'hold_remarks'      => $collection[$i]->hold_remarks,
+    
+                    'recon_date_from'   => $date_from,
+                    'recon_date_to'     => $date_to
+                ]);
+            }
 
-                'recon_date_from'   => $date_from,
-                'recon_date_to'     => $date_to
-            ]);
+           
 
         }
         return response()->json([
@@ -600,7 +611,7 @@ class ReconciliationController extends Controller
 
         DB::beginTransaction();
         try{
-            if(isset($recon_control)){
+            if(isset($recon_control)){ // For Control Nummber
                 $control_ext = $recon_control->ctrl_num_ext + 1;
                 
                 ReconRequestRemarks::insert([
@@ -610,45 +621,59 @@ class ReconciliationController extends Controller
                 ]);
                 for ($i=0; $i < count($request->addEprpoData['data']); $i++) { 
                     $jsn_decoded_recon_req = json_decode($request->addEprpoData['data'][$i]);
-                    // return $jsn_decoded_recon_req;
-                    ReconRequest::insert([
-                        'ctrl_num'           => $control,
-                        'ctrl_num_ext'       => $control_ext,
-                        'po_date'            => $jsn_decoded_recon_req->po_date,
-                        'po_num'             => $jsn_decoded_recon_req->reference_po_number,
-                        'pr_num'             => $jsn_decoded_recon_req->po_number,
-                        'prod_code'          => $jsn_decoded_recon_req->item_code,
-                        'prod_name'          => $jsn_decoded_recon_req->item_name,
-                        'prod_desc'          => $jsn_decoded_recon_req->long_description,
-                        'supplier'           => $jsn_decoded_recon_req->supplier_name,
-                        'currency'           => $jsn_decoded_recon_req->currency_code,
-                        'uom'                => $jsn_decoded_recon_req->unit_of_measure_code,
-                        'unit_price'         => $jsn_decoded_recon_req->unit_price,
-                        'received_qty'       => $jsn_decoded_recon_req->quantity_received,
-                        'po_balance'         => $jsn_decoded_recon_req->po_balance,
-                        'pic'                => $jsn_decoded_recon_req->item_code,
-                        'received_date'      => $jsn_decoded_recon_req->received_date,
-                        'delivery_date'      => $jsn_decoded_recon_req->actual_delivery_date,
-                        'received_by'        => $jsn_decoded_recon_req->received_by,
-                        'invoice_no'         => $jsn_decoded_recon_req->other_reference,
-                        'rcv_no'             => $jsn_decoded_recon_req->receiving_number,
-                        'classification'     => $jsn_decoded_recon_req->classification_code,
-                        'allocation'         => $jsn_decoded_recon_req->allocation,
-                        'po_remarks'         => $jsn_decoded_recon_req->po_remarks,
-                        'hold_remarks'       => $jsn_decoded_recon_req->hold_remarks,
-                        'recon_date_from'    => $req_from,
-                        'recon_date_to'      => $req_to,
-                        'created_by'         => $_SESSION['rapidx_user_id'],
-                        'created_at'         => NOW()
-                    ]);
-                    DB::commit();
+                    
+                    if(
+                        !Reconciliation::where('po_num', $jsn_decoded_recon_req->reference_po_number)
+                        ->where('pr_num', $jsn_decoded_recon_req->po_number)
+                        ->where('prod_code', $jsn_decoded_recon_req->item_code)
+                        ->where('rcv_no', $jsn_decoded_recon_req->receiving_number)
+                        ->exists()
+                    ){
+                        ReconRequest::insert([
+                            'ctrl_num'           => $control,
+                            'ctrl_num_ext'       => $control_ext,
+                            'po_date'            => $jsn_decoded_recon_req->po_date,
+                            'po_num'             => $jsn_decoded_recon_req->reference_po_number,
+                            'pr_num'             => $jsn_decoded_recon_req->po_number,
+                            'prod_code'          => $jsn_decoded_recon_req->item_code,
+                            'prod_name'          => $jsn_decoded_recon_req->item_name,
+                            'prod_desc'          => $jsn_decoded_recon_req->long_description,
+                            'supplier'           => $jsn_decoded_recon_req->supplier_name,
+                            'currency'           => $jsn_decoded_recon_req->currency_code,
+                            'uom'                => $jsn_decoded_recon_req->unit_of_measure_code,
+                            'unit_price'         => $jsn_decoded_recon_req->unit_price,
+                            'received_qty'       => $jsn_decoded_recon_req->quantity_received,
+                            'po_balance'         => $jsn_decoded_recon_req->po_balance,
+                            'pic'                => $jsn_decoded_recon_req->item_code,
+                            'received_date'      => $jsn_decoded_recon_req->received_date,
+                            'delivery_date'      => $jsn_decoded_recon_req->actual_delivery_date,
+                            'received_by'        => $jsn_decoded_recon_req->received_by,
+                            'invoice_no'         => $jsn_decoded_recon_req->other_reference,
+                            'rcv_no'             => $jsn_decoded_recon_req->receiving_number,
+                            'classification'     => $jsn_decoded_recon_req->classification_code,
+                            'allocation'         => $jsn_decoded_recon_req->allocation,
+                            'po_remarks'         => $jsn_decoded_recon_req->po_remarks,
+                            'hold_remarks'       => $jsn_decoded_recon_req->hold_remarks,
+                            'recon_date_from'    => $req_from,
+                            'recon_date_to'      => $req_to,
+                            'created_by'         => $_SESSION['rapidx_user_id'],
+                            'created_at'         => NOW()
+                        ]);
+                    }
+                    else{
+                        return response()->json([
+                            'msg' => 'Error data has duplicate'
+                        ], 409);
+                    }
                 }
+                DB::commit();
+
                 return response()->json([
                     'result' => 1,
                     'msg' => 'Successfully Requested'
                 ]);
             }
-            else{
+            else{ // For Control Nummber (START TO 1)
                 $control_ext = 1;
                 ReconRequestRemarks::insert([
                     'recon_request_ctrl_num' => $control,
@@ -657,40 +682,55 @@ class ReconciliationController extends Controller
                 ]);
                 for ($i=0; $i < count($request->addEprpoData['data']); $i++) { 
                     $jsn_decoded_recon_req = json_decode( $request->addEprpoData['data'][$i]);
-                    // return $jsn_decoded_recon_req;
-                    ReconRequest::insert([
-                        'ctrl_num'           => $control,
-                        'ctrl_num_ext'       => $control_ext,
-                        'po_date'            => $jsn_decoded_recon_req->po_date,
-                        'po_num'             => $jsn_decoded_recon_req->reference_po_number,
-                        'pr_num'             => $jsn_decoded_recon_req->po_number,
-                        'prod_code'          => $jsn_decoded_recon_req->item_code,
-                        'prod_name'          => $jsn_decoded_recon_req->item_name,
-                        'prod_desc'          => $jsn_decoded_recon_req->long_description,
-                        'supplier'           => $jsn_decoded_recon_req->supplier_name,
-                        'currency'           => $jsn_decoded_recon_req->currency_code,
-                        'uom'                => $jsn_decoded_recon_req->unit_of_measure_code,
-                        'unit_price'         => $jsn_decoded_recon_req->unit_price,
-                        'received_qty'       => $jsn_decoded_recon_req->quantity_received,
-                        'po_balance'         => $jsn_decoded_recon_req->po_balance,
-                        'pic'                => $jsn_decoded_recon_req->item_code,
-                        'received_date'      => $jsn_decoded_recon_req->received_date,
-                        'delivery_date'      => $jsn_decoded_recon_req->actual_delivery_date,
-                        'received_by'        => $jsn_decoded_recon_req->received_by,
-                        'invoice_no'         => $jsn_decoded_recon_req->other_reference,
-                        'rcv_no'             => $jsn_decoded_recon_req->receiving_number,
-                        'classification'     => $jsn_decoded_recon_req->classification_code,
-                        'allocation'         => $jsn_decoded_recon_req->allocation,
-                        'po_remarks'         => $jsn_decoded_recon_req->po_remarks,
-                        'hold_remarks'       => $jsn_decoded_recon_req->hold_remarks,
-                        'recon_date_from'    => $req_from,
-                        'recon_date_to'      => $req_to,
-                        'created_by'         => $_SESSION['rapidx_user_id'],
-                        'created_at'         => NOW()
 
-                    ]);
-                    DB::commit();
+                    if(
+                        !Reconciliation::where('po_num', $jsn_decoded_recon_req->reference_po_number)
+                        ->where('pr_num', $jsn_decoded_recon_req->po_number)
+                        ->where('prod_code', $jsn_decoded_recon_req->item_code)
+                        ->where('rcv_no', $jsn_decoded_recon_req->receiving_number)
+                        ->exists()
+                    ){
+                        ReconRequest::insert([
+                            'ctrl_num'           => $control,
+                            'ctrl_num_ext'       => $control_ext,
+                            'po_date'            => $jsn_decoded_recon_req->po_date,
+                            'po_num'             => $jsn_decoded_recon_req->reference_po_number,
+                            'pr_num'             => $jsn_decoded_recon_req->po_number,
+                            'prod_code'          => $jsn_decoded_recon_req->item_code,
+                            'prod_name'          => $jsn_decoded_recon_req->item_name,
+                            'prod_desc'          => $jsn_decoded_recon_req->long_description,
+                            'supplier'           => $jsn_decoded_recon_req->supplier_name,
+                            'currency'           => $jsn_decoded_recon_req->currency_code,
+                            'uom'                => $jsn_decoded_recon_req->unit_of_measure_code,
+                            'unit_price'         => $jsn_decoded_recon_req->unit_price,
+                            'received_qty'       => $jsn_decoded_recon_req->quantity_received,
+                            'po_balance'         => $jsn_decoded_recon_req->po_balance,
+                            'pic'                => $jsn_decoded_recon_req->item_code,
+                            'received_date'      => $jsn_decoded_recon_req->received_date,
+                            'delivery_date'      => $jsn_decoded_recon_req->actual_delivery_date,
+                            'received_by'        => $jsn_decoded_recon_req->received_by,
+                            'invoice_no'         => $jsn_decoded_recon_req->other_reference,
+                            'rcv_no'             => $jsn_decoded_recon_req->receiving_number,
+                            'classification'     => $jsn_decoded_recon_req->classification_code,
+                            'allocation'         => $jsn_decoded_recon_req->allocation,
+                            'po_remarks'         => $jsn_decoded_recon_req->po_remarks,
+                            'hold_remarks'       => $jsn_decoded_recon_req->hold_remarks,
+                            'recon_date_from'    => $req_from,
+                            'recon_date_to'      => $req_to,
+                            'created_by'         => $_SESSION['rapidx_user_id'],
+                            'created_at'         => NOW()
+
+                        ]);
+                    }
+                    else{
+                        return response()->json([
+                            'msg' => 'Error data has duplicate'
+                        ], 409);
+                    }
+
                 }
+                DB::commit();
+
                 return response()->json([
                     'result' => 1,
                     'msg' => 'Successfully Requested'

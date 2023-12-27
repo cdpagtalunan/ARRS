@@ -397,8 +397,9 @@ class RequestController extends Controller
         ->whereIn('status', $request->param)
         ->whereIn('ctrl_num', $category_access)
         ->whereNull('deleted_at')
-        ->orderBy('status', 'asc')
-        ->get();
+        // ->orderBy('status', 'asc')
+        ->distinct()
+        ->get(['ctrl_num','ctrl_num_ext','status', 'request_type','po_num','recon_fkid']);
 
         return DataTables::of($requests)
         ->addColumn('action', function($requests){

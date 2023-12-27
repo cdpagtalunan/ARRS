@@ -72,7 +72,6 @@ use App\Http\Controllers\ReconciliationController;
         //^ USER REQUEST ROUTE
         Route::get('get_request', [RequestController::class, 'get_request']);
 
-
         //^ MAILING ROUTE
         Route::get('send_email', [EmailController::class, 'send_email']);
 

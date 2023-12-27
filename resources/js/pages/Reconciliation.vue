@@ -25,8 +25,8 @@
                                 </div>
                                 <!-- <div class="col-3 d-flex flex-row justify-content-between align-items-center"> -->
                                 <div class="col-3">
-                                    <!-- <button type="button" class="btn btn-sm btn-info" @click="loadDataEPRPO(1)">Load 1st cutoff</button> -->
-                                    <!-- <button type="button" class="btn btn-sm btn-info" @click="loadDataEPRPO(2)">Load 2nd cutoff</button> -->
+                                    <button type="button" class="btn btn-sm btn-info" @click="loadDataEPRPO(1)">Load 1st cutoff</button>
+                                    <button type="button" class="btn btn-sm btn-info" @click="loadDataEPRPO(2)">Load 2nd cutoff</button>
 
                                     <strong>Status: {{ catStatus }}</strong>
                                     <!-- <router-link class="btn btn-info btn-sm" :to="{ name: 'UserRequest' }">
@@ -50,6 +50,7 @@
                                         <button type="button" class="btn btn-primary float-end" @click="btnAddRecon(dtParams)"><icons icon="fas fa-plus"></icons> Add Recon</button>
                                         <br>
                                         <br>
+                                        
                                         <DataTable
                                             class="table table-sm table-bordered table-hover wrap display"
                                             :columns="columns"
@@ -700,7 +701,7 @@
                             toastr.success(`${res.msg}`);
                             modals.hide();
                         }).catch((err) => {
-                            toastr.error(`something went wrong!`);
+                            toastr.error(`${err.response.data.msg}`);
                         });
                     }
                 }
