@@ -25,9 +25,11 @@
                                 </div>
                                 <!-- <div class="col-3 d-flex flex-row justify-content-between align-items-center"> -->
                                 <div class="col-3">
-                                    <button type="button" class="btn btn-sm btn-info" @click="loadDataEPRPO(1)">Load 1st cutoff</button>
-                                    <button type="button" class="btn btn-sm btn-info" @click="loadDataEPRPO(2)">Load 2nd cutoff</button>
+                                    <button @click="testExport()">test</button>
+                                    <!-- <button type="button" class="btn btn-sm btn-info" @click="loadDataEPRPO(1)">Load 1st cutoff</button> -->
+                                    <!-- <button type="button" class="btn btn-sm btn-info" @click="loadDataEPRPO(2)">Load 2nd cutoff</button> -->
 
+                                    
                                     <strong>Status: {{ catStatus }}</strong>
                                     <!-- <router-link class="btn btn-info btn-sm" :to="{ name: 'UserRequest' }">
                                         <p>Request List</p>
@@ -717,6 +719,11 @@
         }).catch((err) => {
             
         });
+    }
+    
+    const testExport = () => {
+        window.open(`export`, '_blank');
+        
     }
     
 </script>

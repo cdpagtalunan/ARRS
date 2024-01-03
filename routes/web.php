@@ -5,6 +5,7 @@ use Illuminate\Support\Facades\Route;
 
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\CommonController;
+use App\Http\Controllers\ExportController;
 
 /*
 |--------------------------------------------------------------------------
@@ -32,7 +33,7 @@ Route::get('check_user', function (Request $request) {
     }
 });
 
-
+Route::get('export', [ExportController::class, 'export']);
 Route::middleware('CheckSessionExist')->group(function(){
 
     /*
