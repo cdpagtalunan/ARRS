@@ -77,7 +77,6 @@ toastr.options = {
 
 import VueMultiselect from 'vue-multiselect'
 
-
 createApp(AppTemplate)
 .component('Button', Button)
 .component('DataTable', DataTable)

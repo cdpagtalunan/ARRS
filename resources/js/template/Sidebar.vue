@@ -64,13 +64,13 @@
                     </li>
                     <li class="nav-header font-weight-bold" style="font-size: 1rem">Configuration</li>
 
-                    <li class="nav-item">
+                    <!-- <li class="nav-item">
                         <router-link :to="{ name: 'SettingsCutoff' }" class="nav-link">
 
                             <icons icon="fas fa-cog" class="nav-icon"></icons>
                             Cut-off
                         </router-link>
-                    </li>
+                    </li> -->
                     <li class="nav-item">
                         <router-link :to="{ name: 'SettingsCategory' }" class="nav-link">
 

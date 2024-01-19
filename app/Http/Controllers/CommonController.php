@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use Helpers;
 use App\Models\UserAccess;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -30,7 +31,9 @@ class CommonController extends Controller
                     array_push($uAccessArray, $exploded_category[$i]);
                 }
 
-                return response()->json(['uAccess' => $uAccessArray, 'uName' => $_SESSION['rapidx_name'], 'appid' => $user_system_access_check->id ]);
+                $encrypt_id = Helpers::encryptId($user_system_access_check->id);
+
+                return response()->json(['uAccess' => $uAccessArray, 'uName' => $_SESSION['rapidx_name'], 'appid' => $encrypt_id ]);
             }
             else{
                 return response()->json(['msg' => 'User Dont Have Access '], 401);

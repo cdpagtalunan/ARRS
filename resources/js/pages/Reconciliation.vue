@@ -13,19 +13,19 @@
                     <Card :card-body="true" :card-header="true">
                         <template #header>
                             <div class="row justify-content-between">
-                                <div class="col-4">
+                                <div class="col-sm-4">
                                     <div class="input-group">
                                         <div class="input-group-prepend" width="50px">
                                             <span class="input-group-text w-100" id="basic-addon1" style="background-color: #3154b6; color: white;">Select Cut-off</span>
                                         </div>
-                                        <select class="form-control" v-model="cutoffSelect.selected" @change="()=>{ dt.ajax.reload() }">
+                                        <select class="form-control w-25" v-model="cutoffSelect.selected" @change="()=>{ dt.ajax.reload() }">
                                             <option v-for="cutOffSelOption in cutoffSelect.option">{{ cutOffSelOption }}</option>
                                         </select>
+                                        <button class="btn btn-secondary" type="button" id="button-addon2" @click="reconExport()"><icons icon="fas fa-file-excel"></icons></button>
                                     </div>
                                 </div>
                                 <!-- <div class="col-3 d-flex flex-row justify-content-between align-items-center"> -->
-                                <div class="col-3">
-                                    <button @click="testExport()">test</button>
+                                <div class="col-sm-3">
                                     <!-- <button type="button" class="btn btn-sm btn-info" @click="loadDataEPRPO(1)">Load 1st cutoff</button> -->
                                     <!-- <button type="button" class="btn btn-sm btn-info" @click="loadDataEPRPO(2)">Load 2nd cutoff</button> -->
 
@@ -42,7 +42,7 @@
                         </template>
                         <template #body>
                             <ul class="nav nav-tabs">
-                                <li class="nav-item" v-for="cutOffOption in cutOffOptions" :key="cutOffOption.id">
+                                <li class="nav-item" v-for="cutOffOption in userAccesses" :key="cutOffOption.id">
                                     <a class="nav-link" data-bs-toggle="tab" href="#reconDataTable" role="tab" aria-selected="true" @click="loadDataTable(cutOffOption.classification,cutOffOption.department)">{{ `${cutOffOption.classification}-${cutOffOption.department}` }}</a>
                                 </li>
                             </ul>
@@ -304,7 +304,7 @@
     import DataTablesCore from 'datatables.net-bs5';
     DataTable.use(DataTablesCore);
 
-    const cutOffOptions = ref();
+    const userAccesses = ref();
     const cutoffSelect = reactive({
         option: [],
         selected: ""
@@ -450,6 +450,7 @@
     };
     let dt;
     let dtAdd;
+    let injectSess;
     const table = ref();
     const tableAdd = ref();
     const dtParams = reactive({
@@ -496,11 +497,11 @@
 
     onBeforeMount(async () => {
         console.log('before mount');
-        let injectSess = inject('store');
+         injectSess = inject('store');
 
         await setTimeout( async () => {
             await api.get('api/get_category_of_user', {params: {access: injectSess.access}} ).then((result) => {
-                cutOffOptions.value = result.data.uAccess;
+                userAccesses.value = result.data.uAccess;
                 // console.log(result.data.uAccess);
             }).catch((err) => {
                 
@@ -509,13 +510,13 @@
       
     });
 
-    const loadDataEPRPO = async (date) => {
-        await api.get('api/get_eprpo_data', { params: {cutoff:date} }).then((result) => {
+    // const loadDataEPRPO = async (date) => {
+    //     await api.get('api/get_eprpo_data', { params: {cutoff:date} }).then((result) => {
             
-        }).catch((err) => {
+    //     }).catch((err) => {
             
-        });
-    }
+    //     });
+    // }
     const loadDataTable = async (classification, department) => {
 
         dtParams.classification = classification;
@@ -721,8 +722,15 @@
         });
     }
     
-    const testExport = () => {
-        window.open(`export`, '_blank');
+    const reconExport = () => {
+
+        if(cutoffSelect.selected == undefined){
+            toastr.error('Please Select Cutoff');
+        }
+        else{
+            window.open(`export/${injectSess.appId}/${cutoffSelect.selected}/${injectSess.access}`, '_blank');
+        }
+
         
     }
     

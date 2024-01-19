@@ -15,6 +15,9 @@ import ApprovalRequest from '../pages/Admin/ApprovalRequest.vue';
 // ^ Interceptors Page
 import Unauthorized from '../pages/Interceptors/Unauthorized.vue';
 
+// ^ Mailer Page
+import Mailer from '../pages/Mailer.vue';
+
 import api from '../axios';
 
 const isLoggedIn = async () => { // * TO VALIDATE IF SESSION STILL EXIST
@@ -102,6 +105,17 @@ const routes = [
                 name: 'Unauthorized',
                 component: Unauthorized
             },
+        ]
+    },
+    {
+        path: '/ARRS/mailer/',
+        component: '',
+        children:  [
+            {
+                path: 'mail',
+                name: 'Mailer',
+                component: Mailer
+            }
         ]
     },
 ];
