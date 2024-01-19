@@ -5,6 +5,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\EmailController;
+use App\Http\Controllers\CommonController;
 use App\Http\Controllers\ConfigController;
 use App\Http\Controllers\RequestController;
 use App\Http\Controllers\ReconciliationController;
@@ -74,6 +75,9 @@ use App\Http\Controllers\ReconciliationController;
 
         //^ MAILING ROUTE
         Route::get('send_email', [EmailController::class, 'send_email']);
+
+        // ^ DECRYPTING ID
+        Route::get('decrypt_id', [CommonController::class, 'decrypt_id']);
 
     });
         

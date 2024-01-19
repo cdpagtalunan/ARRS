@@ -7,6 +7,7 @@ use App\Models\UserAccess;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
+
 class CommonController extends Controller
 {
     public function check_access(Request $request){
@@ -42,5 +43,11 @@ class CommonController extends Controller
         
 
         }
+    }
+
+    public function decrypt_id(Request $request){
+
+        
+        return Helpers::decryptId($request->Id);
     }
 }

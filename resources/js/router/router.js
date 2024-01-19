@@ -18,6 +18,9 @@ import Unauthorized from '../pages/Interceptors/Unauthorized.vue';
 // ^ Mailer Page
 import Mailer from '../pages/Mailer.vue';
 
+
+import Decrypt from '../pages/Decrypt.vue';
+
 import api from '../axios';
 
 const isLoggedIn = async () => { // * TO VALIDATE IF SESSION STILL EXIST
@@ -104,6 +107,11 @@ const routes = [
                 path: 'unauthorized',
                 name: 'Unauthorized',
                 component: Unauthorized
+            },
+            {
+                path: 'decrypt',
+                name: 'Decrypt',
+                component: Decrypt
             },
         ]
     },
