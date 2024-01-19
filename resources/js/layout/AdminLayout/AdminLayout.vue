@@ -13,12 +13,11 @@
 </template>
 <script setup>
     
-    import { onBeforeMount, ref, provide } from 'vue';
+    import { onBeforeMount, ref, provide, onMounted } from 'vue';
     import Sidebar from '../../template/Sidebar.vue';
     import Header from '../../template/Header.vue';
     import Footer from '../../template/Footer.vue';
     import { useSessionStore } from '../../stores/useSessionStore.js'
-    
     const store = useSessionStore();
     provide('store', store);
 

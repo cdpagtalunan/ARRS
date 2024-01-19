@@ -44,25 +44,22 @@
                             <p>Request List</p>
                         </router-link>
                     </li> -->
-
-                    <li class="nav-header font-weight-bold" style="font-size: 1rem">Admin</li>
+                    <li class="nav-header font-weight-bold" :class="{ 'd-none': isAdmin }" style="font-size: 1rem">Admin</li>
                     
-                    <!-- <div class="nav-item has-treeview" id="ppc-id">
-                    </div> -->
                     <li class="nav-item  has-treeview">
-                        <router-link :to="{ name: 'UserManagement' }" class="nav-link">
+                        <router-link :to="{ name: 'UserManagement' }" class="nav-link" :class="{ 'd-none': isAdmin }">
                             <icons icon="fas fa-user" class="nav-icon"></icons>
                             User Management
                         </router-link>
                     </li>
 
                     <li class="nav-item  has-treeview">
-                        <router-link :to="{ name: 'ApprovalRequest' }" class="nav-link">
+                        <router-link :to="{ name: 'ApprovalRequest' }" class="nav-link" :class="{ 'd-none': isAdmin }">
                             <icons icon="fas fa-file-circle-check" class="nav-icon"></icons>
                             User Requests
                         </router-link>
                     </li>
-                    <li class="nav-header font-weight-bold" style="font-size: 1rem">Configuration</li>
+                    <li class="nav-header font-weight-bold" style="font-size: 1rem" :class="{ 'd-none': isAdmin }">Configuration</li>
 
                     <!-- <li class="nav-item">
                         <router-link :to="{ name: 'SettingsCutoff' }" class="nav-link">
@@ -72,12 +69,14 @@
                         </router-link>
                     </li> -->
                     <li class="nav-item">
-                        <router-link :to="{ name: 'SettingsCategory' }" class="nav-link">
+                        <router-link :to="{ name: 'SettingsCategory' }" class="nav-link" :class="{ 'd-none': isAdmin }">
 
                             <icons icon="fas fa-cog" class="nav-icon"></icons>
                             User Category
                         </router-link>
                     </li>
+                
+
                     
                 </ul>
             </nav>
@@ -88,6 +87,13 @@
 </template>
 
 <script setup>
-    import { ref } from 'vue';
-    // import { useAuthStore } from '../stores';
+    import { inject, ref } from 'vue';
+    const isAdmin = ref(false);
+
+    let session = inject('store')
+
+    if(session.type != 1){
+        isAdmin.value = true;
+    }
+
 </script>

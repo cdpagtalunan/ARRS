@@ -78,6 +78,7 @@ toastr.options = {
 import VueMultiselect from 'vue-multiselect'
 
 createApp(AppTemplate)
+.use(pinia)
 .component('Button', Button)
 .component('DataTable', DataTable)
 .component('Column', Column)
@@ -97,6 +98,6 @@ createApp(AppTemplate)
 .provide('Swal',Swal)
 .provide('Toast',Toast)
 .provide('toastr',toastr)
-.use(pinia)
 .use(router)
+// .use(VueSession)
 .mount('#app')

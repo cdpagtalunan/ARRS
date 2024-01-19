@@ -7,6 +7,7 @@ export const useSessionStore = defineStore("session", {
         name: null,
         appId: null,
         access: [],
+        type: null,
     }),
     getters: {
         
@@ -18,7 +19,7 @@ export const useSessionStore = defineStore("session", {
                 this.name = result.data.uName;
                 this.appId = result.data.appid;
                 this.access = result.data.uAccess;
-                
+                this.type = result.data.uType;
             }).catch((err) => {
                 
             });
