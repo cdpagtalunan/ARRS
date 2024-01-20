@@ -44,22 +44,22 @@
                             <p>Request List</p>
                         </router-link>
                     </li> -->
-                    <li class="nav-header font-weight-bold" :class="{ 'd-none': isAdmin }" style="font-size: 1rem">Admin</li>
+                    <li class="nav-header font-weight-bold"  style="font-size: 1rem" v-if="uType == 1">Admin</li>
                     
                     <li class="nav-item  has-treeview">
-                        <router-link :to="{ name: 'UserManagement' }" class="nav-link" :class="{ 'd-none': isAdmin }">
+                        <router-link :to="{ name: 'UserManagement' }" class="nav-link" v-if="uType == 1">
                             <icons icon="fas fa-user" class="nav-icon"></icons>
                             User Management
                         </router-link>
                     </li>
 
-                    <li class="nav-item  has-treeview">
-                        <router-link :to="{ name: 'ApprovalRequest' }" class="nav-link" :class="{ 'd-none': isAdmin }">
+                    <li class="nav-item  has-treeview" v-if="uType == 1">
+                        <router-link :to="{ name: 'ApprovalRequest' }" class="nav-link" >
                             <icons icon="fas fa-file-circle-check" class="nav-icon"></icons>
                             User Requests
                         </router-link>
                     </li>
-                    <li class="nav-header font-weight-bold" style="font-size: 1rem" :class="{ 'd-none': isAdmin }">Configuration</li>
+                    <li class="nav-header font-weight-bold" style="font-size: 1rem" v-if="uType == 1">Configuration</li>
 
                     <!-- <li class="nav-item">
                         <router-link :to="{ name: 'SettingsCutoff' }" class="nav-link">
@@ -69,13 +69,20 @@
                         </router-link>
                     </li> -->
                     <li class="nav-item">
-                        <router-link :to="{ name: 'SettingsCategory' }" class="nav-link" :class="{ 'd-none': isAdmin }">
+                        <router-link :to="{ name: 'SettingsCategory' }" class="nav-link" v-if="uType == 1">
 
                             <icons icon="fas fa-cog" class="nav-icon"></icons>
                             User Category
                         </router-link>
                     </li>
-                
+                    <li class="nav-header font-weight-bold" style="font-size: 1rem" v-if="uType == 1">Export</li>
+                    <li class="nav-item" v-if="uType == 1">
+                        <router-link :to="{ name: 'AdminExport' }" class="nav-link" >
+
+                            <icons icon="fas fa-cog" class="nav-icon"></icons>
+                            User Category
+                        </router-link>
+                    </li>
 
                     
                 </ul>
@@ -87,13 +94,9 @@
 </template>
 
 <script setup>
-    import { inject, ref } from 'vue';
-    const isAdmin = ref(false);
+import { onMounted, ref } from 'vue';
 
-    let session = inject('store')
-
-    if(session.type != 1){
-        isAdmin.value = true;
-    }
-
+const props = defineProps({
+    uType: {type: Number, default: 0}
+})
 </script>

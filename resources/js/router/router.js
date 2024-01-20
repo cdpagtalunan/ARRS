@@ -11,6 +11,7 @@ import CategorySettings from '../pages/Settings/CategorySettings.vue';
 // ^ Admin Pages
 import UserManagement from '../pages/Admin/UserManagement.vue';
 import ApprovalRequest from '../pages/Admin/ApprovalRequest.vue';
+import AdminExport from '../pages/Admin/AdminExportRecon.vue';
 
 // ^ Interceptors Page
 import Unauthorized from '../pages/Interceptors/Unauthorized.vue';
@@ -36,21 +37,16 @@ const isLoggedIn = async () => { // * TO VALIDATE IF SESSION STILL EXIST
 
 import { useSessionStore } from "../stores/index";
 const hasAccess =  () => { // * TO VALIDATE USER HAS ACCESS ON SYSTEM
-    const sessionStore = useSessionStore();
-    sessionStore.checkSession();
+    // const sessionStore = useSessionStore();
+    // sessionStore.checkSession();
 }
 
-const removeAll = () => {
-    const sessionStore = useSessionStore();
-    sessionStore.removeSession();
-
-}
 
 const routes = [
     {
         path: "/ARRS/",
         component: AdminLayout,
-        beforeEnter: hasAccess,
+        // beforeEnter: hasAccess,
         children: [
             {
                 path: '',
@@ -82,6 +78,12 @@ const routes = [
                 name: 'ApprovalRequest',
                 beforeEnter: isLoggedIn,
                 component: ApprovalRequest
+            },
+            {
+                path: 'admin_export',
+                name: 'AdminExport',
+                beforeEnter: isLoggedIn,
+                component: AdminExport
             },
             // SETTINGS
             {

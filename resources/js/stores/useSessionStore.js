@@ -8,10 +8,8 @@ export const useSessionStore = defineStore("session", {
         appId: null,
         access: [],
         type: null,
+        error: null
     }),
-    getters: {
-        
-    },
     actions: {
         async checkSession(){
             await api.get('check_access').then((result) => {
@@ -21,13 +19,18 @@ export const useSessionStore = defineStore("session", {
                 this.access = result.data.uAccess;
                 this.type = result.data.uType;
             }).catch((err) => {
-                
+                this.error = err;
             });
         },
         resetStore() {
             // console.log("useAuthStore: resetStore");
             this.$reset();
         },
+    },
+    getters: {
+        getType(){
+            return this.type;
+        }
     },
     persist: true,
 });

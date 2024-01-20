@@ -1,7 +1,7 @@
 <template>
     <div class="wrapper">
 
-        <Sidebar></Sidebar>
+        <Sidebar :uType="store.type"></Sidebar>
 
         <Header :username="store.name"></Header>
         <div class="content-wrapper" style="height: auto !important;">
@@ -21,22 +21,28 @@
     const store = useSessionStore();
     provide('store', store);
 
-    const beforeUnloadHandler = (event) => {
-        // Recommended
-        // * this will serve as alert before exiting the system
-        // event.preventDefault();
+    onMounted(() => {
 
-        // Included for legacy support, e.g. Chrome/Edge < 119
-        // event.returnValue = true;
-        // console.log('qwe');
-        store.resetStore();
-    };
-    if(store.name != ""){
+        const beforeUnloadHandler = (event) => {
+            // Recommended
+            // * this will serve as alert before exiting the system
+            // event.preventDefault();
 
-        window.addEventListener("beforeunload", beforeUnloadHandler);
-    }
-    else{
+            // Included for legacy support, e.g. Chrome/Edge < 119
+            // event.returnValue = true;
+            // console.log('qwe');
+            store.resetStore();
+        };
+        if(store.name != ""){
 
-        window.removeEventListener("beforeunload", beforeUnloadHandler);
-    }
+            window.addEventListener("beforeunload", beforeUnloadHandler);
+        }
+        else{
+
+            window.removeEventListener("beforeunload", beforeUnloadHandler);
+        }
+    })
+
+
+   
 </script>

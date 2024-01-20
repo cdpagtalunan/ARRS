@@ -7,7 +7,7 @@ import { createApp } from 'vue'
 import AppTemplate from './layout/index.vue';
 import router from './router/router';
 import 'admin-lte/dist/js/adminlte.min.js';
-import { pinia } from './stores/index';
+import { pinia,useSessionStore } from './stores/index';
 
 
 // * PRIME VUE
@@ -77,6 +77,7 @@ toastr.options = {
 
 import VueMultiselect from 'vue-multiselect'
 
+
 createApp(AppTemplate)
 .use(pinia)
 .component('Button', Button)
@@ -101,3 +102,8 @@ createApp(AppTemplate)
 .use(router)
 // .use(VueSession)
 .mount('#app')
+
+
+
+const userStore = useSessionStore()
+userStore.checkSession();
