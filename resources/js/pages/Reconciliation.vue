@@ -26,7 +26,7 @@
                                 </div>
                                 <!-- <div class="col-3 d-flex flex-row justify-content-between align-items-center"> -->
                                 <div class="col-sm-3">
-                                    <!-- <button type="button" class="btn btn-sm btn-info" @click="loadDataEPRPO(1)">Load 1st cutoff</button> -->
+                                    <button type="button" class="btn btn-sm btn-info" @click="loadDataEPRPO(1)">Load 1st cutoff</button>
                                     <!-- <button type="button" class="btn btn-sm btn-info" @click="loadDataEPRPO(2)">Load 2nd cutoff</button> -->
 
                                     
@@ -510,13 +510,13 @@
       
     });
 
-    // const loadDataEPRPO = async (date) => {
-    //     await api.get('api/get_eprpo_data', { params: {cutoff:date} }).then((result) => {
+    const loadDataEPRPO = async (date) => {
+        await api.get('api/get_eprpo_data', { params: {cutoff:date} }).then((result) => {
             
-    //     }).catch((err) => {
+        }).catch((err) => {
             
-    //     });
-    // }
+        });
+    }
     const loadDataTable = async (classification, department) => {
 
         dtParams.classification = classification;
@@ -728,7 +728,7 @@
             toastr.error('Please Select Cutoff');
         }
         else{
-            window.open(`export/${injectSess.appId}/${cutoffSelect.selected}/${injectSess.access}`, '_blank');
+            window.open(`api/export/${injectSess.appId}/${cutoffSelect.selected}/${injectSess.access}`, '_blank');
         }
 
         

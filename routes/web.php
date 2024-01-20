@@ -36,7 +36,6 @@ Route::get('check_user', function (Request $request) {
 Route::view('/mailer/mail','welcome')->name('mail');
 
 
-Route::get('export/{u_id}/{date_range}/{access}', [ExportController::class, 'export']);
 Route::middleware('CheckSessionExist')->group(function(){
 
     /*

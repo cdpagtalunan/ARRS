@@ -32,7 +32,7 @@
                     </li>
 
                     <li class="nav-item has-treeview">
-                        <router-link :to="{ name: 'Reconciliation' }" class="nav-link">
+                        <router-link :to="{ name: 'Reconciliation' }" class="nav-link" v-if="uType == 1">
                             <icons icon="fab fa-steam-symbol" class="nav-icon"></icons>
                             <p>Reconciliation</p>
                         </router-link>
@@ -79,7 +79,7 @@
                     <li class="nav-item" v-if="uType == 1">
                         <router-link :to="{ name: 'AdminExport' }" class="nav-link" >
 
-                            <icons icon="fas fa-cog" class="nav-icon"></icons>
+                            <icons icon="fas fa-file-excel" class="nav-icon"></icons>
                             User Category
                         </router-link>
                     </li>
