@@ -63,13 +63,16 @@ use App\Http\Controllers\ReconciliationController;
         Route::get('get_recon_for_add', [ReconciliationController::class, 'get_recon_for_add']);
         Route::post('request_for_addition', [ReconciliationController::class, 'request_for_addition']);
         Route::get('get_recon_dates', [ReconciliationController::class, 'get_recon_dates']);
+        Route::post('request_for_edit', [ReconciliationController::class, 'request_for_edit']);
 
         //^ ADMIN REQUEST ROUTE
         Route::get('get_add_request', [RequestController::class, 'get_add_request']);
         Route::get('get_remove_request', [RequestController::class, 'get_remove_request']);
         Route::get('view_request_details', [RequestController::class, 'view_request_details']);
         Route::post('response_request', [RequestController::class, 'response_request']);
-        Route::get('get_remove_recon_details', [RequestController::class, 'get_remove_recon_details']);
+        Route::get('get_requested_recon_details', [RequestController::class, 'get_requested_recon_details']);
+        Route::get('get_edit_request', [RequestController::class, 'get_edit_request']);
+        Route::post('update_request_data', [RequestController::class, 'update_request_data']);
 
         //^ USER REQUEST ROUTE
         Route::get('get_request', [RequestController::class, 'get_request']);

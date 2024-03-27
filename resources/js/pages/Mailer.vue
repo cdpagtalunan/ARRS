@@ -32,10 +32,10 @@
             date.value = moment().format('l');
             // day.value = moment().format('D');
 
-            if(timer.value === "8:30:00 AM" && moment().format('D') == '16'){ // FIRST RECON
+            if(timer.value === "9:47:30 AM" && moment().format('D') == '20'){ // FIRST RECON
                 loadDataEPRPO(1)
             }
-            else if(timer.value === "8:30:30 AM" && moment().format('D') == '26'){ // SECOND RECON
+            if(timer.value === "12:05:30 AM" && moment().format('D') == '26'){ // SECOND RECON
                 loadDataEPRPO(2)
             }
         }, 1000);
@@ -44,6 +44,7 @@
     const loadDataEPRPO = async (param) => {
         await api.get('api/get_eprpo_data', { params: {cutoff:param} }).then((result) => {
             console.log(`Data has been loaded ${date.value} ${timer.value} with parameter ${param}`);
+            console.log(result);
         }).catch((err) => {
             
         });

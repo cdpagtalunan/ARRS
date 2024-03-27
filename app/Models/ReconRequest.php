@@ -12,9 +12,10 @@ class ReconRequest extends Model
     protected $table = "recon_requests";
     protected $connection = "mysql";
     protected $fillable = ['status'];
+    protected $hidden = ['id'];
 
     public function recon_remarks(){
-        return $this->hasOne(ReconRequestRemarks::class,'recon_request_ctrl_num_ext', 'ctrl_num_ext');
+        return $this->hasOne(ReconRequestRemarks::class,'recon_request_id', 'id');
     }
 
     public function recon_details(){

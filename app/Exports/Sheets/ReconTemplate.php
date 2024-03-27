@@ -294,24 +294,33 @@ class ReconTemplate implements  FromView, WithTitle, WithEvents, ShouldAutoSize
                         $summary_supplier_first_range = $start_row;
                         for($y = 0; $y < count($recon['php']['recons']); $y++){
                             $amount = 0;
-                            $usd_recon = $recon['php']['recons'][$y];
-                            $event->sheet->setCellValue("A$start_row", $usd_recon->prod_name);
-                            $event->sheet->setCellValue("B$start_row", $usd_recon->prod_desc);
-                            $event->sheet->setCellValue("C$start_row", $usd_recon->invoice_no);
-                            $event->sheet->setCellValue("D$start_row", $usd_recon->delivery_date);
-                            $event->sheet->setCellValue("E$start_row", $usd_recon->received_qty);
-                            $event->sheet->setCellValue("F$start_row", $usd_recon->supplier);
-                            $event->sheet->setCellValue("G$start_row", $usd_recon->unit_price);
-                            $amount = $usd_recon->unit_price * $usd_recon->received_qty;
+                            $php_recon = $recon['php']['recons'][$y];
+                            $event->sheet->setCellValue("A$start_row", $php_recon->prod_name);
+                            $event->sheet->setCellValue("B$start_row", $php_recon->prod_desc);
+                            $event->sheet->setCellValue("C$start_row", $php_recon->invoice_no);
+                            $event->sheet->setCellValue("D$start_row", $php_recon->delivery_date);
+                            $event->sheet->setCellValue("E$start_row", $php_recon->received_qty);
+                            $event->sheet->setCellValue("F$start_row", $php_recon->supplier);
+                            $event->sheet->setCellValue("G$start_row", $php_recon->unit_price);
+                            $amount = $php_recon->unit_price * $php_recon->received_qty;
                             $event->sheet->setCellValue("H$start_row", round($amount, 2), DataType::TYPE_NUMERIC);
 
                             // * Reconciliation by end user
-                            $event->sheet->setCellValue("J$start_row", $usd_recon->recon_invoice_no);
-                            $event->sheet->setCellValue("K$start_row", $usd_recon->recon_received_qty);
-                            $event->sheet->setCellValue("L$start_row", $usd_recon->recon_amount);
-                            
+                            $event->sheet->setCellValue("J$start_row", $php_recon->recon_invoice_no);
+                            $event->sheet->setCellValue("K$start_row", $php_recon->recon_received_qty);
+                            $event->sheet->setCellValue("L$start_row", round($php_recon->recon_amount, 2) );
+
+                            if($amount == $php_recon->recon_amount){
+                                $event->sheet->setCellValue("M$start_row", "TRUE");
+                            }
+                            else{
+                                $event->sheet->setCellValue("M$start_row", "FALSE");
+                            }
+                            $event->sheet->getDelegate()->getStyle("M$start_row")->applyFromArray($bold);
 
                             $start_row++;
+
+
                         }
                         for($w = 0; $w < count($recon['php']['supplier']); $w++){
                             $php_supplier = $recon['php']['supplier'][$w];

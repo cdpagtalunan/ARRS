@@ -18,13 +18,16 @@
                                 <li class="nav-item">
                                     <a class="nav-link" data-bs-toggle="tab" href="#uRequestRemove" role="tab" aria-selected="true">Remove Request</a>
                                 </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" data-bs-toggle="tab" href="#uRequestEdit" role="tab" aria-selected="true">Edit Request</a>
+                                </li>
                             </ul>
                             <div class="tab-content">
                                 <div class="tab-pane fade show active" id="uRequestAdd" role="tabpanel" aria-labelledby="uRequestAdd-tab">
                                     <br>
                                     <DataTable
                                         class="table table-sm table-bordered table-hover wrap display "
-                                        :columns="columns"
+                                        :columns="addColumns"
                                         ajax="api/get_add_request"
                                         ref="table"
                                         :options="options"
@@ -37,6 +40,16 @@
                                         :columns="removeColumns"
                                         ajax="api/get_remove_request"
                                         ref="tableRemove"
+                                        :options="options"
+                                    />
+                                </div>
+                                <div class="tab-pane fade" id="uRequestEdit" role="tabpanel" aria-labelledby="uRequestEdit-tab">
+                                    <br>
+                                    <DataTable
+                                        class="table table-sm table-bordered table-hover wrap display "
+                                        :columns="editColumns"
+                                        ajax="api/get_edit_request"
+                                        ref="tableEdit"
                                         :options="options"
                                     />
                                 </div>
@@ -71,7 +84,7 @@
                         </template>
                     </Card>
                 </div>
-                <div class="col-9" v-else-if="dtParams.type == 2">  <!-- Remove Request Approval -->
+                <div class="col-9" v-else-if="dtParams.type == 2 || dtParams.type == 3">  <!-- Remove Request Approval -->
                     <Card :card-body="true" :card-header="true">
                         <template #header>
                             <h6></h6>
@@ -82,73 +95,73 @@
                                     <div class="row">
                                         <div class="col-4">
                                             <label for="">PO Date:</label>
-                                            <input type="text" class="form-control" v-model="removeReq.poDate"
+                                            <input type="text" class="form-control" v-model="reconDetailsById.poDate"
                                                 readonly>
                                         </div>
                                         <div class="col-4">
                                             <label for="">PO Number:</label>
-                                            <input type="text" class="form-control" v-model="removeReq.poNum"
+                                            <input type="text" class="form-control" v-model="reconDetailsById.poNum"
                                                 readonly>
                                         </div>
                                         <div class="col-2">
                                             <label for="">Delivery Date:</label>
-                                            <input type="text" class="form-control" v-model="removeReq.delDate"
+                                            <input type="text" class="form-control" v-model="reconDetailsById.delDate"
                                                 readonly>
                                         </div>
                                         <div class="col-2">
                                             <label for="">Received Date:</label>
-                                            <input type="text" class="form-control" v-model="removeReq.receiveDate"
+                                            <input type="text" class="form-control" v-model="reconDetailsById.receiveDate"
                                                 readonly>
                                         </div>
                                     </div>
                                     <div class="row">
                                         <div class="col-4">
                                             <label for="">PR Number:</label>
-                                            <input type="text" class="form-control" v-model="removeReq.prNum"
+                                            <input type="text" class="form-control" v-model="reconDetailsById.prNum"
                                                 readonly>
                                         </div>
                                         <div class="col-4">
                                             <label for="">Received Number:</label>
-                                            <input type="text" class="form-control" v-model="removeReq.receiveNum"
+                                            <input type="text" class="form-control" v-model="reconDetailsById.receiveNum"
                                                 readonly>
                                         </div>
                                         <div class="col-4">
                                             <label for="">Person In-charge:</label>
-                                            <input type="text" class="form-control" v-model="removeReq.pic" readonly>
+                                            <input type="text" class="form-control" v-model="reconDetailsById.pic" readonly>
                                         </div>
                                     </div>
                                     <div class="row">
                                         <div class="col-4">
                                             <label for="">Code:</label>
-                                            <input type="text" class="form-control" v-model="removeReq.code"
+                                            <input type="text" class="form-control" v-model="reconDetailsById.code"
                                                 readonly>
                                         </div>
                                         <div class="col-4">
                                             <label for="">Name:</label>
-                                            <input type="text" class="form-control" v-model="removeReq.name"
+                                            <input type="text" class="form-control" v-model="reconDetailsById.name"
                                                 readonly>
                                         </div>
                                         <div class="col-4">
                                             <label for="">Received By:</label>
-                                            <input type="text" class="form-control" v-model="removeReq.receiveBy" readonly>
+                                            <input type="text" class="form-control" v-model="reconDetailsById.receiveBy" readonly>
                                         </div>
                                     </div>
                                     <div class="row">
                                         <div class="col-4">
                                             <label for="">Supplier:</label>
                                             <!-- <input type="text" class="form-control" v-model="reconData.supplier" readonly> -->
-                                            <textarea class="form-control" v-model="removeReq.supplier"
+                                            <textarea class="form-control" v-model="reconDetailsById.supplier"
                                                 style="resize: none;" readonly></textarea>
                                         </div>
                                         <div class="col-4">
                                             <label for="">Description:</label>
                                             <!-- <input type="text" class="form-control" v-model="reconData.desc" readonly> -->
-                                            <textarea class="form-control" v-model="removeReq.desc"
+                                            <textarea class="form-control" v-model="reconDetailsById.desc"
                                                 style="resize: none;" readonly></textarea>
                                         </div>
                                         <div class="col-4">
                                             <label for="">Invoice No.:</label>
-                                            <textarea class="form-control" v-model="removeReq.invNo"
+                                            <textarea class="form-control" v-model="reconDetailsById.invNo"
                                                 style="resize: none;" readonly></textarea>
                                             <!-- <input type="text" class="form-control" v-model="reconData.invoiceNum" readonly> -->
                                         </div>
@@ -156,38 +169,38 @@
                                     <div class="row">
                                         <div class="col-4">
                                             <label for="">Unit Price:</label>
-                                            <input type="text" class="form-control" v-model="removeReq.price"
+                                            <input type="text" class="form-control" v-model="reconDetailsById.price"
                                                 readonly>
                                         </div>
                                         <div class="col-4">
                                             <label for="">Currency:</label>
-                                            <input type="text" class="form-control" v-model="removeReq.currency"
+                                            <input type="text" class="form-control" v-model="reconDetailsById.currency"
                                                 readonly>
                                         </div>
                                         <div class="col-4">
                                             <label for="">Classification Code:</label>
-                                            <input type="text" class="form-control" v-model="removeReq.class" readonly>
+                                            <input type="text" class="form-control" v-model="reconDetailsById.class" readonly>
                                         </div>
                                     </div>
                                     <div class="row">
                                         <div class="col-2">
                                             <label for="">Received Qty:</label>
-                                            <input type="text" class="form-control" v-model="removeReq.qty"
+                                            <input type="text" class="form-control" v-model="reconDetailsById.qty"
                                                 readonly>
                                         </div>
                                         <div class="col-2">
                                             <label for="">UOM:</label>
-                                            <input type="text" class="form-control" v-model="removeReq.uom"
+                                            <input type="text" class="form-control" v-model="reconDetailsById.uom"
                                                 readonly>
                                         </div>
                                         <div class="col-4">
                                             <label for="">PO Balance:</label>
-                                            <input type="text" class="form-control" v-model="removeReq.poBal"
+                                            <input type="text" class="form-control" v-model="reconDetailsById.poBal"
                                                 readonly>
                                         </div>
                                         <div class="col-4">
                                             <label for="">Allocation:</label>
-                                            <input type="text" class="form-control" v-model="removeReq.alloc" readonly>
+                                            <input type="text" class="form-control" v-model="reconDetailsById.alloc" readonly>
                                         </div>
                                     </div>
                                 </div>
@@ -210,7 +223,8 @@
         <template #footerButton>
             <div v-if="dtParams.status == 0">
                 <button class="btn btn-danger mr-1" @click="sendResponse(2)">Disapprove</button>
-                <button class="btn btn-success" @click="sendResponse(1)">Approve</button>
+                <button class="btn btn-success" @click="sendResponse(1)" v-if="dtParams.type == 2">Approve</button>
+                <button class="btn btn-success" @click="sendResponse(3)" v-if="dtParams.type == 3">Update</button>
             </div>
         </template>
     </Modal>
@@ -250,8 +264,10 @@
     let dt;
     let dtTableRemove;
     let dtTableRequest;
+    let dtTableEdit;
     const table = ref();
     const tableRemove = ref();
+    const tableEdit = ref();
     const tableRequestDetails = ref();
     const modals = ref();
     const modalsPrompt = ref();
@@ -259,7 +275,7 @@
     const adminDisRemarks = ref("");
     const Swal = inject('Swal');
     const toastr = inject('toastr');
-    const removeReq = ref({});
+    const reconDetailsById = ref({});
 
     const dtParams = reactive({
         'ctrl_number'       : 'null',
@@ -283,7 +299,7 @@
         function: 0,
     }
     const modalPromptData = reactive({...modalPromptInitialData});
-    const columns = [
+    const addColumns = [
         {
             data: 'action',
             title: 'Action',
@@ -330,30 +346,85 @@
                     dtParams.ctrl_ext = ctrlExt;
                     dtParams.status = status;
                     dtParams.type = 2;
-                    api.get('api/get_remove_recon_details', {params: {param: dtParams} }).then((result) => {
-                        let res = result.data;
-                        removeReq.value.poDate      = res.recon_details.po_date;
-                        removeReq.value.poNum       = res.recon_details.po_num;
-                        removeReq.value.delDate     = res.recon_details.delivery_date;
-                        removeReq.value.receiveDate = res.recon_details.received_date;
-                        removeReq.value.prNum       = res.recon_details.pr_num;
-                        removeReq.value.receiveNum  = res.recon_details.rcv_no;
-                        removeReq.value.pic         = res.recon_details.pic;
-                        removeReq.value.code        = res.recon_details.prod_code;
-                        removeReq.value.name        = res.recon_details.prod_name;
-                        removeReq.value.receiveBy   = res.recon_details.received_by;
-                        removeReq.value.supplier    = res.recon_details.supplier;
-                        removeReq.value.desc        = res.recon_details.prod_desc;
-                        removeReq.value.invNo       = res.recon_details.invoice_no;
-                        removeReq.value.price       = res.recon_details.unit_price;
-                        removeReq.value.currency    = res.recon_details.currency;
-                        removeReq.value.class       = res.recon_details.classification;
-                        removeReq.value.qty         = res.recon_details.received_qty;
-                        removeReq.value.uom         = res.recon_details.uom;
-                        removeReq.value.poBal       = res.recon_details.po_balance;
-                        removeReq.value.alloc       = res.recon_details.allocation;
+                    api.get('api/get_requested_recon_details', {params: {param: dtParams} }).then((result) => {
+                        let res = result.data.data;
+                        reconDetailsById.value.poDate      = res.recon_details.po_date;
+                        reconDetailsById.value.poNum       = res.recon_details.po_num;
+                        reconDetailsById.value.delDate     = res.recon_details.delivery_date;
+                        reconDetailsById.value.receiveDate = res.recon_details.received_date;
+                        reconDetailsById.value.prNum       = res.recon_details.pr_num;
+                        reconDetailsById.value.receiveNum  = res.recon_details.rcv_no;
+                        reconDetailsById.value.pic         = res.recon_details.pic;
+                        reconDetailsById.value.code        = res.recon_details.prod_code;
+                        reconDetailsById.value.name        = res.recon_details.prod_name;
+                        reconDetailsById.value.receiveBy   = res.recon_details.received_by;
+                        reconDetailsById.value.supplier    = res.recon_details.supplier;
+                        reconDetailsById.value.desc        = res.recon_details.prod_desc;
+                        reconDetailsById.value.invNo       = res.recon_details.invoice_no;
+                        reconDetailsById.value.price       = res.recon_details.unit_price;
+                        reconDetailsById.value.currency    = res.recon_details.currency;
+                        reconDetailsById.value.class       = res.recon_details.classification;
+                        reconDetailsById.value.qty         = res.recon_details.received_qty;
+                        reconDetailsById.value.uom         = res.recon_details.uom;
+                        reconDetailsById.value.poBal       = res.recon_details.po_balance;
+                        reconDetailsById.value.alloc       = res.recon_details.allocation;
 
-                        userRequestRemarks.value = res.recon_details.recon_remove_remarks;
+                        userRequestRemarks.value = res.recon_remarks.remarks;
+                    }).catch((err) => {
+                        
+                    });
+                    modalData.title = `User Request Details`;
+                    modalData.styleSize = 'max-width: 1750px !important; min-width: 1100px;';
+
+                    modals.value.show();
+                });
+            },
+        },
+        { data: 'status', title: 'Status' },
+        { data: 'control', title: 'Control Number' },
+        { data: 'recon_details.po_num', title: 'PO Number' }
+    ];
+    const editColumns = [
+        {
+            data: 'action',
+            title: 'Action',
+            orderable: false,
+            searchable: false,
+            createdCell(cell) {
+                cell.querySelector('.btnViewDetails').addEventListener('click', function(){
+                    let ctrlNo = this.getAttribute('data-ctrl');
+                    let ctrlExt = this.getAttribute('data-ctrlExt');
+                    let status = this.getAttribute('data-status');
+                    dtParams.ctrl_number = ctrlNo;
+                    dtParams.ctrl_ext = ctrlExt;
+                    dtParams.status = status;
+                    dtParams.type = 3;
+                    api.get('api/get_requested_recon_details', {params: {param: dtParams} }).then((result) => {
+                        let res = result.data.data;
+
+                        reconDetailsById.value.reqId          = result.data.reqId;
+                        reconDetailsById.value.poDate      = res.recon_details.po_date;
+                        reconDetailsById.value.poNum       = res.recon_details.po_num;
+                        reconDetailsById.value.delDate     = res.recon_details.delivery_date;
+                        reconDetailsById.value.receiveDate = res.recon_details.received_date;
+                        reconDetailsById.value.prNum       = res.recon_details.pr_num;
+                        reconDetailsById.value.receiveNum  = res.recon_details.rcv_no;
+                        reconDetailsById.value.pic         = res.recon_details.pic;
+                        reconDetailsById.value.code        = res.recon_details.prod_code;
+                        reconDetailsById.value.name        = res.recon_details.prod_name;
+                        reconDetailsById.value.receiveBy   = res.recon_details.received_by;
+                        reconDetailsById.value.supplier    = res.recon_details.supplier;
+                        reconDetailsById.value.desc        = res.recon_details.prod_desc;
+                        reconDetailsById.value.invNo       = res.recon_details.invoice_no;
+                        reconDetailsById.value.price       = res.recon_details.unit_price;
+                        reconDetailsById.value.currency    = res.recon_details.currency;
+                        reconDetailsById.value.class       = res.recon_details.classification;
+                        reconDetailsById.value.qty         = res.recon_details.received_qty;
+                        reconDetailsById.value.uom         = res.recon_details.uom;
+                        reconDetailsById.value.poBal       = res.recon_details.po_balance;
+                        reconDetailsById.value.alloc       = res.recon_details.allocation;
+
+                        userRequestRemarks.value = res.recon_remarks.remarks;
                     }).catch((err) => {
                         
                     });
@@ -418,10 +489,11 @@
         dt = table.value.dt;
         dtTableRequest = tableRequestDetails.value.dt;
         dtTableRemove = tableRemove.value.dt;
+        dtTableEdit = tableEdit.value.dt;
     });
 
     const sendResponse = async (adminResponse) => { 
-        // * adminResponse = 1-approve, 2-disapprove
+        // * adminResponse = 1-approve, 2-disapprove, 3-For update
         if(adminResponse == 1){
             await Swal.fire({
                 title: `Are you sure you want to approve this request?`,
@@ -446,10 +518,26 @@
                 }
             });
         }
-        else{
+        else if(adminResponse == 2){
             modalPromptData.title = `Disapprove Request`
             modalPromptData.function = 2;
             modalsPrompt.value.show();
+        }
+        else if(adminResponse == 3){
+            // console.log(reconDetailsById.value.reqId);
+            api.post('api/update_request_data', {req_id: reconDetailsById.value.reqId}).then((result) => {
+                // console.log(result);
+                if(result.data.result == true){
+                    toastr.success(result.data.msg);
+                    modals.value.hide();
+                    dtTableEdit.ajax.reload()
+                }
+                
+            }).catch((err) => {
+                if(err.response.status == 422){
+                    toastr.error(err.response.data.msg);
+                }
+            });
         }
     }
 

@@ -11,6 +11,23 @@
             .wrapper, body, html{
                 min-height: auto !important;
             }
+            .tableRecon tbody td{
+                padding: 4px 4px;
+                margin: 1px 1px;
+                font-size: 15px;
+                /* text-align: center; */
+                vertical-align: middle;
+            }
+            .tableRecon thead th:first-child{
+                width: 10% !important;
+            }
+            .tableRecon thead th{
+                padding: 4px 4px;
+                margin: 1px 1px;
+                font-size: 16px;
+                text-align: center;
+                vertical-align: middle;
+            }
         </style>
         
         <link rel="stylesheet" href="{{ asset('public/css/app.css') }}">

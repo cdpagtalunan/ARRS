@@ -26,7 +26,7 @@
                                 </div>
                                 <!-- <div class="col-3 d-flex flex-row justify-content-between align-items-center"> -->
                                 <div class="col-sm-3">
-                                    <button type="button" class="btn btn-sm btn-info" @click="loadDataEPRPO(1)">Load 1st cutoff</button>
+                                    <!-- <button type="button" class="btn btn-sm btn-info" @click="loadDataEPRPO(1)">Load 1st cutoff</button> -->
                                     <!-- <button type="button" class="btn btn-sm btn-info" @click="loadDataEPRPO(2)">Load 2nd cutoff</button> -->
 
                                     
@@ -54,7 +54,7 @@
                                         <br>
                                         
                                         <DataTable
-                                            class="table table-sm table-bordered table-hover wrap display"
+                                            class="table table-sm table-bordered table-hover text-wrap display tableRecon"
                                             :columns="columns"
                                             :ajax="{
                                                 url: 'api/get_recon',
@@ -81,7 +81,7 @@
         -->
         <template #body v-if="modalData.viewing == 1 || modalData.viewing == 2 || modalData.viewing == 3"> <!--1-viewing, 2-add recon data, 3-update -->
             <div class="row">
-                <div class="col-8">
+                <div class="col-sm-12">
                     <Card :card-body="true" :card-header="true">
                         <template #header>
                             <h6>LOGISTICS-PURCHASING DATA (Extracted from EPRPO-Receiving Module)</h6>
@@ -205,7 +205,7 @@
                         </template>
                     </Card>
                 </div>
-                <div class="col-4">
+                <!-- <div class="col-4">
                     <Card :card-body="true" :card-header="true">
                         <template #header>
                             <h6>Reconciliation by User</h6>
@@ -224,7 +224,7 @@
                             </form>
                         </template>
                     </Card>
-                </div>
+                </div> -->
             </div>
         </template>
         <template #body v-else-if="modalData.viewing == 4">  <!-- 4-remove -->
@@ -280,17 +280,27 @@
             </div>
            
         </template>
+        <template #body v-else-if="modalData.viewing == 6">
+            <input type="hidden" v-model="requestEditData.reconId">
+            <div>
+                <label>Reasons:</label>
+                <textarea id="txtReqEditReasons" rows="5" class="form-control" v-model="requestEditData.reasons" required></textarea>
+            </div>
+        </template>
         <!-- 
             * FOOTER
         -->
-        <template #footerButton v-if="modalData.viewing == 2 || modalData.viewing == 3"> <!-- 2-add recon data, 3-update -->
-            <button type="button" class="btn btn-success" @click="saveReconData()">Save</button>
-        </template>
-        <template #footerButton v-else-if="modalData.viewing == 4"> <!-- 4-remove -->
+        <!-- <template #footerButton v-if="modalData.viewing == 2 || modalData.viewing == 3"> 2-add recon data, 3-update -->
+            <!-- <button type="button" class="btn btn-success" @click="saveReconData()">Save</button> -->
+        <!-- </template> -->
+        <template #footerButton v-if="modalData.viewing == 4"> <!-- 4-remove -->
             <button type="button" class="btn btn-success" @click="requestForRemove()">Send</button>
         </template>
         <template #footerButton v-else-if="modalData.viewing == 5">
             <button type="button" class="btn btn-success" @click="requestForAddition()">Send</button>
+        </template>
+        <template #footerButton v-else-if="modalData.viewing == 6">
+            <button type="button" class="btn btn-success" @click="requestForEdit()">Send</button>
         </template>
     </Modal>
 
@@ -323,13 +333,13 @@
                     getReconDetails(id, 1);
                 });
 
-                // * Button Add Reconcile
-                if(cell.querySelector('.btnReconcileData')){
-                    cell.querySelector('.btnReconcileData').addEventListener('click', function(){
-                        let id = this.getAttribute('data-id');
-                        getReconDetails(id, 2);
-                    });
-                }
+                // // * Button Add Reconcile
+                // if(cell.querySelector('.btnReconcileData')){
+                //     cell.querySelector('.btnReconcileData').addEventListener('click', function(){
+                //         let id = this.getAttribute('data-id');
+                //         getReconDetails(id, 2);
+                //     });
+                // }
                 // *  Button Edit Reconcile
                 if(cell.querySelector('.btnEditReconcileData')){
                     cell.querySelector('.btnEditReconcileData').addEventListener('click', function(){
@@ -349,17 +359,44 @@
                         // console.log(id);
                     });
                 }
+                // * Button Request for Edit
+                if(cell.querySelector('.btnRequestToEdit')){
+                    cell.querySelector('.btnRequestToEdit').addEventListener('click', function(){
+                        let id = this.getAttribute('data-id');
+                        modalData.viewing = 6;
+                        modalData.styleSize = '';
+                        modalData.title = 'Request for Edit';
+                        requestEditData.value.reconId = id;
+                        modals.show();
+                        console.log('Request for Edit', modalData.viewing);
+                    });
+                }
             },
         },
         { data: 'status', title: 'Recon Status'},
-        { data: 'po_num', title: 'PO Number'},
-        { data: 'pr_num', title: 'PR Number'},
-        { data: 'prod_code', title: 'Code'},
-        { data: 'prod_name', title: 'Name'},
+        // { data: 'po_num', title: 'PO Number'},
+        // { data: 'pr_num', title: 'PR Number'},
+        // { data: 'prod_code', title: 'Code'},
+        // { data: 'prod_name', title: 'Name'},
+        // { data: 'prod_desc', title: 'Description'},
+        // { data: 'supplier', title: 'Supplier'},
+        // { data: 'received_date', title: 'Received Date'},
+        // { data: 'classification', title: 'Classification'},
+        { data: 'prod_name', title: 'Item Name'},
         { data: 'prod_desc', title: 'Description'},
+        { data: 'invoice_no', title: 'Invoice No.'},
+        { data: 'delivery_date', title: 'Delivery Date'},
+        { data: 'received_qty', title: 'Received Qty'},
         { data: 'supplier', title: 'Supplier'},
-        { data: 'received_date', title: 'Received Date'},
-        { data: 'classification', title: 'Classification'},
+        { data: 'unit_price', title: 'Unit Price'},
+        { 
+            data: 'unit_price',
+            title: 'Amount',
+            "render": function(data, type, row, meta) {
+                let total = row.unit_price * row.received_qty;
+                return total.toFixed(2);
+            }
+        },
         
     ];
 
@@ -437,7 +474,6 @@
                 }
 
             }
-
         }
     };
 
@@ -468,10 +504,11 @@
     let modals
 
     const removeReconData = ref({});
+    const requestEditData = ref({});
     const addReconData = ref({});
 
     const reconData = ref({});
-    const uReconData = ref({});
+    // const uReconData = ref({});
     const toastr = inject('toastr');
     const Swal = inject('Swal');
 
@@ -486,8 +523,9 @@
             console.log('modal is closed');
             Object.assign(modalData, modalInitialState); // * assign default value
             reconData.value = {}; // * Reset reconData ref data
-            uReconData.value = {}; // * Reset uReconData ref data
+            // uReconData.value = {}; // * Reset uReconData ref data
             removeReconData.value = {}; // * Reset removeReconData ref data
+            requestEditData.value = {}; // * Reset requestEditData ref data
             addReconData.value = {};
             Object.assign(addEprpoData, addEprpoDataInitialState); // * assign default value
             addEprpoData.data = [];
@@ -500,7 +538,7 @@
          injectSess = inject('store');
 
         await setTimeout( async () => {
-            await api.get('api/get_category_of_user', {params: {access: injectSess.access}} ).then((result) => {
+        await api.get('api/get_category_of_user', {params: {access: injectSess.access}} ).then((result) => {
                 userAccesses.value = result.data.uAccess;
                 // console.log(result.data.uAccess);
             }).catch((err) => {
@@ -532,7 +570,7 @@
             modalData.title = "Reconciliation"; // Title of modal
             modalData.viewing = btnFunction;
             
-            uReconData.value.recon = result.data.recon; // Hash ID
+            // uReconData.value.recon = result.data.recon; // Hash ID
 
             reconData.value.poDate = reconDetails.po_date;
             reconData.value.poNum = reconDetails.po_num;
@@ -554,11 +592,11 @@
             reconData.value.class = reconDetails.classification;
             reconData.value.alloc = reconDetails.allocation;
 
-            if(btnFunction != 2){
-                uReconData.value.invoiceNum   = reconDetails.recon_invoice_no
-                uReconData.value.receivedQty  = reconDetails.recon_received_qty
-                uReconData.value.amount       = reconDetails.recon_amount
-            }
+            // if(btnFunction != 2){
+            //     uReconData.value.invoiceNum   = reconDetails.recon_invoice_no
+            //     uReconData.value.receivedQty  = reconDetails.recon_received_qty
+            //     uReconData.value.amount       = reconDetails.recon_amount
+            // }
             modals.show();
 
         }).catch((err) => {
@@ -566,53 +604,53 @@
         });
     }
 
-    const saveReconData = async () => {
-        await api.post('api/save_recon', uReconData.value).then((result) => {
-            document.querySelector('#txtAmount').classList.remove('is-invalid');
-            document.querySelector('#txtInvoiceNum').classList.remove('is-invalid');
-            document.querySelector('#txtReceivedQty').classList.remove('is-invalid');
+    // const saveReconData = async () => {
+    //     await api.post('api/save_recon', uReconData.value).then((result) => {
+    //         document.querySelector('#txtAmount').classList.remove('is-invalid');
+    //         document.querySelector('#txtInvoiceNum').classList.remove('is-invalid');
+    //         document.querySelector('#txtReceivedQty').classList.remove('is-invalid');
 
-            let results = result.data;
+    //         let results = result.data;
 
-            if(results.result == 1){
-                toastr.success(`${results.msg}`);
-                modals.hide();
-                dt.ajax.reload();
-            }
+    //         if(results.result == 1){
+    //             toastr.success(`${results.msg}`);
+    //             modals.hide();
+    //             dt.ajax.reload();
+    //         }
 
 
-        }).catch((err) => {
-            // console.log(err.response);
-            if(err.response.data.errors.amount != undefined){
-                document.querySelector('#txtAmount').classList.add('is-invalid');
+    //     }).catch((err) => {
+    //         // console.log(err.response);
+    //         if(err.response.data.errors.amount != undefined){
+    //             document.querySelector('#txtAmount').classList.add('is-invalid');
 
-            }
-            else{
-                document.querySelector('#txtAmount').classList.remove('is-invalid');
+    //         }
+    //         else{
+    //             document.querySelector('#txtAmount').classList.remove('is-invalid');
 
-            }
+    //         }
 
-            if(err.response.data.errors.invoiceNum != undefined){
-                document.querySelector('#txtInvoiceNum').classList.add('is-invalid');
+    //         if(err.response.data.errors.invoiceNum != undefined){
+    //             document.querySelector('#txtInvoiceNum').classList.add('is-invalid');
 
-            }
-            else{
-                document.querySelector('#txtInvoiceNum').classList.remove('is-invalid');
+    //         }
+    //         else{
+    //             document.querySelector('#txtInvoiceNum').classList.remove('is-invalid');
 
-            }
+    //         }
 
-            if(err.response.data.errors.receivedQty != undefined){
-                document.querySelector('#txtReceivedQty').classList.add('is-invalid');
+    //         if(err.response.data.errors.receivedQty != undefined){
+    //             document.querySelector('#txtReceivedQty').classList.add('is-invalid');
                 
-            }
-            else{
-                document.querySelector('#txtReceivedQty').classList.remove('is-invalid');
+    //         }
+    //         else{
+    //             document.querySelector('#txtReceivedQty').classList.remove('is-invalid');
                 
-            }
+    //         }
             
-            toastr.error('Please fill-up required fields.')
-        });
-    }
+    //         toastr.error('Please fill-up required fields.')
+    //     });
+    // }
     
     const requestForRemove = async () => {
         await Swal.fire({
@@ -732,6 +770,32 @@
         }
 
         
+    }
+
+    const requestForEdit = (params) => {
+        Swal.fire({
+            title: `Are you sure you want to proceed this request?`,
+            text: "Request will go to logistics for approval.",
+            icon: 'question',
+            position: 'top',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Yes'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                requestEditData.value.extraParams = dtParams;
+                api.post('api/request_for_edit', requestEditData.value).then((result) => {
+                    toastr.success(`${result.data.msg}`);
+                    modals.hide();
+                    dt.ajax.reload();
+
+                }).catch((err) => {
+                    
+                });
+            }
+            
+        })
     }
     
 </script>

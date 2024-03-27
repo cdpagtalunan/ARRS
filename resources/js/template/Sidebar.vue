@@ -80,7 +80,7 @@
                         <router-link :to="{ name: 'AdminExport' }" class="nav-link" >
 
                             <icons icon="fas fa-file-excel" class="nav-icon"></icons>
-                            User Category
+                            Export Reconciliation
                         </router-link>
                     </li>
 

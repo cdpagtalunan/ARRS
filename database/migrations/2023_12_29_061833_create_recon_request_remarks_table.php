@@ -15,6 +15,7 @@ class CreateReconRequestRemarksTable extends Migration
     {
         Schema::create('recon_request_remarks', function (Blueprint $table) {
             $table->id();	
+            $table->bigInteger('recon_request_id')->nullable();
             $table->string('recon_request_ctrl_num')->comment = "from recon_request table as fkid";
             $table->string('recon_request_ctrl_num_ext')->comment = "from recon_request table as fkid";
             $table->longText('remarks');

@@ -137,6 +137,11 @@ class ReconciliationController extends Controller
             $long_description = $collection[$i]->long_description == '' ? $collection[$i]->long_description1 : $collection[$i]->long_description;
 			$po_balance = ( $collection[$i]->po_balance - $collection[$i]->quantity_received );
 
+            /*
+                * This will check if data exist.
+                * this is done for adding and removing of invoices from next month.
+                * this will prevent multiple input.
+            */ 
             if(
                 !Reconciliation::where('po_num',$collection[$i]->reference_po_number)
                 ->where('pr_num', $po_number)
@@ -304,14 +309,24 @@ class ReconciliationController extends Controller
         // $dtFrom = Carbon::create($explode_date[0])->format('Y-m-d');
         // $dtFrom = new Carbon($explode_date[0]);
         
-      
-
-        $recon_data = Reconciliation::whereNull('deleted_at')
+        $recon_data = DB::connection('mysql')
+        ->table('reconciliations')
+        ->whereNull('deleted_at')
         ->where('pr_num', 'LIKE', "%".$request->param['department']."%")
         ->where('classification', $request->param['classification'])
         ->where('recon_date_from', '>=', $dtFrom)
         ->where('recon_date_to', '<=', $dtTo)
-        ->select('*');
+        ->select('*')
+        ->get();
+
+        // return $recon_data;
+
+        // $recon_data = Reconciliation::whereNull('deleted_at')
+        // ->where('pr_num', 'LIKE', "%".$request->param['department']."%")
+        // ->where('classification', $request->param['classification'])
+        // ->where('recon_date_from', '>=', $dtFrom)
+        // ->where('recon_date_to', '<=', $dtTo)
+        // ->select('*');
 
         return DataTables::of($recon_data)
         ->addColumn('action', function($recon_data){
@@ -321,15 +336,18 @@ class ReconciliationController extends Controller
             $result = "";
             // $result .= "<div class='d-flex flex-row'>";
             $result .= "<center>";
-            $result .= "<button class='btn btn-primary btn-sm btnOpenReconDetails' data-id='$encrypt_id'><i class='fas fa-eye'></i></button>";
+            $result .= "<button class='btn btn-primary btn-sm btnOpenReconDetails' data-id='$encrypt_id' title='View Data'><i class='fas fa-eye'></i></button>";
             if($recon_data->recon_status == 0){
-                $result .= "<button class='btn btn-warning btn-sm btnReconcileData ml-1' data-id='$encrypt_id'><i class='fas fa-plus'></i></button>";
+                // $result .= "<button class='btn btn-warning btn-sm btnReconcileData ml-1' data-id='$encrypt_id'><i class='fas fa-plus'></i></button>";
+                $result .= "<button class='btn btn-warning btn-sm btnRequestToEdit ml-1' data-id='$encrypt_id' title='Request to edit'><i class='fa-solid fa-pencil'></i></button>";
+                
+                $result .= "<button class='btn btn-success btn-sm btnDoneRecon ml-1' data-id='$encrypt_id' title='Done'><i class='fa-solid fa-circle-check'></i></button>";
 
-                $result .= "<button class='btn btn-danger btn-sm btnRemoveData ml-1' data-id='$encrypt_id'><i class='fas fa-xmark'></i></button>";
+                $result .= "<button class='btn btn-danger btn-sm btnRemoveData ml-1' data-id='$encrypt_id' title='Request to remove'><i class='fas fa-xmark'></i></button>";
             }
-            else if($recon_data->recon_status == 1){
-                $result .= "<button class='btn btn-secondary btn-sm btnEditReconcileData ml-1' data-id='$encrypt_id'><i class='fas fa-pen-to-square'></i></button>";
-            }
+            // else if($recon_data->recon_status == 1){
+            //     $result .= "<button class='btn btn-secondary btn-sm btnEditReconcileData ml-1' data-id='$encrypt_id'><i class='fas fa-pen-to-square'></i></button>";
+            // }
             $result .= "</center>";
             // $result .= "</div>";
 
@@ -338,17 +356,49 @@ class ReconciliationController extends Controller
         })
         ->addColumn('status', function($recon_data){
             $result = "";
+
+            $approved_request_remarks = DB::connection('mysql')
+            ->table('recon_requests')
+            ->join('recon_request_remarks', 'recon_requests.id', '=', 'recon_request_remarks.recon_request_id')
+            ->where('recon_requests.status', '!=', 0)
+            ->where('recon_requests.request_type', '!=', 0)
+            ->where('recon_requests.recon_fkid', $recon_data->id)
+            ->select('recon_requests.*', 'recon_request_remarks.remarks AS request_remarks')
+            ->get();
+
+            // return $approved_request_remarks;
+
+
             $result .= "<center>";
             if($recon_data->recon_status == 0){
                 $result .= "<span class='badge rounded-pill text-bg-warning'>Pending</span>";
             }
             else if($recon_data->recon_status == 2){
                 $result .= "<span class='badge rounded-pill text-bg-danger'>For Removal</span>";
-                $result .= "<br><span class='badge rounded-pill text-bg-info'>Waiting for logistics<br> Approval</span>";
+                $result .= "<br><span class='badge rounded-pill text-bg-info mt-1'>Waiting for logistics<br> Approval</span>";
+            }
+            else if($recon_data->recon_status == 3){
+                $result .= "<span class='badge rounded-pill text-bg-secondary'>For Edit</span>";
+                $result .= "<br><span class='badge rounded-pill text-bg-info mt-1'>Waiting for logistics<br> Approval</span>";
             }
             else{
                 $result .= "<span class='badge rounded-pill text-bg-success'>Done</span>";
             }
+
+
+            if(count($approved_request_remarks) > 0){
+                if($approved_request_remarks[0]->status == 1){
+                    $result .= "<span class='badge text-bg-success mt-1'>Logistics Approved</span>";
+
+                }
+                else{
+                    $result .= "<span class='badge text-bg-danger mt-1'>Logistics Disapproved</span>";
+                }
+
+                $result .= "<span class='badge  text-bg-light text-dark text-break text-wrap mt-1'><strong>Remarks:</strong> <br>".$approved_request_remarks[0]->request_remarks."</span>";
+
+            }
+
             $result .= "</center>";
             return $result;
         })
@@ -471,17 +521,22 @@ class ReconciliationController extends Controller
             });
             // * End Email
             
-            ReconRequest::insert([
+            $recon_request_id = ReconRequest::insertGetId([
                 'request_type'      => 1,
                 'recon_fkid'        => $decrypt_id,
                 'ctrl_num'          => $control,
                 'ctrl_num_ext'      => $control_ext,
                 'created_by'        => $_SESSION['rapidx_user_id']
             ]);
-
+            ReconRequestRemarks::insert([
+                'recon_request_id'           => $recon_request_id,
+                'recon_request_ctrl_num'     => $control,
+                'recon_request_ctrl_num_ext' => $control_ext,
+                'remarks'                    => $request->reasons
+            ]);
             Reconciliation::where('id', $decrypt_id)
             ->update([
-                'recon_remove_remarks' => $request->reasons,
+                // 'recon_remove_remarks' => $request->reasons,
                 'recon_status' => 2
             ]);
 
@@ -801,5 +856,55 @@ class ReconciliationController extends Controller
             array_push($cutoff_date_array, $cutoff);
         }
         return $cutoff_date_array;
+    }
+
+    public function request_for_edit(Request $request){
+        DB::beginTransaction();
+        
+        try{
+            $decrypt_id = Helpers::decryptId($request->reconId);
+
+            $recon_control = ReconRequest::orderBy('ctrl_num_ext', 'DESC')->first();
+            $control_ext = 0;
+            if(isset($recon_control)){
+                $control_ext = $recon_control->ctrl_num_ext + 1;
+            }
+            else{
+                $control_ext = 1;
+            }
+            $control = $request->extraParams['department'] . "-" . $request->extraParams['classification'];
+
+            $recon_request_id = ReconRequest::insertGetId([
+                'request_type' => 2,
+                'recon_fkid'   => $decrypt_id,
+                'ctrl_num'     => $control,
+                'ctrl_num_ext' => $control_ext,
+                'created_by'   => $_SESSION['rapidx_user_id']
+
+            ]);
+
+            ReconRequestRemarks::insert([
+                'recon_request_id'           => $recon_request_id,
+                'recon_request_ctrl_num'     => $control,
+                'recon_request_ctrl_num_ext' => $control_ext,
+                'remarks'                    => $request->reasons
+            ]);
+
+            Reconciliation::where('id', $decrypt_id)
+            ->update([
+                'recon_status' => 3
+            ]);
+
+            DB::commit();
+
+            return response()->json([
+                'result' => true,
+                'msg'    => "Transaction Successful"
+            ]);
+        }
+        catch(Exemption $e){
+            DB::rollback();
+            return $e;
+        }
     }
 }

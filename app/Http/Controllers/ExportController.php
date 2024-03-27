@@ -60,7 +60,7 @@ class ExportController extends Controller
 
         }
         
-        return $recon_details;
+        // return $recon_details;
 
 
         $date = date('Ymd',strtotime(NOW()));
