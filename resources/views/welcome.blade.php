@@ -25,7 +25,7 @@
                 padding: 4px 4px;
                 margin: 1px 1px;
                 font-size: 16px;
-                text-align: center;
+                text-align: center !important;
                 vertical-align: middle;
             }
         </style>

@@ -332,7 +332,6 @@
                     let id = this.getAttribute('data-id');
                     getReconDetails(id, 1);
                 });
-
                 // // * Button Add Reconcile
                 // if(cell.querySelector('.btnReconcileData')){
                 //     cell.querySelector('.btnReconcileData').addEventListener('click', function(){
@@ -340,6 +339,27 @@
                 //         getReconDetails(id, 2);
                 //     });
                 // }
+
+                // * Done Recon
+                if(cell.querySelector('.btnDoneRecon')){
+                    cell.querySelector('.btnDoneRecon').addEventListener('click', function(){
+                        let id = this.getAttribute('data-id');
+                        Swal.fire({
+                            title: `Are you sure you want to done this data?`,
+                            // text: "Request will go to logistics for approval.",
+                            icon: 'question',
+                            position: 'top',
+                            showCancelButton: true,
+                            confirmButtonColor: '#3085d6',
+                            cancelButtonColor: '#d33',
+                            confirmButtonText: 'Yes'
+                        }).then((result) => {
+                            if (result.isConfirmed) {
+                                saveDoneRecon(id);
+                            }
+                        })
+                    });
+                }
                 // *  Button Edit Reconcile
                 if(cell.querySelector('.btnEditReconcileData')){
                     cell.querySelector('.btnEditReconcileData').addEventListener('click', function(){
@@ -796,6 +816,17 @@
             }
             
         })
+    }
+    
+    const saveDoneRecon = (id) => {
+        api.post('api/save_done_recon', {rec_id: id}).then((result) => {
+            toastr.success(`${result.data.msg}`);
+            dt.ajax.reload();
+
+        }).catch((err) => {
+            toastr.error(`${err}`);
+            
+        });
     }
     
 </script>

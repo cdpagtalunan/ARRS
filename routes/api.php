@@ -58,12 +58,13 @@ use App\Http\Controllers\ReconciliationController;
         Route::get('get_eprpo_data', [ReconciliationController::class, 'get_eprpo_data']);
         Route::get('get_recon', [ReconciliationController::class, 'get_recon']);
         Route::get('get_recon_details', [ReconciliationController::class, 'get_recon_details']);
-        Route::post('save_recon', [ReconciliationController::class, 'save_recon']);
+        // Route::post('save_recon', [ReconciliationController::class, 'save_recon']);
         Route::post('request_remove_recon', [ReconciliationController::class, 'request_remove_recon']);
         Route::get('get_recon_for_add', [ReconciliationController::class, 'get_recon_for_add']);
         Route::post('request_for_addition', [ReconciliationController::class, 'request_for_addition']);
         Route::get('get_recon_dates', [ReconciliationController::class, 'get_recon_dates']);
         Route::post('request_for_edit', [ReconciliationController::class, 'request_for_edit']);
+        Route::post('save_done_recon', [ReconciliationController::class, 'save_done_recon']);
 
         //^ ADMIN REQUEST ROUTE
         Route::get('get_add_request', [RequestController::class, 'get_add_request']);

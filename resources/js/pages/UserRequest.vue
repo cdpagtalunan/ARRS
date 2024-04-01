@@ -312,6 +312,9 @@
         },
         { data: 'req_status', title: 'Status' },
         { data: 'control', title: 'Control Number' },
+        { data: 'recon_details.prod_name', title: 'Item Name' },
+        { data: 'recon_details.prod_desc', title: 'Description' },
+        { data: 'recon_details.invoice_no', title: 'Invoice Number' },
         { data: 'po', title: 'PO Number' }
     ];
 

@@ -431,8 +431,11 @@ class RequestController extends Controller
             if($requests->request_type == 0){
                 $result .= "<span class='badge rounded-pill text-bg-info'>For Addition</span>";
             }
-            else{
+            else if($requests->request_type == 1){
                 $result .= "<span class='badge rounded-pill text-bg-info'>For Removal</span>";
+            }
+            else if($requests->request_type == 2){
+                $result .= "<span class='badge rounded-pill text-bg-info'>For Edit</span>";
             }
 
             $result .= "<br>";

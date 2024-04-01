@@ -334,22 +334,16 @@ class ReconciliationController extends Controller
             $encrypt_id = Helpers::encryptId($recon_data->id);
 
             $result = "";
-            // $result .= "<div class='d-flex flex-row'>";
             $result .= "<center>";
             $result .= "<button class='btn btn-primary btn-sm btnOpenReconDetails' data-id='$encrypt_id' title='View Data'><i class='fas fa-eye'></i></button>";
             if($recon_data->recon_status == 0){
-                // $result .= "<button class='btn btn-warning btn-sm btnReconcileData ml-1' data-id='$encrypt_id'><i class='fas fa-plus'></i></button>";
                 $result .= "<button class='btn btn-warning btn-sm btnRequestToEdit ml-1' data-id='$encrypt_id' title='Request to edit'><i class='fa-solid fa-pencil'></i></button>";
                 
                 $result .= "<button class='btn btn-success btn-sm btnDoneRecon ml-1' data-id='$encrypt_id' title='Done'><i class='fa-solid fa-circle-check'></i></button>";
 
                 $result .= "<button class='btn btn-danger btn-sm btnRemoveData ml-1' data-id='$encrypt_id' title='Request to remove'><i class='fas fa-xmark'></i></button>";
             }
-            // else if($recon_data->recon_status == 1){
-            //     $result .= "<button class='btn btn-secondary btn-sm btnEditReconcileData ml-1' data-id='$encrypt_id'><i class='fas fa-pen-to-square'></i></button>";
-            // }
             $result .= "</center>";
-            // $result .= "</div>";
 
             return $result;
 
@@ -388,11 +382,23 @@ class ReconciliationController extends Controller
 
             if(count($approved_request_remarks) > 0){
                 if($approved_request_remarks[0]->status == 1){
-                    $result .= "<span class='badge text-bg-success mt-1'>Logistics Approved</span>";
+                    $result .= "<br><span class='badge text-bg-success mt-1'>Logistics Approved</span>";
 
                 }
                 else{
                     $result .= "<span class='badge text-bg-danger mt-1'>Logistics Disapproved</span>";
+                }
+
+                if($approved_request_remarks[0]->request_type == 1){
+                    $result .= "";
+                }
+                else if($approved_request_remarks[0]->request_type == 2){
+                    $result .= "";
+                    
+                }
+                else if($approved_request_remarks[0]->request_type == 3){
+                    $result .= "";
+
                 }
 
                 $result .= "<span class='badge  text-bg-light text-dark text-break text-wrap mt-1'><strong>Remarks:</strong> <br>".$approved_request_remarks[0]->request_remarks."</span>";
@@ -422,48 +428,48 @@ class ReconciliationController extends Controller
         return response()->json(['reconDetails' => $recon_details, 'recon' => $request->recon]);
     }
 
-    public function save_recon(UserReconRequest $request){
-        $fields = $request->validated();
-        DB::beginTransaction();
+    // public function save_recon(UserReconRequest $request){
+    //     $fields = $request->validated();
+    //     DB::beginTransaction();
 
-        $decrypt_id = Helpers::decryptId($request->recon);
-        try{
-            $selected_recon_data = DB::table('reconciliations')
-            ->where('id', $decrypt_id)
-            ->select('*')
-            ->first();
-            // return $decrypt_id;
-            $user_recon_array = array(
-                'recon_amount'          => $request->amount,
-                'recon_invoice_no'      => $request->invoiceNum,
-                'recon_received_qty'    => $request->receivedQty
-            );
-            if($selected_recon_data->recon_status == 0){
-                $user_recon_array['recon_status'] = 1;
+    //     $decrypt_id = Helpers::decryptId($request->recon);
+    //     try{
+    //         $selected_recon_data = DB::table('reconciliations')
+    //         ->where('id', $decrypt_id)
+    //         ->select('*')
+    //         ->first();
+    //         // return $decrypt_id;
+    //         $user_recon_array = array(
+    //             'recon_amount'          => $request->amount,
+    //             'recon_invoice_no'      => $request->invoiceNum,
+    //             'recon_received_qty'    => $request->receivedQty
+    //         );
+    //         if($selected_recon_data->recon_status == 0){
+    //             $user_recon_array['recon_status'] = 1;
 
-                Reconciliation::where('id', $decrypt_id)
-                ->update($user_recon_array);
-                // DB::table('reconciliations')
-                // ->where('id', $decrypt_id)
-                // ->update($user_recon_array);
+    //             Reconciliation::where('id', $decrypt_id)
+    //             ->update($user_recon_array);
+    //             // DB::table('reconciliations')
+    //             // ->where('id', $decrypt_id)
+    //             // ->update($user_recon_array);
 
-                DB::commit();
-                return response()->json(['result' => 1, 'msg' => 'Successfully reconcile this data.']);
-            }
-            else{
-                // return "edit";
-                Reconciliation::where('id', $decrypt_id)
-                ->update($user_recon_array);
+    //             DB::commit();
+    //             return response()->json(['result' => 1, 'msg' => 'Successfully reconcile this data.']);
+    //         }
+    //         else{
+    //             // return "edit";
+    //             Reconciliation::where('id', $decrypt_id)
+    //             ->update($user_recon_array);
 
-                DB::commit();
-                return response()->json(['result' => 1, 'msg' => 'Successfully Edited Data.']);
-            }
-        }
-        catch(Exception $e){
-            DB::rollback();
-            return $e;
-        }
-    }
+    //             DB::commit();
+    //             return response()->json(['result' => 1, 'msg' => 'Successfully Edited Data.']);
+    //         }
+    //     }
+    //     catch(Exception $e){
+    //         DB::rollback();
+    //         return $e;
+    //     }
+    // }
 
     public function request_remove_recon(RemoveReconRequest $request){
        
@@ -901,6 +907,31 @@ class ReconciliationController extends Controller
                 'result' => true,
                 'msg'    => "Transaction Successful"
             ]);
+        }
+        catch(Exemption $e){
+            DB::rollback();
+            return $e;
+        }
+    }
+
+    public function save_done_recon(Request $request){
+        DB::beginTransaction();
+        
+        try{
+            $decrypt_id = Helpers::decryptId($request->rec_id);
+
+            Reconciliation::where('id', $decrypt_id)
+            ->update([
+                'recon_status' => 1
+            ]);
+
+            DB::commit();
+
+            return response()->json([
+                'result' => true,
+                'msg' => "Transaction Success"
+            ]);
+        
         }
         catch(Exemption $e){
             DB::rollback();
