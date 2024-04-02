@@ -95,7 +95,7 @@
                         </template>
                     </Card>
                 </div>
-                <div class="col-9" v-else-if="dtParams.type == 1">  <!-- Remove Request Approval -->
+                <div class="col-9" v-else>  <!-- Remove Request Approval -->
                     <Card :card-body="true" :card-header="true">
                         <template #header>
                             <h6></h6>
@@ -225,7 +225,7 @@
                             User Remarks
                         </template>
                         <template #body>
-                            <textarea class="form-control" cols="30" rows="10" readonly v-model="userRequestRemarks"></textarea>
+                            <textarea class="form-control" cols="30" rows="10" readonly v-model="userRequestRemarks" id="txtUserRemarks"></textarea>
                         </template>
                     </Card>
                 </div>
@@ -279,8 +279,9 @@
                         dtTableRequest.ajax.reload();
                     }
                     else{
-                        api.get('api/get_remove_recon_details', {params: {param: dtParams} }).then((result) => {
-                            let res = result.data;
+                        api.get('api/get_requested_recon_details', {params: {param: dtParams} }).then((result) => {
+                            console.log('success get_requested_recon_details');
+                            let res = result.data.data;
                             removeReq.value.poDate      = res.recon_details.po_date;
                             removeReq.value.poNum       = res.recon_details.po_num;
                             removeReq.value.delDate     = res.recon_details.delivery_date;
@@ -302,7 +303,8 @@
                             removeReq.value.poBal       = res.recon_details.po_balance;
                             removeReq.value.alloc       = res.recon_details.allocation;
 
-                            userRequestRemarks.value = res.recon_details.recon_remove_remarks;
+
+                            userRequestRemarks.value = res.recon_remarks.remarks;
                         }).catch((err) => {
                             
                         });
@@ -312,9 +314,9 @@
         },
         { data: 'req_status', title: 'Status' },
         { data: 'control', title: 'Control Number' },
-        { data: 'recon_details.prod_name', title: 'Item Name' },
-        { data: 'recon_details.prod_desc', title: 'Description' },
-        { data: 'recon_details.invoice_no', title: 'Invoice Number' },
+        { data: 'invoice_no', title: 'Invoice Number' },
+        // { data: 'recon_details.prod_desc', title: 'Description' },
+        // { data: 'recon_details.invoice_no', title: 'Invoice Number' },
         { data: 'po', title: 'PO Number' }
     ];
 

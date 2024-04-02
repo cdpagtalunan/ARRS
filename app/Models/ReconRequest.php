@@ -15,7 +15,8 @@ class ReconRequest extends Model
     protected $hidden = ['id'];
 
     public function recon_remarks(){
-        return $this->hasOne(ReconRequestRemarks::class,'recon_request_id', 'id');
+        // return $this->hasOne(ReconRequestRemarks::class,'recon_request_id', 'id');
+        return $this->hasOne(ReconRequestRemarks::class,'recon_request_ctrl_num_ext', 'ctrl_num_ext');
     }
 
     public function recon_details(){

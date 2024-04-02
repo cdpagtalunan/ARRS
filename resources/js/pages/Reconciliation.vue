@@ -238,8 +238,8 @@
             <div class="row justify-content-center mb-2">
                 <div class="col-4"> 
                     <div class="input-group">
-                        <span class="input-group-text" style="background-color: #17a2b8; color: white;">PO Number:</span>
-                        <input type="text" class="form-control" v-model="addReconData.poNumber" @keyup.enter="reloadDt()">
+                        <span class="input-group-text" style="background-color: #17a2b8; color: white;">Invoice Number:</span>
+                        <input type="text" class="form-control" v-model="addReconData.invoiceNo" @keyup.enter="reloadDt()">
                         <button class="btn btn-success" type="button" @click="reloadDt()"><icons icon="fas fa-magnifying-glass"></icons></button>
                     </div>
                 </div>
@@ -258,7 +258,7 @@
                                     url: 'api/get_recon_for_add',
                                     data: function (param){
                                         param.param = dtParams;
-                                        param.po_number = addReconData.poNumber;
+                                        param.invoice_no = addReconData.invoiceNo;
                                     }
                                 }"
                                 ref="tableAdd"
@@ -294,13 +294,13 @@
             <!-- <button type="button" class="btn btn-success" @click="saveReconData()">Save</button> -->
         <!-- </template> -->
         <template #footerButton v-if="modalData.viewing == 4"> <!-- 4-remove -->
-            <button type="button" class="btn btn-success" @click="requestForRemove()">Send</button>
+            <button type="button" class="btn btn-success" @click="requestForRemove()" id="btnRemoveRecon">Send</button>
         </template>
         <template #footerButton v-else-if="modalData.viewing == 5">
-            <button type="button" class="btn btn-success" @click="requestForAddition()">Send</button>
+            <button type="button" class="btn btn-success" @click="requestForAddition()" id="btnAddRecon">Send</button>
         </template>
         <template #footerButton v-else-if="modalData.viewing == 6">
-            <button type="button" class="btn btn-success" @click="requestForEdit()">Send</button>
+            <button type="button" class="btn btn-success" @click="requestForEdit()" id="btnRequestEdit">Send</button>
         </template>
     </Modal>
 
@@ -438,25 +438,8 @@
 
     const test = ref([]);
     const columnsAdd = [
-        // { data: 'action', title: 'Action'},
-        {
-            data: 'action',
-            title: 'Action',
-            orderable: false,
-            searchable: false,
-            createdCell(cell) {
-                // * Button View
-                // cell.querySelector('input[name="checking"]').addEventListener('click', function(){
-                //     let eprpoData = this.getAttribute('data-eprpo');
-                //     // addEprpoData.value.push(eprpoData);
-                //     // console.log(addEprpoData.value);
-
-                //     addEprpoData.data.push(eprpoData);
-                //     addEprpoData.reconClassification = dtParams;
-                //     // console.log(addEprpoData.data);
-                // });
-            },
-        },
+        { data: 'action', title: 'Action'},
+      
         { data: 'reference_po_number', title: 'PO Number'},
         { data: 'po_number', title: 'PR Number'},
         { data: 'other_reference', title: 'Invoice Number'},

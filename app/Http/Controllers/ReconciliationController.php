@@ -597,8 +597,12 @@ class ReconciliationController extends Controller
             AND receiving_header.currency=currency.id
             AND item.id=receiving_details.item_id 
             AND item.unit_of_measure_id=unit_of_measure.id
-            AND reference_po_number = "'.$request->po_number.'"
-        ');
+            AND other_reference = "'.$request->invoice_no.'"
+            ');
+            // AND reference_po_number = "'.$request->po_number.'"
+
+
+        // return $eprpo_data;
 
         for ($i=0; $i < count($eprpo_data) ; $i++) {
             // $test = $eprpo_data[$i]->item_name1;
@@ -629,7 +633,7 @@ class ReconciliationController extends Controller
         return DataTables::of($collection)
         ->addColumn('action', function($collection){
             $result = "";
-            $result .= "<input type='checkbox' class='checkedRecon' data-eprpo='".json_encode($collection)."' name='checking[]'>";
+            $result .= "<input type='checkbox' class='checkedRecon' data-eprpo='".json_encode($collection)."' name='checking[]' checked disabled>";
             return $result;
         })
         // ->addColumn('po_number', function($collection){

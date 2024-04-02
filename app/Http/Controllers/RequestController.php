@@ -408,7 +408,7 @@ class RequestController extends Controller
         ->whereNull('deleted_at')
         // ->orderBy('status', 'asc')
         ->distinct()
-        ->get(['ctrl_num','ctrl_num_ext','status', 'request_type','po_num','recon_fkid']);
+        ->get(['ctrl_num','ctrl_num_ext','status', 'request_type','po_num','recon_fkid', 'invoice_no']);
 
         return DataTables::of($requests)
         ->addColumn('action', function($requests){
@@ -471,7 +471,19 @@ class RequestController extends Controller
             }
             return $result;
         })
-        ->rawColumns(['action', 'req_status', 'control', 'po'])
+        ->addColumn('invoice_no', function($requests){
+            $result = "";
+
+            if(isset($requests->recon_details)){
+                $result .= $requests->recon_details->invoice_no;
+            }
+            else{
+                $result .= $requests->invoice_no;
+            }
+
+            return $result;
+        })
+        ->rawColumns(['action', 'req_status', 'control', 'po', 'invoice_no'])
         ->make(true);
     }
 
