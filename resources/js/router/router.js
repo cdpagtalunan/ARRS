@@ -12,6 +12,7 @@ import CategorySettings from '../pages/Settings/CategorySettings.vue';
 import UserManagement from '../pages/Admin/UserManagement.vue';
 import ApprovalRequest from '../pages/Admin/ApprovalRequest.vue';
 import AdminExport from '../pages/Admin/AdminExportRecon.vue';
+import FinalRecon from '../pages/Admin/FinalRecon.vue';
 
 // ^ Interceptors Page
 import Unauthorized from '../pages/Interceptors/Unauthorized.vue';
@@ -84,6 +85,12 @@ const routes = [
                 name: 'AdminExport',
                 beforeEnter: isLoggedIn,
                 component: AdminExport
+            },
+            {
+                path: 'final_recon',
+                name: 'FinalRecon',
+                beforeEnter: isLoggedIn,
+                component: FinalRecon
             },
             // SETTINGS
             {

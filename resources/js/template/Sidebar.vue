@@ -59,6 +59,13 @@
                             User Requests
                         </router-link>
                     </li>
+
+                    <li class="nav-item  has-treeview" v-if="uType == 1">
+                        <router-link :to="{ name: 'FinalRecon' }" class="nav-link" >
+                            <icons icon="fa-solid fa-list-check" class="nav-icon"></icons>
+                            Final Reconciliation
+                        </router-link>
+                    </li>
                     <li class="nav-header font-weight-bold" style="font-size: 1rem" v-if="uType == 1">Configuration</li>
 
                     <!-- <li class="nav-item">

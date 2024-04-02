@@ -31,7 +31,6 @@ use App\Http\Controllers\ReconciliationController;
         /*
             * START SETTINGS ROUTES
         */
-
         //^ CUT-OFF ROUTE
         Route::get('get_cutoff', [ConfigController::class, 'get_cutoff']);
         Route::post('save_cutoff', [ConfigController::class, 'save_cutoff']);
