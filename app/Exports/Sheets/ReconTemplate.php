@@ -98,32 +98,32 @@ class ReconTemplate implements  FromView, WithTitle, WithEvents, ShouldAutoSize
                     $event->sheet->getColumnDimension('H')->setWidth(20);
                     $event->sheet->getColumnDimension('I')->setWidth(15);
                     $event->sheet->getColumnDimension('J')->setWidth(15);
-                    $event->sheet->getColumnDimension('K')->setWidth(15);
+                    $event->sheet->getColumnDimension('K')->setWidth(19);
                     $event->sheet->getColumnDimension('L')->setWidth(15);
-                    $event->sheet->getColumnDimension('M')->setWidth(15);
-                    $event->sheet->getColumnDimension('N')->setWidth(3);
-                    $event->sheet->getColumnDimension('O')->setWidth(50);
-                    $event->sheet->getColumnDimension('P')->setWidth(25);
+                    // $event->sheet->getColumnDimension('M')->setWidth(15);
+                    $event->sheet->getColumnDimension('M')->setWidth(3);
+                    $event->sheet->getColumnDimension('N')->setWidth(50);
+                    $event->sheet->getColumnDimension('O')->setWidth(25);
 
                     $event->sheet->setCellValue('A2', 'Month');
                     $event->sheet->setCellValue('B2', $this->rec_from. ' to '. $this->rec_to);
-                    $event->sheet->setCellValue('I2', 'In-charge');
-                    $event->sheet->getDelegate()->mergeCells('I2:J2');
-                    $event->sheet->getDelegate()->getStyle('I2')->applyFromArray($center_center);
-                    $event->sheet->setCellValue('L2', 'Date');
-                    $event->sheet->setCellValue('M2', 'Time');
+                    // $event->sheet->setCellValue('G2', 'In-charge');
+                    // $event->sheet->getDelegate()->mergeCells('G2:H2');
+                    // $event->sheet->getDelegate()->getStyle('G2')->applyFromArray($center_center);
+                    // $event->sheet->setCellValue('L2', 'Date');
+                    // $event->sheet->setCellValue('M2', 'Time');
 
 
 
                     $event->sheet->setCellValue('A3', 'Section');
                     $event->sheet->setCellValue('B3', $this->recon_cat['department']);
 
-                    $event->sheet->setCellValue('I3', 'Prepared by:');
+                    // $event->sheet->setCellValue('I3', 'Prepared by:');
                     
                     $event->sheet->setCellValue('A4', 'Classification Code');
                     $event->sheet->setCellValue('B4', $this->recon_cat['classification']);
 
-                    $event->sheet->setCellValue('I4', 'Checked by:');
+                    // $event->sheet->setCellValue('I4', 'Checked by:');
 
                     $event->sheet->setCellValue('A6', 'Dollar Account (US$)');
 
@@ -136,21 +136,24 @@ class ReconTemplate implements  FromView, WithTitle, WithEvents, ShouldAutoSize
                     $event->sheet->getDelegate()->getStyle('A7')->getFont()->setSize(12);
                     $event->sheet->getDelegate()->getStyle('A7')->applyFromArray($center_center);
 
-                    $event->sheet->setCellValue('J7', 'Reconciliation by End-User');
-                    $event->sheet->getDelegate()->mergeCells('J7:M7');
-                    $event->sheet->getDelegate()->getStyle('J7')->getFont()->setSize(12);
-                    $event->sheet->getDelegate()->getStyle('J7')->applyFromArray($center_center);
+                    // $event->sheet->setCellValue('J7', 'Reconciliation by End-User');
+                    // $event->sheet->getDelegate()->mergeCells('J7:M7');
+                    // $event->sheet->getDelegate()->getStyle('J7')->getFont()->setSize(12);
+                    // $event->sheet->getDelegate()->getStyle('J7')->applyFromArray($center_center);
 
-                    $event->sheet->setCellValue('O7', 'Summary per Supplier');
-                    $event->sheet->getDelegate()->mergeCells('O7:P7');
-                    $event->sheet->getDelegate()->getStyle('O7')->getFont()->setSize(12);
-                    $event->sheet->getDelegate()->getStyle('O7')->applyFromArray($center_center);
+                    $event->sheet->setCellValue('N7', 'Summary per Supplier');
+                    $event->sheet->getDelegate()->mergeCells('N7:O7');
+                    $event->sheet->getDelegate()->getStyle('N7')->getFont()->setSize(12);
+                    $event->sheet->getDelegate()->getStyle('N7')->applyFromArray($center_center);
 
 
                     $event->sheet->setCellValue('I7', 'Remarks');
                     $event->sheet->getDelegate()->mergeCells('I7:I8');
                     $event->sheet->getDelegate()->getStyle('I7')->applyFromArray($center_center);
 
+                    $event->sheet->setCellValue('L7', 'Result');
+                    $event->sheet->getDelegate()->mergeCells('L7:L8');
+                    $event->sheet->getDelegate()->getStyle('L7')->applyFromArray($center_center);
 
                     $event->sheet->setCellValue('A8', 'Item Name');
                     $event->sheet->setCellValue('B8', 'Description');
@@ -161,13 +164,20 @@ class ReconTemplate implements  FromView, WithTitle, WithEvents, ShouldAutoSize
                     $event->sheet->setCellValue('G8', 'Unit Price');
                     $event->sheet->setCellValue('H8', 'Amount');
 
-                    $event->sheet->setCellValue('J8', 'Invoice No.');
-                    $event->sheet->setCellValue('K8', 'Received Quantity');
-                    $event->sheet->setCellValue('L8', 'Amount');
-                    $event->sheet->setCellValue('M8', 'Result');
+                    $event->sheet->setCellValue('J7', 'PO Number.');
+                    $event->sheet->getDelegate()->mergeCells('J7:J8');
+                    $event->sheet->getDelegate()->getStyle('J7')->applyFromArray($center_center);
 
-                    $event->sheet->setCellValue('O8', 'Supplier');
-                    $event->sheet->setCellValue('P8', 'Total Amount');
+                    $event->sheet->setCellValue('K7', 'PR Number');
+                    $event->sheet->getDelegate()->mergeCells('K7:K8');
+                    $event->sheet->getDelegate()->getStyle('K7')->applyFromArray($center_center);
+
+                    // $event->sheet->setCellValue('L8', 'Amount');
+                    
+
+                    $event->sheet->setCellValue('N8', 'Supplier');
+                    $event->sheet->setCellValue('O8', 'Total Amount');
+                    
                     
                     
                     $event->sheet->getDelegate()->getStyle('A8:M8')->getAlignment()->setWrapText(true);
@@ -175,17 +185,16 @@ class ReconTemplate implements  FromView, WithTitle, WithEvents, ShouldAutoSize
                     
                     $start_row = 9;
                     
-                    
-                    if(in_array(0 , json_decode($recon['valid'], true))){
-                        $event->sheet->setCellValue("A$start_row", "DATA STILL HAS PENDING FOR RECONCILIATION");
-                        $event->sheet->getDelegate()->mergeCells("A$start_row:M$start_row");
-                        $event->sheet->getDelegate()->getStyle("A$start_row:M$start_row")->applyFromArray($center_center);
-                        $event->sheet->getDelegate()->getStyle("A$start_row")->applyFromArray($bold);
+                    // if(in_array(0 , json_decode($recon['valid'], true))){
+                    //     $event->sheet->setCellValue("A$start_row", "DATA STILL HAS PENDING FOR RECONCILIATION");
+                    //     $event->sheet->getDelegate()->mergeCells("A$start_row:M$start_row");
+                    //     $event->sheet->getDelegate()->getStyle("A$start_row:M$start_row")->applyFromArray($center_center);
+                    //     $event->sheet->getDelegate()->getStyle("A$start_row")->applyFromArray($bold);
 
 
                         
-                    }
-                    else{
+                    // }
+                    // else{
                         /*
                             * USD ACCOUNTS
                         */
@@ -202,20 +211,23 @@ class ReconTemplate implements  FromView, WithTitle, WithEvents, ShouldAutoSize
                             $event->sheet->setCellValue("G$start_row", $usd_recon->unit_price);
                             $amount = $usd_recon->unit_price * $usd_recon->received_qty;
                             $event->sheet->setCellValue("H$start_row", round($amount, 2), DataType::TYPE_NUMERIC);
+                            $event->sheet->setCellValue("J$start_row", $usd_recon->po_num);
+                            $event->sheet->setCellValue("K$start_row", $usd_recon->pr_num);
 
                             // * Reconciliation by end user
-                            $event->sheet->setCellValue("J$start_row", $usd_recon->recon_invoice_no);
-                            $event->sheet->setCellValue("K$start_row", $usd_recon->recon_received_qty);
-                            $event->sheet->setCellValue("L$start_row", $usd_recon->recon_amount);
+                            // $event->sheet->setCellValue("J$start_row", $usd_recon->recon_invoice_no);
+                            // $event->sheet->setCellValue("K$start_row", $usd_recon->recon_received_qty);
+                            // $event->sheet->setCellValue("L$start_row", $usd_recon->recon_amount);
                             
 
-                            if($amount == $usd_recon->recon_amount){
-                                $event->sheet->setCellValue("M$start_row", "TRUE");
+                            // if($amount == $usd_recon->recon_amount){
+                            if($usd_recon->recon_status == 1){
+                                $event->sheet->setCellValue("L$start_row", "TRUE");
                             }
                             else{
-                                $event->sheet->setCellValue("M$start_row", "FALSE");
+                                $event->sheet->setCellValue("L$start_row", "FALSE");
                             }
-                            $event->sheet->getDelegate()->getStyle("M$start_row")->applyFromArray($bold);
+                            $event->sheet->getDelegate()->getStyle("L$start_row")->applyFromArray($bold);
 
                             $start_row++;
                         }
@@ -224,17 +236,17 @@ class ReconTemplate implements  FromView, WithTitle, WithEvents, ShouldAutoSize
                         for($z = 0; $z < count($recon['usd']['supplier']); $z++){
                             $usd_supplier = $recon['usd']['supplier'][$z];
 
-                            $event->sheet->setCellValue("O$start_row_supplier", $usd_supplier);
-                            $event->sheet->setCellValue("P$start_row_supplier", '=SUMIF(F9:F'.$start_row.', "'.$usd_supplier.'", H9:H'.$start_row.')');
+                            $event->sheet->setCellValue("N$start_row_supplier", $usd_supplier);
+                            $event->sheet->setCellValue("O$start_row_supplier", '=SUMIF(F9:F'.$start_row.', "'.$usd_supplier.'", H9:H'.$start_row.')');
                             $start_row_supplier++;
                         }
-                        $event->sheet->setCellValue("O$start_row_supplier", "TOTAL");
+                        $event->sheet->setCellValue("N$start_row_supplier", "TOTAL");
                         $last_range = $start_row_supplier -1;
-                        $event->sheet->setCellValue("P$start_row_supplier", '=SUM(P9:P'.$last_range.')');
+                        $event->sheet->setCellValue("O$start_row_supplier", '=SUM(O9:O'.$last_range.')');
 
-                        $event->sheet->getDelegate()->getStyle("O7:P$start_row_supplier")->applyFromArray($styleBorderAll);
+                        $event->sheet->getDelegate()->getStyle("N7:O$start_row_supplier")->applyFromArray($styleBorderAll);
 
-                        $event->sheet->getDelegate()->getStyle("A7:M$start_row")->applyFromArray($styleBorderAll);
+                        $event->sheet->getDelegate()->getStyle("A7:L$start_row")->applyFromArray($styleBorderAll);
 
                         /*
                             * PESO ACCOUNTS 
@@ -249,21 +261,36 @@ class ReconTemplate implements  FromView, WithTitle, WithEvents, ShouldAutoSize
                         $event->sheet->getDelegate()->getStyle("A$start_row")->getFont()->setSize(12);
                         $event->sheet->getDelegate()->getStyle("A$start_row")->applyFromArray($center_center);
 
-                        $event->sheet->setCellValue("J$start_row", 'Reconciliation by End-User');
-                        $event->sheet->getDelegate()->mergeCells("J$start_row:M$start_row");
-                        $event->sheet->getDelegate()->getStyle("J$start_row")->getFont()->setSize(12);
-                        $event->sheet->getDelegate()->getStyle("J$start_row")->applyFromArray($center_center);
+                        // $event->sheet->setCellValue("J$start_row", 'Reconciliation by End-User');
+                        // $event->sheet->getDelegate()->mergeCells("J$start_row:M$start_row");
+                        // $event->sheet->getDelegate()->getStyle("J$start_row")->getFont()->setSize(12);
+                        // $event->sheet->getDelegate()->getStyle("J$start_row")->applyFromArray($center_center);
 
-                        $event->sheet->setCellValue("O$start_row", 'Summary per Supplier');
-                        $event->sheet->getDelegate()->mergeCells("O$start_row:P$start_row");
-                        $event->sheet->getDelegate()->getStyle("O$start_row")->getFont()->setSize(12);
-                        $event->sheet->getDelegate()->getStyle("O$start_row")->applyFromArray($center_center);
+                        $event->sheet->setCellValue("N$start_row", 'Summary per Supplier');
+                        $event->sheet->getDelegate()->mergeCells("N$start_row:O$start_row");
+                        $event->sheet->getDelegate()->getStyle("N$start_row")->getFont()->setSize(12);
+                        $event->sheet->getDelegate()->getStyle("N$start_row")->applyFromArray($center_center);
 
 
                         $event->sheet->setCellValue("I$start_row", 'Remarks');
                         $event->sheet->getDelegate()->getStyle("I$start_row")->applyFromArray($center_center);
                         $startrow1 = $start_row + 1;
                         $event->sheet->getDelegate()->mergeCells("I$start_row:I$startrow1");
+
+                        $event->sheet->setCellValue("J$start_row", 'PO Number');
+                        $event->sheet->getDelegate()->getStyle("J$start_row")->applyFromArray($center_center);
+                        // $startrow2 = $start_row + 1;
+                        $event->sheet->getDelegate()->mergeCells("J$start_row:J$startrow1");
+
+                        $event->sheet->setCellValue("K$start_row", 'PR Number');
+                        $event->sheet->getDelegate()->getStyle("K$start_row")->applyFromArray($center_center);
+                        // $startrow2 = $start_row + 1;
+                        $event->sheet->getDelegate()->mergeCells("K$start_row:K$startrow1");
+
+                        $event->sheet->setCellValue("L$start_row", 'Result');
+                        $event->sheet->getDelegate()->getStyle("L$start_row")->applyFromArray($center_center);
+                        // $startrow2 = $start_row + 1;
+                        $event->sheet->getDelegate()->mergeCells("L$start_row:L$startrow1");
 
                         $start_row++;
 
@@ -276,13 +303,14 @@ class ReconTemplate implements  FromView, WithTitle, WithEvents, ShouldAutoSize
                         $event->sheet->setCellValue("G$start_row", 'Unit Price');
                         $event->sheet->setCellValue("H$start_row", 'Amount');
 
-                        $event->sheet->setCellValue("J$start_row", 'Invoice No.');
-                        $event->sheet->setCellValue("K$start_row", 'Received Quantity');
-                        $event->sheet->setCellValue("L$start_row", 'Amount');
-                        $event->sheet->setCellValue("M$start_row", 'Result');
+                        // $event->sheet->setCellValue("J$start_row", 'Invoice No.');
+                        // $event->sheet->setCellValue("K$start_row", 'Received Quantity');
+                        // $event->sheet->setCellValue("L$start_row", 'Amount');
+                       
 
-                        $event->sheet->setCellValue("O$start_row", 'Supplier');
-                        $event->sheet->setCellValue("P$start_row", 'Total Amount');
+
+                        $event->sheet->setCellValue("N$start_row", 'Supplier');
+                        $event->sheet->setCellValue("O$start_row", 'Total Amount');
 
                         
                         
@@ -306,17 +334,20 @@ class ReconTemplate implements  FromView, WithTitle, WithEvents, ShouldAutoSize
                             $event->sheet->setCellValue("H$start_row", round($amount, 2), DataType::TYPE_NUMERIC);
 
                             // * Reconciliation by end user
-                            $event->sheet->setCellValue("J$start_row", $php_recon->recon_invoice_no);
-                            $event->sheet->setCellValue("K$start_row", $php_recon->recon_received_qty);
-                            $event->sheet->setCellValue("L$start_row", round($php_recon->recon_amount, 2) );
+                            // $event->sheet->setCellValue("J$start_row", $php_recon->recon_invoice_no);
+                            // $event->sheet->setCellValue("K$start_row", $php_recon->recon_received_qty);
+                            // $event->sheet->setCellValue("L$start_row", round($php_recon->recon_amount, 2) );
+                            $event->sheet->setCellValue("J$start_row", $php_recon->po_num);
+                            $event->sheet->setCellValue("K$start_row", $php_recon->pr_num);
 
-                            if($amount == $php_recon->recon_amount){
-                                $event->sheet->setCellValue("M$start_row", "TRUE");
+                            if($php_recon->recon_status == 1){
+                            // if($amount == $php_recon->recon_amount){
+                                $event->sheet->setCellValue("L$start_row", "TRUE");
                             }
                             else{
-                                $event->sheet->setCellValue("M$start_row", "FALSE");
+                                $event->sheet->setCellValue("L$start_row", "FALSE");
                             }
-                            $event->sheet->getDelegate()->getStyle("M$start_row")->applyFromArray($bold);
+                            $event->sheet->getDelegate()->getStyle("L$start_row")->applyFromArray($bold);
 
                             $start_row++;
 
@@ -325,18 +356,18 @@ class ReconTemplate implements  FromView, WithTitle, WithEvents, ShouldAutoSize
                         for($w = 0; $w < count($recon['php']['supplier']); $w++){
                             $php_supplier = $recon['php']['supplier'][$w];
 
-                            $event->sheet->setCellValue("O$start_row_supplier_php", $php_supplier);
-                            $event->sheet->setCellValue("P$start_row_supplier_php", '=SUMIF(F'.$start_row.':F'.$summary_supplier_first_range.', "'.$php_supplier.'", H'.$summary_supplier_first_range.':H'.$start_row.')');
+                            $event->sheet->setCellValue("N$start_row_supplier_php", $php_supplier);
+                            $event->sheet->setCellValue("O$start_row_supplier_php", '=SUMIF(F'.$start_row.':F'.$summary_supplier_first_range.', "'.$php_supplier.'", H'.$summary_supplier_first_range.':H'.$start_row.')');
                             $start_row_supplier_php++;
                         }
-                        $event->sheet->setCellValue("O$start_row_supplier_php", "TOTAL");
+                        $event->sheet->setCellValue("N$start_row_supplier_php", "TOTAL");
                         $last_range1 = $start_row_supplier_php - 1;
-                        $event->sheet->setCellValue("P$start_row_supplier_php", '=SUM(P'.$summary_supplier_first_range.':P'.$last_range1.')');
+                        $event->sheet->setCellValue("O$start_row_supplier_php", '=SUM(O'.$summary_supplier_first_range.':O'.$last_range1.')');
 
-                        $event->sheet->getDelegate()->getStyle("A$border_first_range:M$start_row")->applyFromArray($styleBorderAll);
-                        $event->sheet->getDelegate()->getStyle("O$border_first_range:P$start_row_supplier_php")->applyFromArray($styleBorderAll);
+                        $event->sheet->getDelegate()->getStyle("A$border_first_range:L$start_row")->applyFromArray($styleBorderAll);
+                        $event->sheet->getDelegate()->getStyle("N$border_first_range:O$start_row_supplier_php")->applyFromArray($styleBorderAll);
     
-                    }    
+                    // }    
 
 
             },
