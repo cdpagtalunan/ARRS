@@ -515,6 +515,21 @@
     const toastr = inject('toastr');
     const Swal = inject('Swal');
 
+    onBeforeMount(async () => {
+        console.log('before mount');
+         injectSess = inject('store');
+
+        await setTimeout( async () => {
+        await api.get('api/get_category_of_user', {params: {access: injectSess.access}} ).then((result) => {
+                userAccesses.value = result.data.uAccess;
+                // console.log(result.data.uAccess);
+            }).catch((err) => {
+                
+            });
+        }, 200);
+      
+    });
+
     onMounted( async () => {
         dt = table.value.dt;
         console.log('mount');
@@ -534,21 +549,6 @@
             addEprpoData.data = [];
         });
         getCutoffDate();
-    });
-
-    onBeforeMount(async () => {
-        console.log('before mount');
-         injectSess = inject('store');
-
-        await setTimeout( async () => {
-        await api.get('api/get_category_of_user', {params: {access: injectSess.access}} ).then((result) => {
-                userAccesses.value = result.data.uAccess;
-                // console.log(result.data.uAccess);
-            }).catch((err) => {
-                
-            });
-        }, 200);
-      
     });
 
     const loadDataEPRPO = async (date) => {
@@ -802,12 +802,21 @@
     }
     
     const saveDoneRecon = (id) => {
-        api.post('api/save_done_recon', {rec_id: id}).then((result) => {
+        // param.param = dtParams;
+        // param.cutoff_date = cutoffSelect.selected
+        api.post('api/save_done_recon', {rec_id: id, dt_params : dtParams, cutoff_date: cutoffSelect.selected}).then((result) => {
             toastr.success(`${result.data.msg}`);
             dt.ajax.reload();
 
         }).catch((err) => {
-            toastr.error(`${err}`);
+            console.log(err.response);
+            if(err.response.status == 422){
+                toastr.error(`${err.response.data.msg}`);
+
+            }
+            else{
+                toastr.error(`${err}`);
+            }
             
         });
     }

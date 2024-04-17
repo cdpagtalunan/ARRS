@@ -175,7 +175,9 @@ class ReconciliationController extends Controller
                     'hold_remarks'      => $collection[$i]->hold_remarks,
     
                     'recon_date_from'   => $date_from,
-                    'recon_date_to'     => $date_to
+                    'recon_date_to'     => $date_to,
+
+                    'created_at'        => NOW()
                 ]);
             }
 
@@ -920,26 +922,49 @@ class ReconciliationController extends Controller
 
     public function save_done_recon(Request $request){
         DB::beginTransaction();
+
+        $exploded_cutoff = explode('to', $request->cutoff_date);
+        $from = Carbon::createFromFormat('m-d-Y', trim($exploded_cutoff[0]));
+        $date_from = $from->format('Y-m-d');
+
+        // return $request->dt_params['department'];
+        $recon = DB::connection('mysql')
+        ->table('reconciliations')
+        ->where('recon_date_from', '<', $date_from)
+        ->where('classification', $request->dt_params['classification'])
+        ->where('pr_num', 'LIKE', "%{$request->dt_params['department']}%")
+        ->where('final_recon_status', 0)
+        ->select('reconciliations.*')
+        ->get();
         
-        try{
-            $decrypt_id = Helpers::decryptId($request->rec_id);
-
-            Reconciliation::where('id', $decrypt_id)
-            ->update([
-                'recon_status' => 1
-            ]);
-
-            DB::commit();
-
+        if(count($recon) == 0){
+            try{
+                $decrypt_id = Helpers::decryptId($request->rec_id);
+    
+                Reconciliation::where('id', $decrypt_id)
+                ->update([
+                    'recon_status' => 1
+                ]);
+    
+                DB::commit();
+    
+                return response()->json([
+                    'result' => true,
+                    'msg' => "Transaction Success"
+                ]);
+            
+            }
+            catch(Exemption $e){
+                DB::rollback();
+                return $e;
+            }
+        }
+        else{
             return response()->json([
-                'result' => true,
-                'msg' => "Transaction Success"
-            ]);
+                'result' => false,
+                'msg' => 'Invalid.<br>You still have pending reconciliation'
+            ], 422);
+        }
         
-        }
-        catch(Exemption $e){
-            DB::rollback();
-            return $e;
-        }
     }
 }
