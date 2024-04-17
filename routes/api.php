@@ -73,6 +73,8 @@ use App\Http\Controllers\ReconciliationController;
         Route::get('get_requested_recon_details', [RequestController::class, 'get_requested_recon_details']);
         Route::get('get_edit_request', [RequestController::class, 'get_edit_request']);
         Route::post('update_request_data', [RequestController::class, 'update_request_data']);
+        Route::get('get_all_recon_cat', [RequestController::class, 'get_all_recon_cat']);
+        Route::post('update_user_reconciliation', [RequestController::class, 'update_user_reconciliation']);
 
         //^ USER REQUEST ROUTE
         Route::get('get_request', [RequestController::class, 'get_request']);

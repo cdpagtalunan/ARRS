@@ -2,7 +2,7 @@
     <Breadcrumb title="Admin">
         <template #breadcrumbs>
             <li class="breadcrumb-item"><a href="">Dashboard</a></li>
-            <li class="breadcrumb-item active">User</li>
+            <li class="breadcrumb-item active">User Requests</li>
         </template>
     </Breadcrumb>
     <section class="content">

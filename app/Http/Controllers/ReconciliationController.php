@@ -386,7 +386,7 @@ class ReconciliationController extends Controller
 
                 }
                 else{
-                    $result .= "<span class='badge text-bg-danger mt-1'>Logistics Disapproved</span>";
+                    $result .= "<br><span class='badge text-bg-danger mt-1'>Logistics Disapproved</span>";
                 }
 
                 if($approved_request_remarks[0]->request_type == 1){
@@ -401,7 +401,7 @@ class ReconciliationController extends Controller
 
                 }
 
-                $result .= "<span class='badge  text-bg-light text-dark text-break text-wrap mt-1'><strong>Remarks:</strong> <br>".$approved_request_remarks[0]->request_remarks."</span>";
+                $result .= "<br><span class='badge  text-bg-light text-dark text-break text-wrap mt-1'><strong>Remarks:</strong> <br>".$approved_request_remarks[0]->request_remarks."</span>";
 
             }
 

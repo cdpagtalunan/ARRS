@@ -5,11 +5,12 @@ namespace App\Http\Controllers;
 use Mail;
 use Helpers;
 use DataTables;
+use Carbon\Carbon;
 use App\Models\UserAccess;
 use App\Models\ReconRequest;
 use App\Models\UserCategory;
-use Illuminate\Http\Request;
 
+use Illuminate\Http\Request;
 use App\Models\Reconciliation;
 use Illuminate\Support\Facades\DB;
 use App\Models\ReconRequestRemarks;
@@ -651,8 +652,157 @@ class RequestController extends Controller
             DB::rollback();
             return $e;
         }
-       
-        
+    }
 
+    public function get_all_recon_cat(Request $request){
+
+        $dateFrom = 0000-00-00;
+        $dateTo = 0000-00-00;
+        if($request->cutoff_date != ""){
+            $explode_date = explode('to', $request->cutoff_date);
+
+            $dateFrom = Carbon::createFromFormat('m-d-Y', trim($explode_date[0]));
+            $dateTo = Carbon::createFromFormat('m-d-Y', trim($explode_date[1]));
+            $dateFrom = $dateFrom->format('Y-m-d');
+            $dateTo = $dateTo->format('Y-m-d');
+        }
+
+        // $recon_data = DB::connection('mysql')
+        // ->table('reconciliations')
+        // ->whereNull('deleted_at')
+        // // ->where('pr_num', 'LIKE', "%".$request->param['department']."%")
+        // // ->where('classification', $request->param['classification'])
+        // ->where('recon_date_from', '>=', $dateFrom)
+        // ->where('recon_date_to', '<=', $dateTo)
+        // ->select('*')
+        // ->get();
+
+        $categories = DB::connection('mysql')
+        ->table('user_categories')
+        ->whereNull('deleted_at')
+        ->select('*')
+        ->get();
+
+        return DataTables::of($categories)
+        ->addColumn('action', function($categories) use ($dateFrom, $dateTo){
+            $result = "";
+            $recon_data = $this->count_not_finished_user_recon($categories->department, $categories->classification, $dateFrom, $dateTo);
+            $count_logstc_done = $this->count_logstc_finished_recon($categories->department, $categories->classification, $dateFrom, $dateTo);
+
+            $disabled = "";
+
+            if($recon_data != 0 || $recon_data === false || $count_logstc_done != 0 ){
+                // return "zero";
+                $disabled = "disabled";
+            }
+
+            // return $recon_data;
+            $result .= "<center>";
+            $result .= "
+            <button class='btn btn-success btn-sm btnDoneUserReconcile' $disabled
+            data-from = '$dateFrom'
+            data-to = '$dateTo'
+            data-classification = '$categories->classification'
+            data-dept = '$categories->department'
+            >
+                <i class='fa-regular fa-circle-check'></i>
+            </button>";
+            
+            $result .= "</center>";
+
+            return $result;
+        })
+        ->addColumn('status', function($categories) use ($dateFrom, $dateTo){
+            $result = "";
+            $recon_data = $this->count_not_finished_user_recon($categories->department, $categories->classification, $dateFrom, $dateTo);
+
+            $count_logstc_done = $this->count_logstc_finished_recon($categories->department, $categories->classification, $dateFrom, $dateTo);
+
+            // return $recon_data;
+            $result .= "<center>";
+            if($recon_data === false){
+                $result .= "<span class='badge bg-secondary'>No Data</span>";
+            }
+            else if($recon_data != 0){
+                $result .= "<span class='badge bg-warning'>Has Pending</span>";
+            }
+            else if($count_logstc_done == 0){
+                $result .= "<span class='badge bg-info text-dark'>For Logistic Recon</span>";
+            }
+            else{
+                $result .= "<span class='badge bg-success'>Done</span>";
+            }
+            $result .= "</center>";
+            return $result;
+        })
+        ->addColumn('general_category', function($categories){
+            $result = "";
+            $result = "$categories->classification-$categories->department";
+            return $result;
+        })
+        ->rawColumns(['action', 'status', 'general_category'])
+        ->make(true);
+    }
+
+    public function update_user_reconciliation(Request $request){
+        DB::beginTransaction();
+        try{
+            Reconciliation::whereNull('deleted_at')
+            ->where('recon_date_from', '>=', $request->from)
+            ->where('recon_date_to', '<=', $request->to)
+            ->where('pr_num', 'LIKE', "%".$request->dept."%")
+            ->where('classification', $request->classification)
+            ->update([
+                'final_recon_status' => 1
+            ]);
+
+            DB::commit();
+
+            return response()->json([
+                'result' => true,
+                'msg'    => "Successfully Updated"
+            ]);
+    
+        }
+        catch(Exemption $e){
+            DB::rollback();
+            return $e;
+        }
+    }
+
+    function count_not_finished_user_recon($department, $classification, $dateFrom, $dateTo){
+        $data = DB::connection('mysql')
+        ->table('reconciliations')
+        ->whereNull('deleted_at')
+        ->where('pr_num', 'LIKE', "%".$department."%")
+        ->where('classification', $classification)
+        ->where('recon_date_from', '>=', $dateFrom)
+        ->where('recon_date_to', '<=', $dateTo)
+        // ->where('recon_status', '<>', 1)
+        ->select('recon_status')
+        // ->count('recon_status');
+        ->get();
+
+        if(!$data->isEmpty()){
+            $get_rec_status = $data->where('recon_status', '<>', 1);
+
+            return count($get_rec_status);
+        }
+        else{
+            return false;
+        }
+    }
+
+    function count_logstc_finished_recon($department, $classification, $dateFrom, $dateTo){
+        return DB::connection('mysql')
+        ->table('reconciliations')
+        ->whereNull('deleted_at')
+        ->where('pr_num', 'LIKE', "%".$department."%")
+        ->where('classification', $classification)
+        ->where('recon_date_from', '>=', $dateFrom)
+        ->where('recon_date_to', '<=', $dateTo)
+        ->where('final_recon_status', 1)
+        ->select('final_recon_status')
+        ->count('final_recon_status');
     }
 }
