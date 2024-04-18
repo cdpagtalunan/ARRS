@@ -30,10 +30,12 @@
                                     <!-- <button type="button" class="btn btn-sm btn-info" @click="loadDataEPRPO(2)">Load 2nd cutoff</button> -->
 
                                     
-                                    <strong>Status: {{ catStatus }}</strong>
-                                    <!-- <router-link class="btn btn-info btn-sm" :to="{ name: 'UserRequest' }">
-                                        <p>Request List</p>
-                                    </router-link>   -->
+                                    <strong>Status: </strong>
+                                    <strong :class="{
+                                            'text-success': catStatus.status,
+                                            'text-danger': !catStatus.status
+                                    }">{{ catStatus.label }}</strong>
+                                    <!-- <strong>Status: {{ catStatus }}</strong> -->
                                     <router-link :to="{ name: 'UserRequest' }" class="float-end">
                                         <button class="btn btn-primary btn-sm"><icons icon="fas fa-clipboard-list"></icons> See Request List</button>
                                     </router-link>   
@@ -319,7 +321,11 @@
         option: [],
         selected: ""
     });
-    const catStatus = ref();
+    const catStatus = reactive({
+        status: false,
+        label : ""
+    });
+    // const catStatusColor = ref(false);
     const columns = [
         {
             data: 'action',
@@ -427,16 +433,6 @@
     }
     const addEprpoData = reactive({...addEprpoDataInitialState});
 
-    // const modalInitialState = {
-    //     title : "",
-    //     backdrop: "true",
-    //     viewing: 0, // 0-none, 1-viewing, 2-add recon data, 3-update, 4-remove, 5- add data from eprpo
-    //     size: "",
-    //     styleSize: "max-width: 1750px !important; min-width: 1100px;"
-    // };
-    // const modalData = reactive({...modalInitialState});
-
-    // const test = ref([]);
     const columnsAdd = [
         { data: 'action', title: 'Action'},
       
@@ -468,11 +464,13 @@
 
                 console.log('idex', index);
                 if(index == -1){
-                    catStatus.value = "Complete";
+                    catStatus.status = true;
+                    catStatus.label = "Complete";
 
                 }
                 else{
-                    catStatus.value = "Pending";
+                    catStatus.status = false;
+                    catStatus.label = "Pending";
 
                 }
 
@@ -811,8 +809,12 @@
         }).catch((err) => {
             console.log(err.response);
             if(err.response.status == 422){
-                toastr.error(`${err.response.data.msg}`);
-
+                // toastr.error(`${err.response.data.msg}`);
+                Swal.fire({
+                    html: `${err.response.data.msg}`,
+                    icon: "info",
+                    position: "top",
+                })
             }
             else{
                 toastr.error(`${err}`);

@@ -322,6 +322,7 @@ class RequestController extends Controller
             
                     $recon_remove_req->status = 2;
                     $recon_remove_req->recon_details->recon_status = 0;
+                    $recon_remove_req->recon_remarks->approver_remarks = $request->adminDisRemarks;
                     $recon_remove_req->push();
 
                     // * For Email
@@ -386,11 +387,28 @@ class RequestController extends Controller
     }
 
     public function get_request(Request $request){
+
         if(!isset($request->access)){
-            $requests = ReconRequest::where('id', 0)
+            $req = ReconRequest::where('id', 0)
             ->get();
 
-            return DataTables::of($requests)
+            return DataTables::of($req)
+            ->addColumn('action', function($req){
+                $result = "";
+                return $result;
+            })
+            ->addColumn('req_status', function($req){
+                $result = "";
+                return $result;
+            })
+            ->addColumn('control', function($req){
+                return "";
+            })
+            ->addColumn('po', function($req){
+                $result = "";
+                return $result;
+            })
+            ->rawColumns(['action', 'req_status', 'control', 'po', 'invoice_no'])
             ->make(true);
         }
 
@@ -400,7 +418,7 @@ class RequestController extends Controller
         ->get();
         $category_access = collect($category_access)->pluck('ctrl');
 
-        $requests = ReconRequest::with([
+        $req = ReconRequest::with([
             'recon_remarks',
             'recon_details'
         ])
@@ -411,47 +429,47 @@ class RequestController extends Controller
         ->distinct()
         ->get(['ctrl_num','ctrl_num_ext','status', 'request_type','po_num','recon_fkid', 'invoice_no']);
 
-        return DataTables::of($requests)
-        ->addColumn('action', function($requests){
+        return DataTables::of($req)
+        ->addColumn('action', function($req){
             $result = "";
             $result .="<center>";
             $result .= "<button class='btn btn-sm btn-info text-light btnViewReconRequest' title='See more' 
-                        data-ctrl='$requests->ctrl_num' 
-                        data-ctrlExt='$requests->ctrl_num_ext'
-                        data-status='$requests->status'
-                        data-type='$requests->request_type'
+                        data-ctrl='$req->ctrl_num' 
+                        data-ctrlExt='$req->ctrl_num_ext'
+                        data-status='$req->status'
+                        data-type='$req->request_type'
                         >
                             <i class='fas fa-eye'></i>
                         </button>";
             $result .="</center>";
             return $result;
         })
-        ->addColumn('req_status', function($requests){
+        ->addColumn('req_status', function($req){
             $result = "";
             $result .= "<center>";
-            if($requests->request_type == 0){
+            if($req->request_type == 0){
                 $result .= "<span class='badge rounded-pill text-bg-info'>For Addition</span>";
             }
-            else if($requests->request_type == 1){
+            else if($req->request_type == 1){
                 $result .= "<span class='badge rounded-pill text-bg-info'>For Removal</span>";
             }
-            else if($requests->request_type == 2){
+            else if($req->request_type == 2){
                 $result .= "<span class='badge rounded-pill text-bg-info'>For Edit</span>";
             }
 
             $result .= "<br>";
 
-            if($requests->status == 0){
+            if($req->status == 0){
 
                 $result .= "<span class='badge rounded-pill text-bg-warning'>For Approval</span>";
             }
-            else if($requests->status == 1){
+            else if($req->status == 1){
                 $result .= "<span class='badge rounded-pill text-bg-success'>Approved</span>";
             }
-            else if($requests->status == 2){
+            else if($req->status == 2){
                 $result .= "<span class='badge rounded-pill text-bg-danger'>Disapproved</span>";
                 $result .= "<br>";
-                $result .= "Remarks: $request->recon_remarks->approver_remarks";
+                $result .= "Remarks: ".$req->recon_remarks->approver_remarks;
             }
 
 
@@ -459,27 +477,27 @@ class RequestController extends Controller
             
             return $result;
         })
-        ->addColumn('control', function($requests){
-            return "$requests->ctrl_num-$requests->ctrl_num_ext";
+        ->addColumn('control', function($req){
+            return "$req->ctrl_num-$req->ctrl_num_ext";
         })
-        ->addColumn('po', function($requests){
+        ->addColumn('po', function($req){
             $result = "";
-            if($requests->po_num == null){
-                $result .= $requests->recon_details->po_num;
+            if($req->po_num == null){
+                $result .= $req->recon_details->po_num;
             }
             else{
-                $result .= $requests->po_num;
+                $result .= $req->po_num;
             }
             return $result;
         })
-        ->addColumn('invoice_no', function($requests){
+        ->addColumn('invoice_no', function($req){
             $result = "";
 
-            if(isset($requests->recon_details)){
-                $result .= $requests->recon_details->invoice_no;
+            if(isset($req->recon_details)){
+                $result .= $req->recon_details->invoice_no;
             }
             else{
-                $result .= $requests->invoice_no;
+                $result .= $req->invoice_no;
             }
 
             return $result;

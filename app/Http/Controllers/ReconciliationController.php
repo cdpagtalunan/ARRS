@@ -934,6 +934,7 @@ class ReconciliationController extends Controller
         ->where('classification', $request->dt_params['classification'])
         ->where('pr_num', 'LIKE', "%{$request->dt_params['department']}%")
         ->where('final_recon_status', 0)
+        ->whereNull('deleted_at')
         ->select('reconciliations.*')
         ->get();
         

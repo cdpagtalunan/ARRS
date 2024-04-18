@@ -223,7 +223,7 @@
         <template #footerButton>
             <div v-if="dtParams.status == 0">
                 <button class="btn btn-danger mr-1" @click="sendResponse(2)">Disapprove</button>
-                <button class="btn btn-success" @click="sendResponse(1)" v-if="dtParams.type == 2">Approve</button>
+                <button class="btn btn-success" @click="sendResponse(1)" v-if="dtParams.type == 1 || dtParams.type == 2">Approve</button>
                 <button class="btn btn-success" @click="sendResponse(3)" v-if="dtParams.type == 3">Update</button>
             </div>
         </template>
@@ -242,7 +242,7 @@
         </template>
         <template #footerButton>
             <div v-if="modalPromptData.function == 2" class="text-center">
-                <button class="btn btn-success" @click="disapprove()">Submit</button>
+                <button class="btn btn-success" @click="disapprove()" id="btnModalPromtSubmit">Submit</button>
             </div>
         </template>
     </ModalPrompt>
