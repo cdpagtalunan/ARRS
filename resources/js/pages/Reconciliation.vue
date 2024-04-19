@@ -460,10 +460,12 @@
                 }
 
                 console.log('dtArray', dtArray)
-                let index = dtArray.indexOf(0);
+                // let index = dtArray.indexOf(0);
+                // let index = dtArray.indexOf(0);
+                let index =  dtArray.every(v => v === 1)
 
                 console.log('idex', index);
-                if(index == -1){
+                if(index){
                     catStatus.status = true;
                     catStatus.label = "Complete";
 

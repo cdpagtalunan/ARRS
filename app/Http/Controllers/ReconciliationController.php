@@ -120,7 +120,7 @@ class ReconciliationController extends Controller
             AND receiving_header.currency=currency.id
             AND item.id=receiving_details.item_id 
             AND item.unit_of_measure_id=unit_of_measure.id
-            AND date(received_date) BETWEEN "'.$date_from.'" AND "'.$date_to.'"
+            AND date(actual_delivery_date) BETWEEN "'.$date_from.'" AND "'.$date_to.'"
         ');
 
         $collection = collect($eprpo_data)->whereIn('classification_code', $cat_array)->flatten(0);
@@ -688,14 +688,14 @@ class ReconciliationController extends Controller
                 ]);
                 for ($i=0; $i < count($request->addEprpoData['data']); $i++) { 
                     $jsn_decoded_recon_req = json_decode($request->addEprpoData['data'][$i]);
-                    
-                    if(
-                        !Reconciliation::where('po_num', $jsn_decoded_recon_req->reference_po_number)
+                    // return $jsn_decoded_recon_req;
+                    $existing_data = Reconciliation::where('po_num', $jsn_decoded_recon_req->reference_po_number)
                         ->where('pr_num', $jsn_decoded_recon_req->po_number)
                         ->where('prod_code', $jsn_decoded_recon_req->item_code)
                         ->where('rcv_no', $jsn_decoded_recon_req->receiving_number)
-                        ->exists()
-                    ){
+                        ->where('invoice_no', $jsn_decoded_recon_req->other_reference)
+                        ->get();
+                    if(count($existing_data) == 0){
                         ReconRequest::insert([
                             'ctrl_num'           => $control,
                             'ctrl_num_ext'       => $control_ext,
@@ -729,7 +729,8 @@ class ReconciliationController extends Controller
                     }
                     else{
                         return response()->json([
-                            'msg' => 'Error data has duplicate'
+                            'msg' => "Error data has duplicate. <br> Data duplicate on {$existing_data[0]->recon_date_from} to {$existing_data[0]->recon_date_to} reconciliation.",
+                            // 'test' => $existing_data
                         ], 409);
                     }
                 }
