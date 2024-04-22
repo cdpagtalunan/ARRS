@@ -80,7 +80,7 @@ use App\Http\Controllers\ReconciliationController;
         Route::get('get_request', [RequestController::class, 'get_request']);
 
         //^ MAILING ROUTE
-        Route::get('send_email', [EmailController::class, 'send_email']);
+        // Route::get('send_email', [EmailController::class, 'send_email']);
 
         // ^ DECRYPTING ID
         Route::get('decrypt_id', [CommonController::class, 'decrypt_id']);

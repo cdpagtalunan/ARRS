@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Helpers;
+use Mail;
 use App\Models\UserAccess;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -47,5 +48,14 @@ class CommonController extends Controller
 
     public function decrypt_id(Request $request){
         return Helpers::decryptId($request->Id);
+    }
+
+    public function send_mail($mail_filename, $data, $request, $admin_email, $user_email, $subject){
+        Mail::send("mail.{$mail_filename}", $data, function($message) use ($request, $admin_email, $user_email, $subject){
+            $message->to($admin_email);
+            $message->cc($user_email);
+            $message->bcc('cpagtalunan@pricon.ph');
+            $message->subject($subject);
+        });
     }
 }

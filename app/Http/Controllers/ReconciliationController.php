@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use Mail;
-use Helpers;;
+use Helpers;
 use DataTables;
 use Carbon\Carbon;
 use App\Models\CutOff;
@@ -18,9 +18,16 @@ use App\Models\ReconRequestRemarks;
 
 use App\Http\Requests\UserReconRequest;
 use App\Http\Requests\RemoveReconRequest;
+use App\Http\Controllers\CommonController;
+
 
 class ReconciliationController extends Controller
 {
+    protected $mailSender;
+
+    public function __construct(CommonController $mailSender) {
+      $this->mailSender = $mailSender;
+    }
     public function get_category_of_user(Request $request){
         // for ($i=0; $i < count($request->access); $i++) { 
             
@@ -474,7 +481,7 @@ class ReconciliationController extends Controller
     // }
 
     public function request_remove_recon(RemoveReconRequest $request){
-       
+
         $request->validated();
 
         DB::beginTransaction();
@@ -498,12 +505,12 @@ class ReconciliationController extends Controller
             $data = array(
                 'type' => "Removal",
                 'control' => $control."-".$control_ext, // change to $control-$control_ext
-                'remove_request_data' => $recon_details,
+                'request_data' => $recon_details,
                 'user_remarks' => $request->reasons,
                 // 'cutoff_date_req' => $request->cutoff_date,
                 'requestor' => $_SESSION['rapidx_name']
             );
-            // return $data['remove_request_data'];
+            // return $data['request_data'];
             $get_cat = UserCategory::where('classification', $request->extraParams['classification'])
             ->where('department', $request->extraParams['department'])
             ->whereNull('deleted_at')
@@ -518,15 +525,15 @@ class ReconciliationController extends Controller
 
             $admin_email = collect($get_all_user)->where('user_type', 1)->pluck('rapidx_user_details.email')->flatten(0)->toArray();
             $user_email = collect($get_all_user)->where('user_type', 2)->pluck('rapidx_user_details.email')->flatten(0)->toArray();
-            
-            // return $user_email;
-            
-            Mail::send('mail.user_request', $data, function($message) use ($request, $admin_email, $user_email){
-                $message->to($admin_email);
-                $message->cc($user_email);
-                $message->bcc('cpagtalunan@pricon.ph');
-                $message->subject("Reconciliation Request For Removal <ARRS Generated Email Do Not Reply>");
-            });
+            $subject = "Reconciliation Request For Removal <ARRS Generated Email Do Not Reply>";
+
+            $this->mailSender->send_mail('user_request', $data, $request, $admin_email, $user_email, $subject);
+            // Mail::send('mail.user_request', $data, function($message) use ($request, $admin_email, $user_email){
+            //     $message->to($admin_email);
+            //     $message->cc($user_email);
+            //     $message->bcc('cpagtalunan@pricon.ph');
+            //     $message->subject("Reconciliation Request For Removal <ARRS Generated Email Do Not Reply>");
+            // });
             // * End Email
             
             $recon_request_id = ReconRequest::insertGetId([
@@ -830,13 +837,14 @@ class ReconciliationController extends Controller
     
             $admin_email = collect($get_all_user)->where('user_type', 1)->pluck('rapidx_user_details.email')->flatten(0)->toArray();
             $user_email = collect($get_all_user)->where('user_type', 2)->pluck('rapidx_user_details.email')->flatten(0)->toArray();
-            
-            Mail::send('mail.user_request', $data, function($message) use ($request, $admin_email, $user_email){
-                $message->to($admin_email);
-                $message->cc($user_email);
-                $message->bcc('cpagtalunan@pricon.ph');
-                $message->subject("Reconciliation Request For Approval <ARRS Generated Email Do Not Reply>");
-            });
+            $subject = "Reconciliation Request For Approval <ARRS Generated Email Do Not Reply>";
+            $this->mailSender->send_mail('user_request', $data, $request, $admin_email, $user_email, $subject);
+            // Mail::send('mail.user_request', $data, function($message) use ($request, $admin_email, $user_email){
+            //     $message->to($admin_email);
+            //     $message->cc($user_email);
+            //     $message->bcc('cpagtalunan@pricon.ph');
+            //     $message->subject("Reconciliation Request For Approval <ARRS Generated Email Do Not Reply>");
+            // });
 
             return response()->json([
                 'result' => 1,
@@ -888,6 +896,7 @@ class ReconciliationController extends Controller
             }
             $control = $request->extraParams['department'] . "-" . $request->extraParams['classification'];
 
+            
             $recon_request_id = ReconRequest::insertGetId([
                 'request_type' => 2,
                 'recon_fkid'   => $decrypt_id,
@@ -909,6 +918,39 @@ class ReconciliationController extends Controller
             ->update([
                 'recon_status' => 3
             ]);
+
+            // ^ Sending of email
+            $get_cat = UserCategory::where('classification', $request->extraParams['classification'])
+            ->where('department', $request->extraParams['department'])
+            ->whereNull('deleted_at')
+            ->first('id');
+            $get_all_user = UserAccess::with([
+                'rapidx_user_details'
+            ])
+            ->whereNull('deleted_at')
+            ->whereRaw('FIND_IN_SET("'.$get_cat->id.'", category_id)')
+            ->get();
+
+            $raw_to_edit_data = DB::connection('mysql')
+            ->table('reconciliations')
+            ->where('id', $decrypt_id)
+            ->select('*')
+            ->first();
+
+            $admin_email = collect($get_all_user)->where('user_type', 1)->pluck('rapidx_user_details.email')->flatten(0)->toArray();
+            $user_email = collect($get_all_user)->where('user_type', 2)->pluck('rapidx_user_details.email')->flatten(0)->toArray();
+            $data = array(
+                'type' => "Edit",
+                'control' => $control."-".$control_ext,
+                'request_data' => $raw_to_edit_data,
+                'user_remarks' => $request->reasons,
+                // 'cutoff_date_req' => $request->cutoff_date,
+                'requestor' => $_SESSION['rapidx_name']
+            );
+            // // return $data;
+            $subject = "Reconciliation Request For Edit <ARRS Generated Email Do Not Reply>";
+            $this->mailSender->send_mail('user_request', $data, $request, $admin_email, $user_email, $subject); 
+
 
             DB::commit();
 

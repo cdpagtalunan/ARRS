@@ -14,10 +14,16 @@ use Illuminate\Http\Request;
 use App\Models\Reconciliation;
 use Illuminate\Support\Facades\DB;
 use App\Models\ReconRequestRemarks;
+use App\Http\Controllers\CommonController;
 use App\Http\Controllers\ReconciliationController;
 
 class RequestController extends Controller
 {
+    protected $mailSender;
+
+    public function __construct(CommonController $mailSender) {
+      $this->mailSender = $mailSender;
+    }
     public function get_add_request(Request $request){
         $recon_request = ReconRequest::whereNull('deleted_at')
         ->whereNull('recon_fkid')
@@ -206,13 +212,15 @@ class RequestController extends Controller
                         // 'cutoff_date_req' => $request->cutoff_date,
                         'requestor' => $_SESSION['rapidx_name']
                     );
+                    $subject = "Approved Reconciliation Request <ARRS Generated Email Do Not Reply>";
+                    $this->mailSender->send_mail('admin_response', $data, $request, $admin_email, $user_email, $subject);
                     
-                    Mail::send('mail.admin_response', $data, function($message) use ($request, $admin_email, $user_email){
-                        $message->to($user_email);
-                        $message->cc($admin_email);
-                        $message->bcc('cpagtalunan@pricon.ph');
-                        $message->subject("Approved Reconciliation Request <ARRS Generated Email Do Not Reply>");
-                    });
+                    // Mail::send('mail.admin_response', $data, function($message) use ($request, $admin_email, $user_email){
+                    //     $message->to($user_email);
+                    //     $message->cc($admin_email);
+                    //     $message->bcc('cpagtalunan@pricon.ph');
+                    //     $message->subject("Approved Reconciliation Request <ARRS Generated Email Do Not Reply>");
+                    // });
                     // * End Email
 
                     DB::commit();
@@ -239,12 +247,15 @@ class RequestController extends Controller
                         'requestor' => $_SESSION['rapidx_name']
                     );
                     // return $data;
-                    Mail::send('mail.admin_response', $data, function($message) use ($request, $admin_email, $user_email){
-                        $message->to($user_email);
-                        $message->cc($admin_email);
-                        $message->bcc('cpagtalunan@pricon.ph');
-                        $message->subject("Approved Reconciliation Request <ARRS Generated Email Do Not Reply>");
-                    });
+                    $subject = "Approved Reconciliation Request <ARRS Generated Email Do Not Reply>";
+                    $this->mailSender->send_mail('admin_response', $data, $request, $admin_email, $user_email, $subject); 
+                    
+                    // Mail::send('mail.admin_response', $data, function($message) use ($request, $admin_email, $user_email){
+                    //     $message->to($user_email);
+                    //     $message->cc($admin_email);
+                    //     $message->bcc('cpagtalunan@pricon.ph');
+                    //     $message->subject("Approved Reconciliation Request <ARRS Generated Email Do Not Reply>");
+                    // });
 
                     $recon_remove_req->status = 1;
                     $recon_remove_req->recon_details->deleted_at = NOW();
@@ -294,13 +305,15 @@ class RequestController extends Controller
                         // 'cutoff_date_req' => $request->cutoff_date,
                         'requestor' => $_SESSION['rapidx_name']
                     );
+                    $subject = "Disapproved Reconciliation Request <ARRS Generated Email Do Not Reply>";
+                    $this->mailSender->send_mail('admin_response', $data, $request, $admin_email, $user_email, $subject);
                     
-                    Mail::send('mail.admin_response', $data, function($message) use ($request, $admin_email, $user_email){
-                        $message->to($user_email);
-                        $message->cc($admin_email);
-                        $message->bcc('cpagtalunan@pricon.ph');
-                        $message->subject("Disapproved Reconciliation Request <ARRS Generated Email Do Not Reply>");
-                    });
+                    // Mail::send('mail.admin_response', $data, function($message) use ($request, $admin_email, $user_email){
+                    //     $message->to($user_email);
+                    //     $message->cc($admin_email);
+                    //     $message->bcc('cpagtalunan@pricon.ph');
+                    //     $message->subject("Disapproved Reconciliation Request <ARRS Generated Email Do Not Reply>");
+                    // });
 
                     // * END
         
@@ -335,13 +348,15 @@ class RequestController extends Controller
                         // 'cutoff_date_req' => $request->cutoff_date,
                         'requestor' => $_SESSION['rapidx_name']
                     );
+                    $subject = "Disapproved Reconciliation Request <ARRS Generated Email Do Not Reply>";
+                    $this->mailSender->send_mail('admin_response', $data, $request, $admin_email, $user_email, $subject);
                     
-                    Mail::send('mail.admin_response', $data, function($message) use ($request, $admin_email, $user_email){
-                        $message->to($user_email);
-                        $message->cc($admin_email);
-                        $message->bcc('cpagtalunan@pricon.ph');
-                        $message->subject("Disapproved Reconciliation Request <ARRS Generated Email Do Not Reply>");
-                    });
+                    // Mail::send('mail.admin_response', $data, function($message) use ($request, $admin_email, $user_email){
+                    //     $message->to($user_email);
+                    //     $message->cc($admin_email);
+                    //     $message->bcc('cpagtalunan@pricon.ph');
+                    //     $message->subject("Disapproved Reconciliation Request <ARRS Generated Email Do Not Reply>");
+                    // });
 
                     // * END
                     // DB::commit();
