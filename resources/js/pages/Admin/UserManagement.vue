@@ -25,7 +25,7 @@
                                             <div class="spinner-border spinner-border-sm" role="status"/>
                                         </td>
                                     </tr>
-                                    <tr v-for="row in columns" :key="row.id"> 
+                                    <tr v-for="row in columns" :key="row.id">
                                         <td>{{ row.id }}</td>
                                         <td>{{ row.fk_preshipment_id }}</td>
                                     </tr>
@@ -46,12 +46,12 @@
             <Modal :title="modalDetails.title" backdrop="static">
                 <template #body>
                     <!-- {{ formData }} -->
-                    <input type="hidden" v-model="formData.id"> 
+                    <input type="hidden" v-model="formData.id">
                     <label class="form-label">Employee</label>
-                    <VueMultiselect 
+                    <VueMultiselect
                         :class="{'invalid': empMultSel}"
                         v-model="formData.empDetails"
-                        label="name" 
+                        label="name"
                         placeholder="Select one"
                         :options="selectOptions"
                         selectLabel=""
@@ -62,10 +62,10 @@
                             No User Found. Register User on RapidX.
                         </template>
                     </VueMultiselect>
-                    
+
                     <label>User Type</label>
-                    <select 
-                        class="form-control" 
+                    <select
+                        class="form-control"
                         v-model="formData.uType"
                         id="selUType"
                     >
@@ -73,22 +73,22 @@
                         <option value="2">User</option>
                     </select>
                     <label>User Category</label>
-                    <!-- <select 
-                        class="form-control"  
+                    <!-- <select
+                        class="form-control"
                         v-model="formData.uCat"
                         id="selUCat"
                     >
                     <option value="0">Admin</option>
                     <option v-for="selectCatOption in selectCatOptions" :key="selectCatOption.id" :value="selectCatOption.id">{{ selectCatOption.classification + "-" + selectCatOption.department}}</option>
-                     
+
                     </select> -->
 
-                    <VueMultiselect 
+                    <VueMultiselect
                         :class="{'invalid': CatMultSel}"
 
-                        v-model="formData.uCat" 
-                        placeholder="Search Category" 
-                        :custom-label="labelValue => selectCatOptions.find(x => x.id == labelValue).classification +'-'+selectCatOptions.find(x => x.id == labelValue).department" 
+                        v-model="formData.uCat"
+                        placeholder="Search Category"
+                        :custom-label="labelValue => selectCatOptions.find(x => x.id == labelValue).classification +'-'+selectCatOptions.find(x => x.id == labelValue).department"
                         :options="selectCatOptions.map(option => option.id)"
                         :multiple="true">
                     </VueMultiselect>
@@ -100,7 +100,7 @@
         </div>
     </section>
 
-   
+
 </template>
 <style>
 
@@ -108,10 +108,10 @@
 <script setup>
     import { ref, onMounted, reactive, inject } from 'vue';
     import api from '../../axios';
- 
+
     import DataTable from 'datatables.net-vue3';
     import DataTablesCore from 'datatables.net-bs5';
-    
+
 
     DataTable.use(DataTablesCore);
 
@@ -164,7 +164,7 @@
         { data: 'rapidx_user_details.email', title: 'Email' },
         { data: 'user_type', title: 'Type' },
         { data: 'category', title: 'Assigned Category' }
-        
+
     ];
     const options = {
         responsive: true,
@@ -203,7 +203,7 @@
         modalDetails.title = title;
         // getRapidxEmpDetails();
     }
-    
+
     const saveUser = async () => {
         await api.post('api/save_user', formData.value).then((result) => {
             // console.log(result);
@@ -226,27 +226,27 @@
             }
             else{
                 empMultSel.value = false
-               
+
             }
             if(err.response.data.errors.uType != undefined){
                 // formDataErr.uTypeError = true
                 document.querySelector('#selUType').classList.add('is-invalid');
-               
+
             }
             else{
                 // formDataErr.uTypeError = false
                 document.querySelector('#selUType').classList.remove('is-invalid');
-                
+
             }
             if(err.response.data.errors.uCat != undefined){
                 CatMultSel.value = true
                 // document.querySelector('#selUCat').classList.add('is-invalid');
-               
+
             }
             else{
                 CatMultSel.value = false
                 // document.querySelector('#selUCat').classList.remove('is-invalid');
-                
+
             }
 
 
@@ -275,13 +275,13 @@
 
         });
     }
-    
+
     const updateUserStat = async (id, fnName) => {
         await api.post('api/update_user_stat', { emp:id, fn_name: fnName }).then((res) => {
             let response = res.data;
             toastr.success(response.msg);
             dt.ajax.reload();
-            
+
         }).catch((err) => {
 
         });
@@ -295,7 +295,7 @@
             selectCatOptions = result.data;
             selectCatOptions.push({'id':0, 'classification' : 'Admin', 'department' : ''});
         }).catch((err) => {
-            
+
         });
     }
 </script>

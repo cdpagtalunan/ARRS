@@ -46,8 +46,6 @@ class CommonController extends Controller
     }
 
     public function decrypt_id(Request $request){
-
-        
         return Helpers::decryptId($request->Id);
     }
 }

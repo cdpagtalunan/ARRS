@@ -22,7 +22,7 @@ class RequestController extends Controller
         $recon_request = ReconRequest::whereNull('deleted_at')
         ->whereNull('recon_fkid')
         ->distinct()
-        ->get(['ctrl_num_ext', 'status', 'ctrl_num','po_num', 'recon_fkid']);
+        ->get(['ctrl_num_ext', 'status', 'ctrl_num','po_num', 'recon_fkid','invoice_no']);
 
         // $recon_request = DB::connection('mysql')->table('recon_requests')
         // ->select('ctrl_num_ext', 'status', 'ctrl_num')

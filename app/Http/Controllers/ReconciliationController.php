@@ -534,7 +534,8 @@ class ReconciliationController extends Controller
                 'recon_fkid'        => $decrypt_id,
                 'ctrl_num'          => $control,
                 'ctrl_num_ext'      => $control_ext,
-                'created_by'        => $_SESSION['rapidx_user_id']
+                'created_by'        => $_SESSION['rapidx_user_id'],
+                'created_at'        => NOW()
             ]);
             ReconRequestRemarks::insert([
                 'recon_request_id'           => $recon_request_id,
@@ -892,7 +893,8 @@ class ReconciliationController extends Controller
                 'recon_fkid'   => $decrypt_id,
                 'ctrl_num'     => $control,
                 'ctrl_num_ext' => $control_ext,
-                'created_by'   => $_SESSION['rapidx_user_id']
+                'created_by'   => $_SESSION['rapidx_user_id'],
+                'created_at'   => NOW()
 
             ]);
 

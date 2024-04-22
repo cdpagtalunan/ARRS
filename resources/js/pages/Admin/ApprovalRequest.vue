@@ -13,13 +13,13 @@
                         <template #body>
                             <ul class="nav nav-tabs">
                                 <li class="nav-item">
-                                    <a class="nav-link active" data-bs-toggle="tab" href="#uRequestAdd" role="tab" aria-selected="true">Add Request</a>
+                                    <a class="nav-link active" data-bs-toggle="tab" href="#uRequestAdd" @click="dtTableRequest.ajax.reload()" role="tab" aria-selected="true">Add Request</a>
                                 </li>
                                 <li class="nav-item">
-                                    <a class="nav-link" data-bs-toggle="tab" href="#uRequestRemove" role="tab" aria-selected="true">Remove Request</a>
+                                    <a class="nav-link" data-bs-toggle="tab" href="#uRequestRemove" @click="dtTableRemove.ajax.reload()" role="tab" aria-selected="true">Remove Request</a>
                                 </li>
                                 <li class="nav-item">
-                                    <a class="nav-link" data-bs-toggle="tab" href="#uRequestEdit" role="tab" aria-selected="true">Edit Request</a>
+                                    <a class="nav-link" data-bs-toggle="tab" href="#uRequestEdit" @click="dtTableEdit.ajax.reload()" role="tab" aria-selected="true">Edit Request</a>
                                 </li>
                             </ul>
                             <div class="tab-content">
@@ -322,8 +322,9 @@
             },
         },
         { data: 'req_status', title: 'Status' },
-        { data: 'control', title: 'Control Number' },
-        { data: 'po_num', title: 'PO Number' }
+        { data: 'po_num', title: 'PO Number' },
+        { data: 'invoice_no', title: 'Invoice Number' },
+        { data: 'control', title: 'Control Number' }
     ];
    
     const options = {
@@ -381,8 +382,9 @@
             },
         },
         { data: 'status', title: 'Status' },
-        { data: 'control', title: 'Control Number' },
-        { data: 'recon_details.po_num', title: 'PO Number' }
+        { data: 'recon_details.po_num', title: 'PO Number' },
+        { data: 'recon_details.invoice_no', title: 'Invoice Number' },
+        { data: 'control', title: 'Control Number' }
     ];
     const editColumns = [
         {
@@ -436,8 +438,10 @@
             },
         },
         { data: 'status', title: 'Status' },
-        { data: 'control', title: 'Control Number' },
-        { data: 'recon_details.po_num', title: 'PO Number' }
+        { data: 'recon_details.po_num', title: 'PO Number' },
+        { data: 'recon_details.invoice_no', title: 'Invoice Number' },
+        { data: 'control', title: 'Control Number' }
+
     ];
 
     const requestDetailsColumn = [
