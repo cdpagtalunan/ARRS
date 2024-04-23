@@ -200,7 +200,7 @@ class AdminController extends Controller
     public function get_cat(Request $request){
         $cat = DB::connection('mysql')->table('user_categories')
         ->whereNull('deleted_at')
-        ->select('id', 'classification', 'department')
+        ->select('id', 'classification', 'department', 'deleted_at')
         ->get();
         return $cat;
         // return response()->json(['res' => $cat]);

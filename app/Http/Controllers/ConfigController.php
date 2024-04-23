@@ -213,10 +213,21 @@ class ConfigController extends Controller
             else{
                 $update_array['deleted_at'] = null;
             }
+
+            // * REMOVAL ON USER ACCESS OF CATEGORY ID THAT WILL BE INACTIVE
+            $user_with_inactive_access = DB::connection('mysql')
+            ->table('user_accesses')
+            ->whereRaw('FIND_IN_SET("'.$encrypted_id.'", category_id)')
+            ->update([
+                "category_id" => DB::raw("TRIM(BOTH ',' FROM REPLACE(CONCAT(',', `category_id`, ','), ',$encrypted_id,', ','))")
+            ]);
+            // * END
+          
             
             DB::connection('mysql')->table('user_categories')
             ->where('id', $encrypted_id)
             ->update($update_array);
+
             DB::commit();
 
             return response()->json([

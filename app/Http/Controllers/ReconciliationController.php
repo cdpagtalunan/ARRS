@@ -33,6 +33,7 @@ class ReconciliationController extends Controller
             
         // }
         $user_cat = UserCategory::whereIn('id', $request->access)
+        ->whereNull('deleted_at')
         ->get();
         return response()->json(['uAccess' => $user_cat]);
     }
