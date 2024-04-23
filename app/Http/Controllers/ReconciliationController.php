@@ -60,6 +60,17 @@ class ReconciliationController extends Controller
             $date_to = $mutable->format('Y-m')."-".$day_to;
             $date_from = $mutable->subMonth()->format('Y-m')."-".$day_from;
 
+            // * TO INSERT ALL REMOVED RECON TO NEW RECON MONTH
+            // ^ NOTE: THIS WILL ONLY WORK FOR NEW CUTOFF ONLY
+
+            Reconciliation::where('recon_status', 2)
+            ->whereNotNull('deleted_at')
+            ->update([
+                'recon_status' => 0,
+                'recon_date_from' => $date_from,
+                'recon_date_to' => $date_to,
+                'deleted_at' => NULL
+            ]);
         }
         else{
             $day_to = 25;
@@ -187,10 +198,8 @@ class ReconciliationController extends Controller
                     'created_at'        => NOW()
                 ]);
             }
-
-           
-
         }
+
         return response()->json([
             'query1' => $collection,
             'date_from' => $date_from,
@@ -494,7 +503,7 @@ class ReconciliationController extends Controller
             else{
                 $control_ext = 1;
             }
-            $control = $request->extraParams['department'] . "-" . $request->extraParams['classification'];
+            $control = $request->extraParams['department'] . "~" . $request->extraParams['classification'];
 
 
             $decrypt_id = Helpers::decryptId($request->reconId);
@@ -504,7 +513,7 @@ class ReconciliationController extends Controller
             ->first();
             $data = array(
                 'type' => "Removal",
-                'control' => $control."-".$control_ext, // change to $control-$control_ext
+                'control' => $control."~".$control_ext, // change to $control-$control_ext
                 'request_data' => $recon_details,
                 'user_remarks' => $request->reasons,
                 // 'cutoff_date_req' => $request->cutoff_date,
@@ -682,7 +691,7 @@ class ReconciliationController extends Controller
         // return;
         $recon_control = ReconRequest::orderBy('ctrl_num_ext', 'DESC')->first();
         
-        $control = $request->addEprpoData['reconClassification']['department'] . "-" . $request->addEprpoData['reconClassification']['classification'];
+        $control = $request->addEprpoData['reconClassification']['department'] . "~" . $request->addEprpoData['reconClassification']['classification'];
 
         DB::beginTransaction();
         try{
@@ -894,7 +903,7 @@ class ReconciliationController extends Controller
             else{
                 $control_ext = 1;
             }
-            $control = $request->extraParams['department'] . "-" . $request->extraParams['classification'];
+            $control = $request->extraParams['department'] . "~" . $request->extraParams['classification'];
 
             
             $recon_request_id = ReconRequest::insertGetId([

@@ -22,6 +22,8 @@ use App\Http\Controllers\ExportController;
     * THIS ROUTE WILL CHECK IF RAPIDX SESSION STILL EXIST
     * IF NO SESSION EXIST, SYSTEM WILL REDIRECT USER TO LOGIN 
 */
+Route::view('/mailer/mail','welcome')->name('mail');
+
 Route::get('check_user', function (Request $request) {
     session_start();
     if($_SESSION){
@@ -33,7 +35,6 @@ Route::get('check_user', function (Request $request) {
     }
 });
 
-Route::view('/mailer/mail','welcome')->name('mail');
 
 
 Route::middleware('CheckSessionExist')->group(function(){

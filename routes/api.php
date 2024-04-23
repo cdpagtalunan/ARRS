@@ -25,6 +25,7 @@ use App\Http\Controllers\ReconciliationController;
 // Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 //     return $request->user();
 // });
+Route::get('get_eprpo_data', [ReconciliationController::class, 'get_eprpo_data']);
 
 // Route::group(['middleware' => ['auth:sanctum']], function () {
     Route::middleware('CheckSessionExist')->group(function(){
@@ -54,7 +55,6 @@ use App\Http\Controllers\ReconciliationController;
         
         //^ RECONCILIATION ROUTE
         Route::get('get_category_of_user', [ReconciliationController::class, 'get_category_of_user']);
-        Route::get('get_eprpo_data', [ReconciliationController::class, 'get_eprpo_data']);
         Route::get('get_recon', [ReconciliationController::class, 'get_recon']);
         Route::get('get_recon_details', [ReconciliationController::class, 'get_recon_details']);
         // Route::post('save_recon', [ReconciliationController::class, 'save_recon']);

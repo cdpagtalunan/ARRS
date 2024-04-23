@@ -32,7 +32,7 @@
             date.value = moment().format('l');
             // day.value = moment().format('D');
 
-            if(timer.value === "9:47:30 AM" && moment().format('D') == '20'){ // FIRST RECON
+            if(timer.value === "12:05:30 AM" && moment().format('D') == '16'){ // FIRST RECON
                 loadDataEPRPO(1)
             }
             if(timer.value === "12:05:30 AM" && moment().format('D') == '26'){ // SECOND RECON

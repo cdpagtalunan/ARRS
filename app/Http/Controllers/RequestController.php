@@ -67,7 +67,7 @@ class RequestController extends Controller
             return $result;
         })
         ->addColumn('control', function($recon_request){
-            return "$recon_request->ctrl_num-$recon_request->ctrl_num_ext";
+            return "$recon_request->ctrl_num~$recon_request->ctrl_num_ext";
         })
         ->rawColumns(['req_status', 'action', 'control'])
         ->make(true);
@@ -114,7 +114,7 @@ class RequestController extends Controller
             return $result;
         })
         ->addColumn('control', function($recon_request){
-            return "$recon_request->ctrl_num-$recon_request->ctrl_num_ext";
+            return "$recon_request->ctrl_num~$recon_request->ctrl_num_ext";
         })
         ->rawColumns(['action', 'status', 'control'])
         ->make(true);
@@ -140,7 +140,7 @@ class RequestController extends Controller
 
         try{
             // * Get Email recipient
-            $exploded_data = explode('-', $request->dtParams['ctrl_number']);
+            $exploded_data = explode('~', $request->dtParams['ctrl_number']);
             $get_cat = UserCategory::where('classification', $exploded_data[1])
             ->where('department', $exploded_data[0])
             ->whereNull('deleted_at')
