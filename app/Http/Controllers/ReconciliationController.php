@@ -29,12 +29,27 @@ class ReconciliationController extends Controller
       $this->mailSender = $mailSender;
     }
     public function get_category_of_user(Request $request){
-        // for ($i=0; $i < count($request->access); $i++) { 
-            
-        // }
-        $user_cat = UserCategory::whereIn('id', $request->access)
-        ->whereNull('deleted_at')
-        ->get();
+        $user_cat;
+
+        if(in_array(0, $request->access)){
+            $user_cat = DB::connection('mysql')
+            ->table('user_categories')
+            ->whereNull('deleted_at')
+            ->select('*')
+            ->get();
+
+            // $user_cat = UserCategory::whereNull('deleted_at')
+            // ->get();
+        }
+        else{
+            $user_cat = DB::connection('mysql')
+            ->table('user_categories')
+            ->whereIn('id', $request->access)
+            ->whereNull('deleted_at')
+            ->select('*')
+            ->get();
+        }
+       
         return response()->json(['uAccess' => $user_cat]);
     }
 

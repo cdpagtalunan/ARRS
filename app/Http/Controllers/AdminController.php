@@ -105,7 +105,8 @@ class AdminController extends Controller
             $user_access_array = array(
                 'rapidx_emp_no'   => $request->empDetails['id'],
                 'category_id'     => implode(",",$request->uCat),
-                'user_type'       => $request->uType
+                'user_type'       => $request->uType,
+                'user_desig'       => $request->uDesig
             );
             
             if(isset($request->id)){ // UPDATE

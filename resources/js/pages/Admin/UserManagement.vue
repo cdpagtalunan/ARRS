@@ -92,6 +92,20 @@
                         :options="selectCatOptions.map(option => option.id)"
                         :multiple="true">
                     </VueMultiselect>
+
+                    <label class="mt-2">User Designation</label> <br>
+                    <div class="form-check">
+                        <input class="form-check-input" type="radio" id="selDesigF1" v-model="formData.uDesig" value="1">
+                        <label class="form-check-label" for="selDesigF1">
+                            Factory 1
+                        </label>
+                    </div>
+                    <div class="form-check">
+                        <input class="form-check-input" type="radio" id="selDesigF3" v-model="formData.uDesig" value="2">
+                        <label class="form-check-label" for="selDesigF3">
+                            Factory 3
+                        </label>
+                    </div>
                 </template>
                 <template #footerButton>
                     <button type="button" class="btn btn-success" @click="saveUser">Save</button>
@@ -163,7 +177,19 @@
         { data: 'rapidx_user_details.name', title: 'Name' },
         { data: 'rapidx_user_details.email', title: 'Email' },
         { data: 'user_type', title: 'Type' },
-        { data: 'category', title: 'Assigned Category' }
+        { data: 'category', title: 'Assigned Category' },
+        { 
+            data: 'user_desig',
+            title: 'Designation',
+            render: function(data){
+                if(data == 1){
+                    return "Factory 1";
+                }
+                else{
+                    return "Factory 3"
+                }
+            }
+        }
 
     ];
     const options = {
@@ -245,8 +271,18 @@
             }
             else{
                 CatMultSel.value = false
-                // document.querySelector('#selUCat').classList.remove('is-invalid');
+                // document.querySelector('#selUCat').classList.remove('is-invalid')
+            }
+            if(err.response.data.errors.uDesig != undefined){
+                document.querySelector('#selDesigF1').classList.add('is-invalid');
+                document.querySelector('#selDesigF3').classList.add('is-invalid');
+                // document.querySelector('#selUCat').classList.add('is-invalid');
 
+            }
+            else{
+                CatMultSel.value = false
+                document.querySelector('#selDesigF1').classList.remove('is-invalid');
+                document.querySelector('#selDesigF3').classList.remove('is-invalid');
             }
 
 
@@ -270,6 +306,7 @@
             formData.value.empDetails = data.userData.rapidx_user_details;
             formData.value.uType = data.userData.user_type;
             formData.value.uCat = data.forSelCat;
+            formData.value.uDesig = data.userData.user_desig;
             modals.value.show();
         }).catch((err) => {
 

@@ -26,7 +26,8 @@ class UserRequest extends FormRequest
         return [
             'empDetails'    => 'required',
             'uCat'          => 'required',
-            'uType'         => 'required'
+            'uType'         => 'required',
+            'uDesig'         => 'required'
         ];
     }
 

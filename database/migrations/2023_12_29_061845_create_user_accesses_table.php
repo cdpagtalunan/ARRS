@@ -18,6 +18,7 @@ class CreateUserAccessesTable extends Migration
             $table->string('rapidx_emp_no')->comment = "Link to Rapidx Employee ID";
             $table->string('category_id')->comment = "from user category";
             $table->unsignedSmallInteger('user_type')->comment = "1-admin, 2-user";
+            $table->SmallInteger('user_desig')->comment = "1-Factory_1, 2-Factory_3";
             $table->string('created_by');
             $table->string('updated_by')->nullable();
             $table->timestamps();

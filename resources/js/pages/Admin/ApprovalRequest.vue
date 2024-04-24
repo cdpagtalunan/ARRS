@@ -514,6 +514,7 @@
                         modals.value.hide();
                         // if(result.data.result == 1){
                         dt.ajax.reload();
+                        dtTableRemove.ajax.reload();
                         // }
                         
                     }).catch((err) => {
@@ -527,7 +528,7 @@
             modalPromptData.function = 2;
             modalsPrompt.value.show();
         }
-        else if(adminResponse == 3){
+        else if(adminResponse == 3){ // EDIT
             // console.log(reconDetailsById.value.reqId);
             api.post('api/update_request_data', {req_id: reconDetailsById.value.reqId}).then((result) => {
                 // console.log(result);
