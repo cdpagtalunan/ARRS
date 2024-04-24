@@ -55,172 +55,180 @@ class ReconciliationController extends Controller
 
     public function get_eprpo_data(Request $request){
 
-        // $cut_off = CutOff::where('cut_off', $request->cutoff)
-        // ->whereNull('deleted_at')
-        // ->first();
-
-        $mutable = Carbon::today();
-        $current_year = $mutable->format('Y');
-        $month_today = $mutable->format('m');
-
-        // $date_to = $mutable->format('Y-m')."-".$cut_off->day_to;
-        // // $month = $mutable->format('M'); // this is for reconciliation_dates
-
-        // $date_from = $mutable->subMonth()->format('Y-m')."-".$cut_off->day_from;
-        // $from_date = $mutable->format('M').". ".$cut_off->day_from; // this is for reconciliation_dates
-        // $date_range = "$from_date - $to_date"; // this is for reconciliation_dates
-        // return;
-        if($request->cutoff == 1){
-            $day_to = 15;
-            $day_from = 26;
-            $date_to = $mutable->format('Y-m')."-".$day_to;
-            $date_from = $mutable->subMonth()->format('Y-m')."-".$day_from;
-
-            // * TO INSERT ALL REMOVED RECON TO NEW RECON MONTH
-            // ^ NOTE: THIS WILL ONLY WORK FOR NEW CUTOFF ONLY
-
-            Reconciliation::where('recon_status', 2)
-            ->whereNotNull('deleted_at')
-            ->update([
-                'recon_status' => 0,
-                'recon_date_from' => $date_from,
-                'recon_date_to' => $date_to,
-                'deleted_at' => NULL
-            ]);
-        }
-        else{
-            $day_to = 25;
-            $day_from = 16;
-            $date_to = $mutable->format('Y-m')."-".$day_to;
-            $date_from = $mutable->format('Y-m')."-".$day_from;
-        }
-
-        $recon_date = ReconciliationDate::firstOrCreate(
-            ['month' => $month_today],
-            ['year' => $current_year, 'cutoff' => $request->cutoff ]
-        );
-        if($recon_date->cutoff != $request->cutoff){
-            ReconciliationDate::where('id', $recon_date->id)
-            ->update([
-                'cutoff' => $request->cutoff
-            ]);
-        }
-        $categories = DB::connection('mysql')->table('user_categories')
-        ->whereNull('deleted_at')
-        ->get();
-
-        $distinct_cat = collect($categories)->unique('classification')->flatten(0);
-      
-        $cat_array = array();
-        for($x = 0; $x < count($distinct_cat); $x++){
-            // $result .= $cat_details[$x]->classification."-".$cat_details[$x]->department;
-            array_push($cat_array, $distinct_cat[$x]->classification);
-        }
-
-        // return;
-        $eprpo_data = DB::connection('mysql_eprpo')
-        ->select('
-            SELECT 
-            item.item_name as item_name1,
-            item.long_description as long_description1,
-            receiving_details.item_name,
-            receiving_details.long_description,
-            receiving_details.receiving_number,
-            receiving_header.received_date,
-            receiving_header.received_by,
-            receiving_header.actual_delivery_date,
-            supplier_name,
-            item_code,
-            receiving_details.unit_price,
-            receiving_details.quantity_received,
-            currency_code,
-            reference_po_number,
-            other_reference,
-            unit_of_measure_id,
-            unit_of_measure_code,
-
-            (SELECT purchase_order_details.`classification_code` FROM `purchase_order_details` WHERE purchase_order_details.`order_number` = receiving_header.reference_po_number AND purchase_order_details.item_id= receiving_details.item_id LIMIT 0,1 ) as classification_code,
-            (SELECT purchase_order_header.`po_remarks` FROM `purchase_order_header` WHERE purchase_order_header.`order_number` = receiving_header.reference_po_number LIMIT 0,1) as po_remarks,
-            (SELECT purchase_order_details.`quantity` 
-            FROM `purchase_order_details` 
-            WHERE purchase_order_details.`order_number` = receiving_header.reference_po_number and 
-            receiving_header.receiving_number = receiving_details.receiving_number and
-            receiving_details.item_id = purchase_order_details.item_id LIMIT 0,1) as po_balance,
-            (SELECT hold_invoice_remarks.`remarks` FROM `hold_invoice_remarks` WHERE hold_invoice_remarks.`reference_po_number` = receiving_header.reference_po_number LIMIT 0,1) as hold_remarks
-
-            FROM receiving_header, receiving_details, item, supplier, currency, unit_of_measure
-            WHERE receiving_header.receiving_number=receiving_details.receiving_number
-            AND supplier.id=receiving_header.supplier_id 
-            AND receiving_header.currency=currency.id
-            AND item.id=receiving_details.item_id 
-            AND item.unit_of_measure_id=unit_of_measure.id
-            AND date(actual_delivery_date) BETWEEN "'.$date_from.'" AND "'.$date_to.'"
-        ');
-
-        $collection = collect($eprpo_data)->whereIn('classification_code', $cat_array)->flatten(0);
-
-
-        for ($i=0; $i < count($collection); $i++) { 
-
-            $po_number      = $this->getRefReqNum($collection[$i]->reference_po_number);
-            $allocation     = $this->getAllocation($po_number);
-            $po_date        = $this->getPoDate($collection[$i]->reference_po_number);
-            $assigned_to    = $this->getPoAssignedTo($collection[$i]->reference_po_number);
-            $received_by    = $this->getFullName($collection[$i]->received_by);
-            $item_name = $collection[$i]->item_name == '' ? $collection[$i]->item_name1 : $collection[$i]->item_name;
-            $long_description = $collection[$i]->long_description == '' ? $collection[$i]->long_description1 : $collection[$i]->long_description;
-			$po_balance = ( $collection[$i]->po_balance - $collection[$i]->quantity_received );
-
-            /*
-                * This will check if data exist.
-                * this is done for adding and removing of invoices from next month.
-                * this will prevent multiple input.
-            */ 
-            if(
-                !Reconciliation::where('po_num',$collection[$i]->reference_po_number)
-                ->where('pr_num', $po_number)
-                ->where('prod_code', $collection[$i]->item_code)
-                ->where('rcv_no', $collection[$i]->receiving_number)
-                ->exists()
-            ){
-                Reconciliation::insert([
-                    'po_date'           => $po_date,
-                    'po_num'            => $collection[$i]->reference_po_number,
-                    'pr_num'            => $po_number,
-                    'prod_code'         => $collection[$i]->item_code,
-                    'prod_name'         => $item_name,
-                    'prod_desc'         => $long_description,
-                    'supplier'          => $collection[$i]->supplier_name,
-                    'currency'          => $collection[$i]->currency_code,
-                    'uom'               => $collection[$i]->unit_of_measure_code,
-                    'unit_price'        => $collection[$i]->unit_price,
-                    'received_qty'      => $collection[$i]->quantity_received,
-                    'po_balance'        => $po_balance,
-                    // 'pic'               => 
-                    'received_date'     => $collection[$i]->received_date,
-                    // 'delivery_date'     => $collection[$i]->item_code,
-                    'delivery_date'     => $collection[$i]->actual_delivery_date,
-                    'received_by'       => $received_by,
-                    'invoice_no'        => $collection[$i]->other_reference,
-                    'rcv_no'            => $collection[$i]->receiving_number,
-                    'classification'    => $collection[$i]->classification_code,
-                    'allocation'        => $allocation,
-                    'po_remarks'        => $collection[$i]->po_remarks,
-                    'hold_remarks'      => $collection[$i]->hold_remarks,
+        DB::beginTransaction();
+        
+        try{
+            $mutable = Carbon::today();
+            $current_year = $mutable->format('Y');
+            $month_today = $mutable->format('m');
     
-                    'recon_date_from'   => $date_from,
-                    'recon_date_to'     => $date_to,
-
-                    'created_at'        => NOW()
+            if($request->cutoff == 1){
+                $day_to = 15;
+                $day_from = 26;
+                $date_to = $mutable->format('Y-m')."-".$day_to;
+                $date_from = $mutable->subMonth()->format('Y-m')."-".$day_from;
+    
+                // * TO INSERT ALL REMOVED RECON TO NEW RECON MONTH
+                // ^ NOTE: THIS WILL ONLY WORK FOR NEW CUTOFF ONLY
+    
+                Reconciliation::where('recon_status', 2)
+                ->whereNotNull('deleted_at')
+                ->update([
+                    'recon_status' => 0,
+                    'recon_date_from' => $date_from,
+                    'recon_date_to' => $date_to,
+                    'deleted_at' => NULL
                 ]);
             }
-        }
+            else{
+                $day_to = 25;
+                $day_from = 16;
+                $date_to = $mutable->format('Y-m')."-".$day_to;
+                $date_from = $mutable->format('Y-m')."-".$day_from;
+            }
+    
+            $recon_date = ReconciliationDate::firstOrCreate(
+                ['month' => $month_today],
+                ['year' => $current_year, 'cutoff' => $request->cutoff ]
+            );
+            if($recon_date->cutoff != $request->cutoff){
+                ReconciliationDate::where('id', $recon_date->id)
+                ->update([
+                    'cutoff' => $request->cutoff
+                ]);
+            }
+            $categories = DB::connection('mysql')->table('user_categories')
+            ->whereNull('deleted_at')
+            ->get();
+    
+            $distinct_cat = collect($categories)->unique('classification')->flatten(0);
+          
+            $cat_array = array();
+            for($x = 0; $x < count($distinct_cat); $x++){
+                // $result .= $cat_details[$x]->classification."-".$cat_details[$x]->department;
+                array_push($cat_array, $distinct_cat[$x]->classification);
+            }
+    
+            // return;
+            $eprpo_data = DB::connection('mysql_eprpo')
+            ->select('
+                SELECT 
+                item.item_name as item_name1,
+                item.long_description as long_description1,
+                receiving_details.item_name,
+                receiving_details.long_description,
+                receiving_details.receiving_number,
+                receiving_header.received_date,
+                receiving_header.received_by,
+                receiving_header.actual_delivery_date,
+                supplier_name,
+                item_code,
+                receiving_details.unit_price,
+                receiving_details.quantity_received,
+                currency_code,
+                reference_po_number,
+                other_reference,
+                unit_of_measure_id,
+                unit_of_measure_code,
+    
+                (SELECT purchase_order_details.`classification_code` FROM `purchase_order_details` WHERE purchase_order_details.`order_number` = receiving_header.reference_po_number AND purchase_order_details.item_id= receiving_details.item_id LIMIT 0,1 ) as classification_code,
+                (SELECT purchase_order_header.`po_remarks` FROM `purchase_order_header` WHERE purchase_order_header.`order_number` = receiving_header.reference_po_number LIMIT 0,1) as po_remarks,
+                (SELECT purchase_order_details.`quantity` 
+                FROM `purchase_order_details` 
+                WHERE purchase_order_details.`order_number` = receiving_header.reference_po_number and 
+                receiving_header.receiving_number = receiving_details.receiving_number and
+                receiving_details.item_id = purchase_order_details.item_id LIMIT 0,1) as po_balance,
+                (SELECT hold_invoice_remarks.`remarks` FROM `hold_invoice_remarks` WHERE hold_invoice_remarks.`reference_po_number` = receiving_header.reference_po_number LIMIT 0,1) as hold_remarks
+    
+                FROM receiving_header, receiving_details, item, supplier, currency, unit_of_measure
+                WHERE receiving_header.receiving_number=receiving_details.receiving_number
+                AND supplier.id=receiving_header.supplier_id 
+                AND receiving_header.currency=currency.id
+                AND item.id=receiving_details.item_id 
+                AND item.unit_of_measure_id=unit_of_measure.id
+                AND date(actual_delivery_date) BETWEEN "'.$date_from.'" AND "'.$date_to.'"
+            ');
+    
+            $collection = collect($eprpo_data)->whereIn('classification_code', $cat_array)->flatten(0);
+    
+            for ($i=6; $i < count($collection); $i++) { 
+    
+                $po_number      = $this->getRefReqNum($collection[$i]->reference_po_number);
+                $allocation     = $this->getAllocation($po_number);
+                $po_date        = $this->getPoDate($collection[$i]->reference_po_number);
+                $assigned_to    = $this->getPoAssignedTo($collection[$i]->reference_po_number);
+                $received_by    = $this->getFullName($collection[$i]->received_by);
+                $ship_to        = $this->getShipTo($po_number);
+                $ship_to1; // String only
+                if($ship_to == 0){
+                    $ship_to1 = "Factory 1";
+                }
+                else{
+                    $ship_to1 = $ship_to;
+                }
+    
+                $item_name = $collection[$i]->item_name == '' ? $collection[$i]->item_name1 : $collection[$i]->item_name;
+                $long_description = $collection[$i]->long_description == '' ? $collection[$i]->long_description1 : $collection[$i]->long_description;
+                $po_balance = ( $collection[$i]->po_balance - $collection[$i]->quantity_received );
+    
+                /*
+                    * This will check if data exist.
+                    * this is done for adding and removing of invoices from next month.
+                    * this will prevent multiple input.
+                */ 
+                if(
+                    !Reconciliation::where('po_num',$collection[$i]->reference_po_number)
+                    ->where('pr_num', $po_number)
+                    ->where('prod_code', $collection[$i]->item_code)
+                    ->where('rcv_no', $collection[$i]->receiving_number)
+                    ->exists()
+                ){
+                    Reconciliation::insert([
+                        'po_date'           => $po_date,
+                        'po_num'            => $collection[$i]->reference_po_number,
+                        'pr_num'            => $po_number,
+                        'prod_code'         => $collection[$i]->item_code,
+                        'prod_name'         => $item_name,
+                        'prod_desc'         => $long_description,
+                        'supplier'          => $collection[$i]->supplier_name,
+                        'currency'          => $collection[$i]->currency_code,
+                        'uom'               => $collection[$i]->unit_of_measure_code,
+                        'unit_price'        => $collection[$i]->unit_price,
+                        'received_qty'      => $collection[$i]->quantity_received,
+                        'po_balance'        => $po_balance,
+                        // 'pic'               => 
+                        'received_date'     => $collection[$i]->received_date,
+                        // 'delivery_date'     => $collection[$i]->item_code,
+                        'delivery_date'     => $collection[$i]->actual_delivery_date,
+                        'received_by'       => $received_by,
+                        'invoice_no'        => $collection[$i]->other_reference,
+                        'rcv_no'            => $collection[$i]->receiving_number,
+                        'classification'    => $collection[$i]->classification_code,
+                        'allocation'        => $allocation,
+                        'po_remarks'        => $collection[$i]->po_remarks,
+                        'hold_remarks'      => $collection[$i]->hold_remarks,
+        
+                        'recon_date_from'   => $date_from,
+                        'recon_date_to'     => $date_to,
+                        'ship_to'           => $ship_to1,
+    
+                        'created_at'        => NOW()
+                    ]);
+                }
+            }
 
-        return response()->json([
-            'query1' => $collection,
-            'date_from' => $date_from,
-            'date_to' => $date_to
-        ]);
+            DB::commit();
+    
+            return response()->json([
+                'query1' => $collection,
+                'date_from' => $date_from,
+                'date_to' => $date_to
+            ]);
+        }
+        catch(Exemption $e){
+            DB::rollback();
+            return $e;
+        }
     }
 
     function getRefReqNum($po){
@@ -237,9 +245,6 @@ class ReconciliationController extends Controller
         if($query != null){
             $result = $query->reference_requisition_number;
         }
-        // while($obj=fetch($rs)){
-        //     $result = $obj->reference_requisition_number;
-        // }
         return $result;
     }
     function getAllocation($prnumber){
@@ -326,6 +331,15 @@ class ReconciliationController extends Controller
 
         $full_name = "$query->first_name $query->middle_name $query->last_name";
         return $full_name;
+    }
+
+    function getShipTo($pr_number){
+        $query = DB::connection('mysql_eprpo')->table('purchase_requisition_header')
+        ->where('requisition_number', $pr_number)
+        ->select('requisition_number', 'facshipto')
+        ->first();
+
+        return $query->facshipto;
     }
 
     public function get_recon(Request $request){
