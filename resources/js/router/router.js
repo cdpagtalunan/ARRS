@@ -45,8 +45,8 @@ const hasAccess =  () => { // * TO VALIDATE USER HAS ACCESS ON SYSTEM
 
 const routes = [
     {
-        // path: "/ARRS/",
-        path: "/ARRS_rev1/",
+        path: "/ARRS/",
+        // path: "/ARRS_rev1/",
         component: AdminLayout,
         // beforeEnter: hasAccess,
         children: [
