@@ -151,7 +151,7 @@ class ReconciliationController extends Controller
     
             $collection = collect($eprpo_data)->whereIn('classification_code', $cat_array)->flatten(0);
     
-            for ($i=6; $i < count($collection); $i++) { 
+            for ($i=0; $i < count($collection); $i++) { 
     
                 $po_number      = $this->getRefReqNum($collection[$i]->reference_po_number);
                 $allocation     = $this->getAllocation($po_number);
@@ -160,7 +160,8 @@ class ReconciliationController extends Controller
                 $received_by    = $this->getFullName($collection[$i]->received_by);
                 $ship_to        = $this->getShipTo($po_number);
                 $ship_to1; // String only
-                if($ship_to == 0){
+                // return $ship_to;
+                if($ship_to->facshipto == 0){
                     $ship_to1 = "Factory 1";
                 }
                 else{
@@ -211,6 +212,7 @@ class ReconciliationController extends Controller
                         'recon_date_from'   => $date_from,
                         'recon_date_to'     => $date_to,
                         'ship_to'           => $ship_to1,
+                        'requisitioner'     => "$ship_to->first_name $ship_to->last_name",
     
                         'created_at'        => NOW()
                     ]);
@@ -335,16 +337,18 @@ class ReconciliationController extends Controller
 
     function getShipTo($pr_number){
         $query = DB::connection('mysql_eprpo')->table('purchase_requisition_header')
-        ->where('requisition_number', $pr_number)
-        ->select('requisition_number', 'facshipto')
+        ->join('user', 'purchase_requisition_header.requisitioner', 'user.id')
+        ->where('purchase_requisition_header.requisition_number', $pr_number)
+        ->select('purchase_requisition_header.requisition_number', 'purchase_requisition_header.facshipto', 'user.first_name', 'user.last_name')
         ->first();
 
-        return $query->facshipto;
+        return $query;
     }
 
     public function get_recon(Request $request){
         $dtFrom = 0000-00-00;
         $dtTo = 0000-00-00;
+
         if($request->cutoff_date != ""){
             $explode_date = explode('to', $request->cutoff_date);
 
@@ -354,27 +358,62 @@ class ReconciliationController extends Controller
             $dtTo = $dtTo->format('Y-m-d');
         }
         
-        // $dtFrom = Carbon::create($explode_date[0])->format('Y-m-d');
-        // $dtFrom = new Carbon($explode_date[0]);
+        if(strtoupper($request->param['department']) == 'STAMPING'){
+            $recon_data = DB::connection('mysql')
+            ->table('reconciliations')
+            ->whereNull('deleted_at')
+            // ->where('pr_num', 'LIKE', "%".$request->param['department']."%")
+            ->where('classification', $request->param['classification'])
+            ->where('recon_date_from', '>=', $dtFrom)
+            ->where('recon_date_to', '<=', $dtTo)
+            ->where('allocation', 'LIKE', '%stamping%')
+            ->select('*')
+            ->get();
+        }
+        else{
+            // ! Remove IfElse and uncomment the query below when carlo olanga is already using the new user with section ppd-grinding
+            if($request->param['department'] == 'PPD-GRIN'){
+                $recon_data = DB::connection('mysql')
+                ->table('reconciliations')
+                ->whereNull('deleted_at')
+                // ->where('pr_num', 'LIKE', "%".$request->param['department']."%")
+                ->where('requisitioner', "Carlo Olanga")
+                ->where('classification', $request->param['classification'])
+                ->where('recon_date_from', '>=', $dtFrom)
+                ->where('recon_date_to', '<=', $dtTo)
+                ->where('allocation', 'NOT LIKE', '%stamping%')
+                ->select('*')
+                ->get();
+            }
+            else{
+                $recon_data = DB::connection('mysql')
+                ->table('reconciliations')
+                ->whereNull('deleted_at')
+                ->where('pr_num', 'LIKE', "%".$request->param['department']."%")
+                ->where('classification', $request->param['classification'])
+                ->where('requisitioner',"<>", "Carlo Olanga")
+                ->where('recon_date_from', '>=', $dtFrom)
+                ->where('recon_date_to', '<=', $dtTo)
+                ->where('allocation', 'NOT LIKE', '%stamping%')
+                ->select('*')
+                ->get();
+            }
+
+            // ! Uncomment this MF.
+            // $recon_data = DB::connection('mysql')
+            // ->table('reconciliations')
+            // ->whereNull('deleted_at')
+            // ->where('pr_num', 'LIKE', "%".$request->param['department']."%")
+            // ->where('classification', $request->param['classification'])
+            // ->where('recon_date_from', '>=', $dtFrom)
+            // ->where('recon_date_to', '<=', $dtTo)
+            // ->where('allocation', 'NOT LIKE', '%stamping%')
+            // ->select('*')
+            // ->get();
+            
+        }
+
         
-        $recon_data = DB::connection('mysql')
-        ->table('reconciliations')
-        ->whereNull('deleted_at')
-        ->where('pr_num', 'LIKE', "%".$request->param['department']."%")
-        ->where('classification', $request->param['classification'])
-        ->where('recon_date_from', '>=', $dtFrom)
-        ->where('recon_date_to', '<=', $dtTo)
-        ->select('*')
-        ->get();
-
-        // return $recon_data;
-
-        // $recon_data = Reconciliation::whereNull('deleted_at')
-        // ->where('pr_num', 'LIKE', "%".$request->param['department']."%")
-        // ->where('classification', $request->param['classification'])
-        // ->where('recon_date_from', '>=', $dtFrom)
-        // ->where('recon_date_to', '<=', $dtTo)
-        // ->select('*');
 
         return DataTables::of($recon_data)
         ->addColumn('action', function($recon_data){

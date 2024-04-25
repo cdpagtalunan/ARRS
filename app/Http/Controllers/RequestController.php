@@ -428,7 +428,7 @@ class RequestController extends Controller
         }
 
         $category_access = DB::connection('mysql')->table('user_categories')
-        ->select(DB::raw("CONCAT(department,'-',classification) AS ctrl"))
+        ->select(DB::raw("CONCAT(department,'~',classification) AS ctrl"))
         ->whereIn('id', $request->access)
         ->get();
         $category_access = collect($category_access)->pluck('ctrl');

@@ -45,6 +45,8 @@ class CreateReconciliationsTable extends Migration
             $table->string('recon_date_from')->nullable();
             $table->string('recon_date_to')->nullable();
             $table->string('recon_remove_remarks')->nullable();
+            $table->string('ship_to')->nullable()->comment = "factory";
+            $table->string('requisitioner')->nullable();
             $table->timestamps();
             $table->softDeletes();
         });
