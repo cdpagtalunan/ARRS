@@ -29,7 +29,7 @@
                                 class="table table-sm table-bordered table-hover text-wrap display tableFinalRecon"
                                 :columns="columnFinalRecon"
                                 :ajax="{
-                                    url: 'api/get_all_recon_cat',
+                                    url: 'api/git pu',
                                     data: function (param){ 
                                         param.cutoff_date = cutoffSelect.selected
                                     }
