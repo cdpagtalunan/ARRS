@@ -54,6 +54,8 @@
     DataTable.use(DataTablesCore);
 
     const toastr = inject('toastr');
+    const Swal = inject('Swal');
+
 
     let dtTableFinalRecon;
     const tableFinalRecon = ref();
@@ -110,15 +112,31 @@
         });
     }
 
-    const updateUserReconciliation = async (dept, classification, dateTo, dateFrom) => {
-        await api.post('api/update_user_reconciliation', {dept: dept,classification: classification, to: dateTo, from: dateFrom}).then((result) => {
-            // console.log(result.data.result);
-            if(result.data.result == true){
-                toastr.success(result.data.msg);
-                dtTableFinalRecon.ajax.reload();
+    const updateUserReconciliation = (dept, classification, dateTo, dateFrom) => {
+
+        Swal.fire({
+            title: `Are you sure you want to proceed?`,
+            // text: "This.",
+            icon: 'question',
+            position: 'top',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Yes'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                api.post('api/update_user_reconciliation', {dept: dept,classification: classification, to: dateTo, from: dateFrom}).then((result) => {
+                    // console.log(result.data.result);
+                    if(result.data.result == true){
+                        toastr.success(result.data.msg);
+                        dtTableFinalRecon.ajax.reload();
+                    }
+                }).catch((err) => {
+                    
+                });
             }
-        }).catch((err) => {
             
-        });
+        })
+       
     }
 </script>
