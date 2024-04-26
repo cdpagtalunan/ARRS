@@ -6,6 +6,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\CommonController;
 use App\Http\Controllers\ExportController;
+use App\Http\Controllers\ReconciliationController;
 
 /*
 |--------------------------------------------------------------------------
@@ -23,6 +24,8 @@ use App\Http\Controllers\ExportController;
     * IF NO SESSION EXIST, SYSTEM WILL REDIRECT USER TO LOGIN 
 */
 Route::view('/mailer/mail','welcome')->name('mail');
+Route::get('get_eprpo_data', [ReconciliationController::class, 'get_eprpo_data']);
+
 
 Route::get('check_user', function (Request $request) {
     session_start();
