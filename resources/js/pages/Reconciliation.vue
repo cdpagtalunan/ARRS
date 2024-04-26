@@ -58,7 +58,9 @@
                                                 url: 'api/get_recon',
                                                 data: function (param){
                                                     param.param = dtParams;
-                                                    param.cutoff_date = cutoffSelect.selected
+                                                    param.cutoff_date = cutoffSelect.selected;
+                                                    param.access =  injectSess.access;
+                                                    param.user_type =  injectSess.type;
                                                 }
                                             }"
                                             ref="table"
