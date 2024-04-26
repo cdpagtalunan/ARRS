@@ -110,8 +110,8 @@ const routes = [
         ]
     },
     {
-        // path: '/ARRS/',
-        path: '/ARRS_rev/',
+        path: '/ARRS/',
+        // path: '/ARRS_rev/',
         component: '',
         children:  [
             {

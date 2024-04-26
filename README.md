@@ -44,6 +44,7 @@ $ npm i pinia-plugin-persistedstate-2
 ```
 
 > **Note**
+Always configure the router.js and axios.js.
 > 
 
 ## Download
