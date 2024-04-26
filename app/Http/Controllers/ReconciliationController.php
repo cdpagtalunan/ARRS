@@ -348,7 +348,8 @@ class ReconciliationController extends Controller
     public function get_recon(Request $request){
         $dtFrom = 0000-00-00;
         $dtTo = 0000-00-00;
-
+        
+        // return $request->access[0];
         if($request->cutoff_date != ""){
             $explode_date = explode('to', $request->cutoff_date);
 
@@ -416,20 +417,30 @@ class ReconciliationController extends Controller
         
 
         return DataTables::of($recon_data)
-        ->addColumn('action', function($recon_data){
+        ->addColumn('action', function($recon_data) use ($request){
             
             $encrypt_id = Helpers::encryptId($recon_data->id);
-
             $result = "";
+
+            $user = DB::connection('mysql')
+            ->table('user_categories')
+            ->where('department', $request->param['department'])
+            ->where('classification', $request->param['classification'])
+            ->select('id')
+            ->first();
+
             $result .= "<center>";
             $result .= "<button class='btn btn-primary btn-sm btnOpenReconDetails' data-id='$encrypt_id' title='View Data'><i class='fas fa-eye'></i></button>";
-            if($recon_data->recon_status == 0){
-                $result .= "<button class='btn btn-warning btn-sm btnRequestToEdit ml-1' data-id='$encrypt_id' title='Request to edit'><i class='fa-solid fa-pencil'></i></button>";
-                
-                $result .= "<button class='btn btn-success btn-sm btnDoneRecon ml-1' data-id='$encrypt_id' title='Done'><i class='fa-solid fa-circle-check'></i></button>";
-
-                $result .= "<button class='btn btn-danger btn-sm btnRemoveData ml-1' data-id='$encrypt_id' title='Request to remove'><i class='fas fa-xmark'></i></button>";
+            if(in_array($user->id, $request->access)){
+                if($recon_data->recon_status == 0){
+                    $result .= "<button class='btn btn-warning btn-sm btnRequestToEdit ml-1' data-id='$encrypt_id' title='Request to edit'><i class='fa-solid fa-pencil'></i></button>";
+                    
+                    $result .= "<button class='btn btn-success btn-sm btnDoneRecon ml-1' data-id='$encrypt_id' title='Done'><i class='fa-solid fa-circle-check'></i></button>";
+    
+                    $result .= "<button class='btn btn-danger btn-sm btnRemoveData ml-1' data-id='$encrypt_id' title='Request to remove'><i class='fas fa-xmark'></i></button>";
+                }
             }
+           
             $result .= "</center>";
 
             return $result;
