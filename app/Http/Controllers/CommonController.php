@@ -12,9 +12,12 @@ use Illuminate\Support\Facades\DB;
 class CommonController extends Controller
 {
     public function check_access(Request $request){
-        $found_key = array_search('32', array_column($_SESSION['rapidx_user_accesses'], 'module_id')); // * 32 is the id of this module on RAPIDX
-        if($found_key == ""){
-            return response()->json(['msg' => 'User Dont Have Access'], 401);
+        // $found_key = array_search("32", array_column($_SESSION['rapidx_user_accesses'], 'module_id')); // * 32 is the id of this module on RAPIDX
+        // $found_key = in_array("32", array_column($_SESSION['rapidx_user_accesses'], 'module_id')); // * 32 is the id of this module on RAPIDX
+        // return $found_key;
+        // if($found_key == ""){
+        if(!in_array("32", array_column($_SESSION['rapidx_user_accesses'], 'module_id'))){
+            return response()->json(['msg' => 'User Dont Have Access', 'access' => $_SESSION['rapidx_user_accesses']], 401);
         }
         else{
             $user_system_access_check = DB::connection('mysql')->table('user_accesses')
@@ -35,7 +38,7 @@ class CommonController extends Controller
 
                 $encrypt_id = Helpers::encryptId($user_system_access_check->id);
 
-                return response()->json(['uAccess' => $uAccessArray, 'uName' => $_SESSION['rapidx_name'], 'appid' => $encrypt_id, 'uType' => $user_system_access_check->user_type ]);
+                return response()->json(['uAccess' => $uAccessArray, 'uName' => $_SESSION['rapidx_name'], 'appid' => $encrypt_id, 'uType' => $user_system_access_check->user_type, 'access' => $_SESSION['rapidx_user_accesses'] ]);
             }
             else{
                 return response()->json(['msg' => 'User Dont Have Access '], 401);
