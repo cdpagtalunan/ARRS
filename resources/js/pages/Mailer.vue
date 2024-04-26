@@ -35,14 +35,14 @@
             if(timer.value === "12:05:30 AM" && moment().format('D') == '16'){ // FIRST RECON
                 loadDataEPRPO(1)
             }
-            if(timer.value === "12:05:30 AM" && moment().format('D') == '26'){ // SECOND RECON
+            if(timer.value === "12:05:00 AM" && moment().format('D') == '26'){ // SECOND RECON
                 loadDataEPRPO(2)
             }
         }, 1000);
     })
 
     const loadDataEPRPO = async (param) => {
-        await api.get('api/get_eprpo_data', { params: {cutoff:param} }).then((result) => {
+        await api.get('/get_eprpo_data', { params: {cutoff:param} }).then((result) => {
             console.log(`Data has been loaded ${date.value} ${timer.value} with parameter ${param}`);
             console.log(result);
         }).catch((err) => {

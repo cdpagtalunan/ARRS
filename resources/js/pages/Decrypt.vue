@@ -32,7 +32,7 @@
     }
 
     const loadDataEPRPO = async (date) => {
-        await api.get('api/get_eprpo_data', { params: {cutoff:date} }).then((result) => {
+        await api.get('/get_eprpo_data', { params: {cutoff:date} }).then((result) => {
             
         }).catch((err) => {
             
