@@ -161,8 +161,9 @@ class RequestController extends Controller
             ->where('user_type', 1)
             ->get();
 
-            $admin_email = collect($get_user_admin)->pluck('rapidx_user_details.email')->flatten(0)->toArray();
-            $user_email = collect($get_user_per_cat)->pluck('rapidx_user_details.email')->flatten(0)->toArray();
+            $admin_email = collect($get_user_admin)->pluck('rapidx_user_details.email')->flatten(0)->filter()->toArray();
+            $user_email = collect($get_user_per_cat)->pluck('rapidx_user_details.email')->flatten(0)->filter()->toArray();
+
             // * END
 
             if($request->adminDisRemarks == "" || $request->adminDisRemarks == null){ // approve
