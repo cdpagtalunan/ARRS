@@ -91,6 +91,7 @@ class ReconciliationController extends Controller
                 ['year' => $current_year, 'cutoff' => $request->cutoff ]
             );
             if($recon_date->cutoff != $request->cutoff){
+                // return "hindi equal";
                 ReconciliationDate::where('id', $recon_date->id)
                 ->update([
                     'cutoff' => $request->cutoff
@@ -228,7 +229,6 @@ class ReconciliationController extends Controller
             
             // $data = array(
             //     'type' => "Removal",
-            //     'control' => $control."~".$control_ext, // change to $control-$control_ext
             //     'request_data' => $recon_details,
             //     'user_remarks' => $request->reasons,
             //     // 'cutoff_date_req' => $request->cutoff_date,
