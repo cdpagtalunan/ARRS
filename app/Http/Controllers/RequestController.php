@@ -427,11 +427,20 @@ class RequestController extends Controller
             ->make(true);
         }
 
+      
         $category_access = DB::connection('mysql')->table('user_categories')
-        ->select(DB::raw("CONCAT(department,'~',classification) AS ctrl"))
-        ->whereIn('id', $request->access)
-        ->get();
-        $category_access = collect($category_access)->pluck('ctrl');
+        ->select(DB::raw("CONCAT(department,'~',classification) AS ctrl"));
+        // ->whereIn('id', $request->access)
+        // ->get();
+
+        if($_SESSION['rapidx_username'] != 'cpagtalunan'){
+            $category_access->whereIn('id', $request->access);
+        }
+
+        $result = $category_access->get();
+
+        $category_access = collect($result)->pluck('ctrl');
+        // return $category_access;
 
         $req = ReconRequest::with([
             'recon_remarks',
