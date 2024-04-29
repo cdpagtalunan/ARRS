@@ -563,6 +563,7 @@
     const disapprove = async () => {
         if(adminDisRemarks.value == ""){
             toastr.error('Please fill up required fields');
+            toastr.error('test');
             document.getElementById('txtDisRemarks').classList.add('is-invalid');
         }
         else{
