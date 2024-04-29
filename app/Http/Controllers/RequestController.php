@@ -150,11 +150,10 @@ class RequestController extends Controller
                 'rapidx_user_details'
             ])
             ->whereNull('deleted_at')
-            ->whereRaw('FIND_IN_SET("'.$get_cat->id.'", category_id)')
             ->get();
 
             $admin_email = collect($get_all_user)->where('user_type', 1)->pluck('rapidx_user_details.email')->flatten(0)->toArray();
-            $user_email = collect($get_all_user)->where('user_type', 2)->pluck('rapidx_user_details.email')->flatten(0)->toArray();
+            $user_email = collect($get_all_user)->where('user_type', 2)->pluck('rapidx_user_details.email')->whereRaw('FIND_IN_SET("'.$get_cat->id.'", category_id)')->flatten(0)->toArray();
             // * END
 
             if($request->adminDisRemarks == "" || $request->adminDisRemarks == null){ // approve
