@@ -3,7 +3,8 @@
 <head>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="Content-Type" content="text/html;charset=UTF-8">
-    <link rel="stylesheet" type="text/css" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css">
+    {{-- <link rel="stylesheet" type="text/css" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css"> --}}
+    <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.3/css/bootstrap.min.css">
     <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css">
 
 
@@ -22,13 +23,10 @@
         <div class="col-sm-12">
             Good Day!
             <br>
-            Please be informed that you have reconciliation for <strong>{{ $type }}</strong>.
             <br>
-            Below are the reconciliation information:
-            <hr>
-            
-            <hr>
+            <label>Please be informed that data from {{ $from }} to {{ $to }} is now available for reconciliation.</label>
             <br>
+            <hr>
             <div class="col-sm-12">
                 <div class="form-group row">
                     <label class="col-sm-12 col-form-label">For more info, please log-in to your Rapidx account. Go to http://rapidx/ and ARRS </label>
