@@ -32,15 +32,70 @@ class ExportController extends Controller
         $recon_cat = array();
         for($x = 0; $x < count($user_cat); $x++){
             array_push($recon_cat, $user_cat[$x]->classification."-".$user_cat[$x]->department);
-            $recon_data = DB::connection('mysql')
-            ->select("
-                SELECT * FROM 
-                reconciliations 
-                WHERE `classification` = '".$user_cat[$x]->classification."' 
-                AND `pr_num` LIKE '%".$user_cat[$x]->department."%'
-                AND `deleted_at` IS NULL
-                AND recon_date_from >= '".$rec_from."' AND recon_date_to <= '".$rec_to."'
-            ");
+
+
+            // return  $user_cat[$x]->department;
+            // $recon_data = DB::connection('mysql')
+            // ->select("
+            //     SELECT * FROM 
+            //     reconciliations 
+            //     WHERE `classification` = '".$user_cat[$x]->classification."' 
+            //     AND `pr_num` LIKE '%".$user_cat[$x]->department."%'
+            //     AND `deleted_at` IS NULL
+            //     AND recon_date_from >= '".$rec_from."' AND recon_date_to <= '".$rec_to."'
+            // ");
+
+            // $recon_data = DB::connection('mysql')
+            // ->table('reconciliations')
+            // ->select("*")
+            // ->where('classification', $user_cat[$x]->classification)
+            // ->where('pr_num', 'LIKE', "%{$user_cat[$x]->department}%")
+            // ->whereNull('deleted_at')
+            // ->where('recon_date_from', '>=', $rec_from)
+            // ->where('recon_date_to', '<=', $rec_to)
+            // ->get();
+
+
+            if(strtoupper($user_cat[$x]->department) == 'STAMPING'){
+                $recon_data = DB::connection('mysql')
+                ->table('reconciliations')
+                ->whereNull('deleted_at')
+                ->where('classification', $user_cat[$x]->classification)
+                ->where('recon_date_from', '>=', $rec_from)
+                ->where('recon_date_to', '<=', $rec_to)
+                ->where('allocation', 'LIKE', '%stamping%')
+                ->select('*')
+                ->get();
+            }
+            else{
+                if($user_cat[$x]->department == 'PPD-GRIN'){
+                    $recon_data = DB::connection('mysql')
+                    ->table('reconciliations')
+                    ->whereNull('deleted_at')
+                    ->where('requisitioner', "Carlo Olanga")
+                    ->where('classification', $user_cat[$x]->classification)
+                    ->where('recon_date_from', '>=', $rec_from)
+                    ->where('recon_date_to', '<=', $rec_to)
+                    ->where('allocation', 'NOT LIKE', '%stamping%')
+                    ->select('*')
+                    ->get();
+                }
+                else{
+                    $recon_data = DB::connection('mysql')
+                    ->table('reconciliations')
+                    ->whereNull('deleted_at')
+                    ->where('pr_num', 'LIKE', "%{$user_cat[$x]->department}%")
+                    ->where('classification', $user_cat[$x]->classification)
+                    ->where('requisitioner',"<>", "Carlo Olanga")
+                    ->where('recon_date_from', '>=', $rec_from)
+                    ->where('recon_date_to', '<=', $rec_to)
+                    ->where('allocation', 'NOT LIKE', '%stamping%')
+                    ->select('*')
+                    ->get();
+                }
+            }
+          
+
             $recon_data_usd = collect($recon_data)->where('currency', 'USD')->flatten(0);
             $recon_data_usd_supplier = collect($recon_data_usd)->pluck('supplier')->unique()->flatten(0);
 
@@ -82,15 +137,66 @@ class ExportController extends Controller
 
         for($x = 0; $x < count($user_cat); $x++){
             array_push($recon_cat, $user_cat[$x]->classification."-".$user_cat[$x]->department);
-            $recon_data = DB::connection('mysql')
-            ->select("
-                SELECT * FROM 
-                reconciliations 
-                WHERE `classification` = '".$user_cat[$x]->classification."' 
-                AND `pr_num` LIKE '%".$user_cat[$x]->department."%'
-                AND `deleted_at` IS NULL
-                AND recon_date_from >= '".$rec_from."' AND recon_date_to <= '".$rec_to."'
-            ");
+            // $recon_data = DB::connection('mysql')
+            // ->select("
+            //     SELECT * FROM 
+            //     reconciliations 
+            //     WHERE `classification` = '".$user_cat[$x]->classification."' 
+            //     AND `pr_num` LIKE '%".$user_cat[$x]->department."%'
+            //     AND `deleted_at` IS NULL
+            //     AND recon_date_from >= '".$rec_from."' AND recon_date_to <= '".$rec_to."'
+            // ");
+            if(strtoupper($user_cat[$x]->department) == 'STAMPING'){
+                $recon_data = DB::connection('mysql')
+                ->table('reconciliations')
+                ->whereNull('deleted_at')
+                ->where('classification', $user_cat[$x]->classification)
+                ->where('recon_date_from', '>=', $rec_from)
+                ->where('recon_date_to', '<=', $rec_to)
+                ->where('allocation', 'LIKE', '%stamping%')
+                ->select('*')
+                ->get();
+            }
+            else{
+                // ! Remove IfElse and uncomment the query below when carlo olanga is already using the new user with section ppd-grinding
+                if($user_cat[$x]->department == 'PPD-GRIN'){
+                    $recon_data = DB::connection('mysql')
+                    ->table('reconciliations')
+                    ->whereNull('deleted_at')
+                    ->where('requisitioner', "Carlo Olanga")
+                    ->where('classification', $user_cat[$x]->classification)
+                    ->where('recon_date_from', '>=', $rec_from)
+                    ->where('recon_date_to', '<=', $rec_to)
+                    ->where('allocation', 'NOT LIKE', '%stamping%')
+                    ->select('*')
+                    ->get();
+                }
+                else{
+                    $recon_data = DB::connection('mysql')
+                    ->table('reconciliations')
+                    ->whereNull('deleted_at')
+                    ->where('pr_num', 'LIKE', "%{$user_cat[$x]->department}%")
+                    ->where('classification', $user_cat[$x]->classification)
+                    ->where('requisitioner',"<>", "Carlo Olanga")
+                    ->where('recon_date_from', '>=', $rec_from)
+                    ->where('recon_date_to', '<=', $rec_to)
+                    ->where('allocation', 'NOT LIKE', '%stamping%')
+                    ->select('*')
+                    ->get();
+                }
+                // ! Uncomment this
+                // $recon_data = DB::connection('mysql')
+                // ->table('reconciliations')
+                // ->whereNull('deleted_at')
+                // ->where('pr_num', 'LIKE', "%{$user_cat[$x]->department}%")
+                // ->where('classification', $user_cat[$x]->classification)
+                // ->where('requisitioner',"<>", "Carlo Olanga")
+                // ->where('recon_date_from', '>=', $rec_from)
+                // ->where('recon_date_to', '<=', $rec_to)
+                // ->where('allocation', 'NOT LIKE', '%stamping%')
+                // ->select('*')
+                // ->get();
+            }
             $recon_data_usd = collect($recon_data)->where('currency', 'USD')->flatten(0);
             $recon_data_usd_supplier = collect($recon_data_usd)->pluck('supplier')->unique()->flatten(0);
 
