@@ -93,6 +93,12 @@
                         :multiple="true">
                     </VueMultiselect>
 
+                    <label>Is Authorize?</label>
+                    <select id="selAuthorized" v-model="formData.auth" class="form-control">
+                        <option value="0"> Not Authorize</option>
+                        <option value="1">Authorize</option>
+                    </select>
+
                     <label class="mt-2">User Designation</label> <br>
                     <div class="form-check">
                         <input class="form-check-input" type="radio" id="selDesigF1" v-model="formData.uDesig" value="1">
@@ -189,6 +195,18 @@
                     return "Factory 3"
                 }
             }
+        },
+        { 
+            data: 'is_auth',
+            title: 'Authorize',
+            render: function(data){
+                if(data == 0){
+                    return "Not Authorize";
+                }
+                else{
+                    return "Authorize"
+                }
+            }
         }
 
     ];
@@ -201,6 +219,7 @@
     });
 
     const formData = ref({
+        auth: 0
     });
     const selectOptions = ref([]);
     // const selectCatOptions = ref();
@@ -215,7 +234,9 @@
 
         modals.value = new Modal(document.querySelector('#modalComponentId'), {});
         document.getElementById("modalComponentId").addEventListener('hidden.bs.modal', event => {
-            formData.value = {};
+            formData.value = {
+                auth: 0
+            };
             empMultSel.value = false
             document.querySelector('#selUType').classList.remove('is-invalid');
             CatMultSel.value = false
@@ -307,6 +328,7 @@
             formData.value.uType = data.userData.user_type;
             formData.value.uCat = data.forSelCat;
             formData.value.uDesig = data.userData.user_desig;
+            formData.value.auth = data.userData.is_auth;
             modals.value.show();
         }).catch((err) => {
 

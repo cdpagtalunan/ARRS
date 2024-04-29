@@ -252,7 +252,7 @@
 
 </style>
 <script setup>
-    import { ref, onMounted, reactive, inject } from 'vue';
+    import { ref, onMounted, reactive, inject, onBeforeMount } from 'vue';
     import api from '../../axios';
  
     import DataTable from 'datatables.net-vue3';
@@ -474,6 +474,12 @@
             // console.log(dtDatas[0]['recon_remarks']);
         }
     };
+
+    let injectSess;
+    onBeforeMount( async() => {
+        console.log('before mount');
+        injectSess = inject('store');
+    });
     onMounted(() => {
 
         modals.value = new Modal(document.querySelector('#modalComponentId'), {});
@@ -496,7 +502,15 @@
         dtTableEdit = tableEdit.value.dt;
     });
 
-    const sendResponse = async (adminResponse) => { 
+    const sendResponse = async (adminResponse) => {
+        if(injectSess.isAuth == 0){
+            Swal.fire({
+                title: "Error",
+                text: "You are not authorized!",
+                icon: "error"
+            });
+            return false;
+        }
         // * adminResponse = 1-approve, 2-disapprove, 3-For update
         if(adminResponse == 1){
             await Swal.fire({
@@ -548,7 +562,8 @@
 
     const disapprove = async () => {
         if(adminDisRemarks.value == ""){
-            toastr.error('Please fill up required field');
+            toastr.error('Please fill up required fields');
+            toastr.error('test');
             document.getElementById('txtDisRemarks').classList.add('is-invalid');
         }
         else{

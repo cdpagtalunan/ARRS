@@ -8,6 +8,7 @@ export const useSessionStore = defineStore("session", {
         appId: null,
         access: [],
         type: null,
+        isAuth: null,
         error: null
     }),
     actions: {
@@ -18,6 +19,7 @@ export const useSessionStore = defineStore("session", {
                 this.appId = result.data.appid;
                 this.access = result.data.uAccess;
                 this.type = result.data.uType;
+                this.isAuth = result.data.isAuth;
             }).catch((err) => {
                 this.error = err;
             });
