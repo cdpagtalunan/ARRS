@@ -146,14 +146,23 @@ class RequestController extends Controller
             ->whereNull('deleted_at')
             ->first('id');
     
-            $get_all_user = UserAccess::with([
+            $get_user_per_cat = UserAccess::with([
                 'rapidx_user_details'
             ])
             ->whereNull('deleted_at')
+            ->where('user_type', 2)
+            ->whereRaw('FIND_IN_SET("'.$get_cat->id.'", category_id)')
             ->get();
 
-            $admin_email = collect($get_all_user)->where('user_type', 1)->pluck('rapidx_user_details.email')->flatten(0)->toArray();
-            $user_email = collect($get_all_user)->where('user_type', 2)->pluck('rapidx_user_details.email')->whereRaw('FIND_IN_SET("'.$get_cat->id.'", category_id)')->flatten(0)->toArray();
+            $get_user_admin = UserAccess::with([
+                'rapidx_user_details'
+            ])
+            ->whereNull('deleted_at')
+            ->where('user_type', 1)
+            ->get();
+
+            $admin_email = collect($get_user_admin)->pluck('rapidx_user_details.email')->flatten(0)->toArray();
+            $user_email = collect($get_user_per_cat)->pluck('rapidx_user_details.email')->flatten(0)->toArray();
             // * END
 
             if($request->adminDisRemarks == "" || $request->adminDisRemarks == null){ // approve
