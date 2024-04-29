@@ -19,6 +19,7 @@ class CreateUserAccessesTable extends Migration
             $table->string('category_id')->comment = "from user category";
             $table->unsignedSmallInteger('user_type')->comment = "1-admin, 2-user";
             $table->SmallInteger('user_desig')->comment = "1-Factory_1, 2-Factory_3";
+            $table->SmallInteger('is_auth')->default(0)->comment = "0-Not, 1-Yes";
             $table->string('created_by');
             $table->string('updated_by')->nullable();
             $table->timestamps();

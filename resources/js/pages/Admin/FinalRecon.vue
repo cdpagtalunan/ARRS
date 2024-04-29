@@ -31,7 +31,8 @@
                                 :ajax="{
                                     url: 'api/get_all_recon_cat',
                                     data: function (param){ 
-                                        param.cutoff_date = cutoffSelect.selected
+                                        param.cutoff_date = cutoffSelect.selected;
+                                        // param.is_auth = injectSess.isAuth;
                                     }
                                 }"
                                 ref="tableFinalRecon"
@@ -92,14 +93,22 @@
         { data: 'general_category', title: 'Category'},
     ];
 
+    let injectSess;
     onBeforeMount( async() => {
+        console.log('before mount');
+        injectSess = inject('store');
+
         await getCutoffDate();
+
+
     });
     
     onMounted(() => {
         dtTableFinalRecon = tableFinalRecon.value.dt;
         setTimeout(() => {
             dtTableFinalRecon.ajax.reload();
+            // console.log(injectSess.isAuth);
+
         }, 200);
     });
 
@@ -114,29 +123,40 @@
 
     const updateUserReconciliation = (dept, classification, dateTo, dateFrom) => {
 
-        Swal.fire({
-            title: `Are you sure you want to proceed?`,
-            // text: "This.",
-            icon: 'question',
-            position: 'top',
-            showCancelButton: true,
-            confirmButtonColor: '#3085d6',
-            cancelButtonColor: '#d33',
-            confirmButtonText: 'Yes'
-        }).then((result) => {
-            if (result.isConfirmed) {
-                api.post('api/update_user_reconciliation', {dept: dept,classification: classification, to: dateTo, from: dateFrom}).then((result) => {
-                    // console.log(result.data.result);
-                    if(result.data.result == true){
-                        toastr.success(result.data.msg);
-                        dtTableFinalRecon.ajax.reload();
-                    }
-                }).catch((err) => {
-                    
-                });
-            }
-            
-        })
+        if(injectSess.isAuth == 0){
+            Swal.fire({
+                title: "Error",
+                text: "You are not authorized!",
+                icon: "error"
+            });
+        }
+        else{
+            Swal.fire({
+                title: `Are you sure you want to proceed?`,
+                // text: "This.",
+                icon: 'question',
+                position: 'top',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Yes'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    api.post('api/update_user_reconciliation', {dept: dept,classification: classification, to: dateTo, from: dateFrom}).then((result) => {
+                        // console.log(result.data.result);
+                        if(result.data.result == true){
+                            toastr.success(result.data.msg);
+                            dtTableFinalRecon.ajax.reload();
+                        }
+                    }).catch((err) => {
+                        
+                    });
+                }
+                
+            })
+        }
+
+       
        
     }
 </script>

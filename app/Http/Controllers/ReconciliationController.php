@@ -226,22 +226,22 @@ class ReconciliationController extends Controller
             // $admin_email = collect($get_all_user)->where('user_type', 1)->pluck('rapidx_user_details.email')->flatten(0)->toArray();
             // $user_email = collect($get_all_user)->where('user_type', 2)->pluck('rapidx_user_details.email')->flatten(0)->toArray();
             
-            $data = array(
-                'type' => "Removal",
-                'control' => $control."~".$control_ext, // change to $control-$control_ext
-                'request_data' => $recon_details,
-                'user_remarks' => $request->reasons,
-                // 'cutoff_date_req' => $request->cutoff_date,
-                'requestor' => $_SESSION['rapidx_name']
-            );
-            $admin_email = "cpagtalunan@pricon.ph";
-            $user_email = "cbretusto@pricon.ph";
-            $subject = "Available reconciliation for $date_from to $date_to <ARRS Generated Email Do Not Reply>";
+            // $data = array(
+            //     'type' => "Removal",
+            //     'control' => $control."~".$control_ext, // change to $control-$control_ext
+            //     'request_data' => $recon_details,
+            //     'user_remarks' => $request->reasons,
+            //     // 'cutoff_date_req' => $request->cutoff_date,
+            //     'requestor' => $_SESSION['rapidx_name']
+            // );
+            // $admin_email = "cpagtalunan@pricon.ph";
+            // $user_email = "cbretusto@pricon.ph";
+            // $subject = "Available reconciliation for $date_from to $date_to <ARRS Generated Email Do Not Reply>";
 
-            $this->mailSender->send_mail('uploaded_recon', $data, $request, $admin_email, $user_email, $subject);
+            // $this->mailSender->send_mail('uploaded_recon', $data, $request, $admin_email, $user_email, $subject);
 
 
-            // DB::commit();
+            DB::commit();
     
             return response()->json([
                 'query1' => $collection,

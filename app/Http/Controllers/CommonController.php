@@ -38,7 +38,12 @@ class CommonController extends Controller
 
                 $encrypt_id = Helpers::encryptId($user_system_access_check->id);
 
-                return response()->json(['uAccess' => $uAccessArray, 'uName' => $_SESSION['rapidx_name'], 'appid' => $encrypt_id, 'uType' => $user_system_access_check->user_type, 'access' => $_SESSION['rapidx_user_accesses'] ]);
+                return response()->json([
+                    'uAccess' => $uAccessArray, 
+                    'uName' => $_SESSION['rapidx_name'], 
+                    'appid' => $encrypt_id, 
+                    'uType' => $user_system_access_check->user_type, 
+                    'isAuth' => $user_system_access_check->is_auth ]);
             }
             else{
                 return response()->json(['msg' => 'User Dont Have Access '], 401);
