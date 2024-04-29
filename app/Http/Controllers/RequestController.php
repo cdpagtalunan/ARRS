@@ -717,19 +717,17 @@ class RequestController extends Controller
         ->get();
 
         return DataTables::of($categories)
-        ->addColumn('action', function($categories) use ($dateFrom, $dateTo){
+        ->addColumn('action', function($categories) use ($dateFrom, $dateTo, $request){
             $result = "";
             $recon_data = $this->count_not_finished_user_recon($categories->department, $categories->classification, $dateFrom, $dateTo);
             $count_logstc_done = $this->count_logstc_finished_recon($categories->department, $categories->classification, $dateFrom, $dateTo);
 
             $disabled = "";
 
-            if($recon_data != 0 || $recon_data === false || $count_logstc_done != 0 ){
-                // return "zero";
+            if($recon_data != 0 || $recon_data === false || $count_logstc_done != 0){
                 $disabled = "disabled";
             }
 
-            // return $recon_data;
             $result .= "<center>";
             $result .= "
             <button class='btn btn-success btn-sm btnDoneUserReconcile' $disabled
@@ -740,7 +738,6 @@ class RequestController extends Controller
             >
                 <i class='fa-regular fa-circle-check'></i>
             </button>";
-            
             $result .= "</center>";
 
             return $result;
