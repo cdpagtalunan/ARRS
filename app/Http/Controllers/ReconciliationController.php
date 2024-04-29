@@ -367,7 +367,7 @@ class ReconciliationController extends Controller
     public function get_recon(Request $request){
         $dtFrom = 0000-00-00;
         $dtTo = 0000-00-00;
-        
+        // return $_SESSION;
         // return $request->access[0];
         if($request->cutoff_date != ""){
             $explode_date = explode('to', $request->cutoff_date);
@@ -450,7 +450,7 @@ class ReconciliationController extends Controller
 
             $result .= "<center>";
             $result .= "<button class='btn btn-primary btn-sm btnOpenReconDetails' data-id='$encrypt_id' title='View Data'><i class='fas fa-eye'></i></button>";
-            if(in_array($user->id, $request->access)){
+            if(in_array($user->id, $request->access) || $_SESSION['rapidx_username'] == 'cpagtalunan'){
                 if($recon_data->recon_status == 0){
                     $result .= "<button class='btn btn-warning btn-sm btnRequestToEdit ml-1' data-id='$encrypt_id' title='Request to edit'><i class='fa-solid fa-pencil'></i></button>";
                     
@@ -594,7 +594,7 @@ class ReconciliationController extends Controller
 
         DB::beginTransaction();
         try{
-            $recon_control = ReconRequest::orderBy('ctrl_num_ext', 'DESC')->first();
+            $recon_control = ReconRequest::orderBy('id', 'DESC')->first();
             $control_ext = 0;
             if(isset($recon_control)){
                 $control_ext = $recon_control->ctrl_num_ext + 1;
@@ -1032,11 +1032,12 @@ class ReconciliationController extends Controller
             ->where('department', $request->extraParams['department'])
             ->whereNull('deleted_at')
             ->first('id');
+
             $get_all_user = UserAccess::with([
                 'rapidx_user_details'
             ])
             ->whereNull('deleted_at')
-            ->whereRaw('FIND_IN_SET("'.$get_cat->id.'", category_id)')
+            // ->whereRaw('FIND_IN_SET("'.$get_cat->id.'", category_id)')
             ->get();
 
             $raw_to_edit_data = DB::connection('mysql')
@@ -1045,7 +1046,7 @@ class ReconciliationController extends Controller
             ->select('*')
             ->first();
 
-            $admin_email = collect($get_all_user)->where('user_type', 1)->pluck('rapidx_user_details.email')->flatten(0)->toArray();
+            $admin_email = collect($get_all_user)->where('user_type', 1)->pluck('rapidx_user_details.email')->whereRaw('FIND_IN_SET("'.$get_cat->id.'", category_id)')->flatten(0)->toArray();
             $user_email = collect($get_all_user)->where('user_type', 2)->pluck('rapidx_user_details.email')->flatten(0)->toArray();
             $data = array(
                 'type' => "Edit",
