@@ -227,7 +227,7 @@ class ReconciliationController extends Controller
             $admin_email = collect($get_all_user)->where('user_type', 1)->pluck('rapidx_user_details.email')->flatten(0)->toArray();
             $user_email = collect($get_all_user)->where('user_type', 2)->pluck('rapidx_user_details.email')->flatten(0)->toArray();
             
-            return $user_email;
+            
             $data = array(
                 // 'from'      => $date_from,
                 'from'      => Carbon::parse($date_from)->toFormattedDateString(),
