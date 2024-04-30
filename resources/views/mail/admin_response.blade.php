@@ -33,11 +33,31 @@
                         <td><strong>ARRS Control Number:</strong></td>
                         <td>{{ $control }}</td>
                     </tr>
+
                     @if ($type == 'Disapproved')
-                         <tr>
+                        @if ($function == 'add')   <tr>
                             <td><strong>Requestor remarks:</strong></td>
-                            <td>{{ $user_remarks }}</td>
-                        </tr>
+                                <td>{{ $recon_data[0]['recon_remarks']['remarks'] }}</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Logistics remarks:</strong></td>
+                                <td>{{ $recon_data[0]['recon_remarks']['approver_remarks'] }}</td>
+                            </tr>
+                        @else
+                        <tr>
+                            <td><strong>Requestor remarks:</strong></td>
+                                <td>{{ $recon_data->recon_remarks->remarks }}</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Logistics remarks:</strong></td>
+                                <td>{{ $recon_data->recon_remarks->approver_remarks }}</td>
+                            </tr>
+                        @endif
+
+                    {{-- <tr>
+                        <td><strong>Logistics remarks:</strong></td>
+                        <td>{{ $recon_data }}</td>
+                    </tr> --}}
                     @endif
                     {{-- <tr>
                         <td><strong>Requestor remarks:</strong></td>
@@ -90,63 +110,63 @@
                     <table  style="width: 100%;">
                         <tr>
                             <td><strong>PO Date:</strong></td>
-                            <td>{{ $remove_request_data->recon_details->po_date }}</td>
+                            <td>{{ $recon_data->recon_details->po_date }}</td>
                             <td><strong>PO Number:</strong></td>
-                            <td>{{ $remove_request_data->recon_details->po_num }}</td>
+                            <td>{{ $recon_data->recon_details->po_num }}</td>
                         </tr>
                         <tr>
                             <td><strong>PR Number:</strong></td>
-                            <td>{{ $remove_request_data->recon_details->pr_num }}</td>
+                            <td>{{ $recon_data->recon_details->pr_num }}</td>
                             <td><strong>Received Number:</strong></td>
-                            <td>{{ $remove_request_data->recon_details->rcv_no }}</td>
+                            <td>{{ $recon_data->recon_details->rcv_no }}</td>
                         </tr>
                         <tr>
                             <td><strong>Code:</strong></td>
-                            <td>{{ $remove_request_data->recon_details->prod_code }}</td>
+                            <td>{{ $recon_data->recon_details->prod_code }}</td>
                             <td><strong>Name:</strong></td>
-                            <td>{{ $remove_request_data->recon_details->prod_name }}</td>
+                            <td>{{ $recon_data->recon_details->prod_name }}</td>
                         </tr>
                         <tr>
                             <td><strong>Supplier:</strong></td>
-                            <td>{{ $remove_request_data->recon_details->supplier }}</td>
+                            <td>{{ $recon_data->recon_details->supplier }}</td>
                             <td><strong>Description:</strong></td>
-                            <td>{{ $remove_request_data->recon_details->prod_desc }}</td>
+                            <td>{{ $recon_data->recon_details->prod_desc }}</td>
                         </tr>
                         <tr>
                             <td><strong>Unit Price:</strong></td>
-                            <td>{{ $remove_request_data->recon_details->unit_price }}</td>
+                            <td>{{ $recon_data->recon_details->unit_price }}</td>
                             <td><strong>Currency:</strong></td>
-                            <td>{{ $remove_request_data->recon_details->currency }}</td>
+                            <td>{{ $recon_data->recon_details->currency }}</td>
                         </tr>
                         <tr>
                             <td><strong>Received Qty:</strong></td>
-                            <td>{{ $remove_request_data->recon_details->received_qty }}</td>
+                            <td>{{ $recon_data->recon_details->received_qty }}</td>
                             <td><strong>UOM:</strong></td>
-                            <td>{{ $remove_request_data->recon_details->uom }}</td>
+                            <td>{{ $recon_data->recon_details->uom }}</td>
                         </tr>
                         <tr>
                             <td><strong>PO Balance:</strong></td>
-                            <td>{{ $remove_request_data->recon_details->po_balance }}</td>
+                            <td>{{ $recon_data->recon_details->po_balance }}</td>
                             <td><strong>Delivery Date:</strong></td>
-                            <td>{{ $remove_request_data->recon_details->delivery_date }}</td>
+                            <td>{{ $recon_data->recon_details->delivery_date }}</td>
                         </tr>
                         <tr>
                             <td><strong>Received Date:</strong></td>
-                            <td>{{ $remove_request_data->recon_details->received_date }}</td>
+                            <td>{{ $recon_data->recon_details->received_date }}</td>
                             <td><strong>Person-in-charge:</strong></td>
-                            <td>{{ $remove_request_data->recon_details->pic }}</td>
+                            <td>{{ $recon_data->recon_details->pic }}</td>
                         </tr>
                         <tr>
                             <td><strong>Received By:</strong></td>
-                            <td>{{ $remove_request_data->recon_details->received_by }}</td>
+                            <td>{{ $recon_data->recon_details->received_by }}</td>
                             <td><strong>Invoice Number:</strong></td>
-                            <td>{{ $remove_request_data->recon_details->invoice_no }}</td>
+                            <td>{{ $recon_data->recon_details->invoice_no }}</td>
                         </tr>
                         <tr>
                             <td><strong>Classification:</strong></td>
-                            <td>{{ $remove_request_data->recon_details->classification }}</td>
+                            <td>{{ $recon_data->recon_details->classification }}</td>
                             <td><strong>Allocation:</strong></td>
-                            <td>{{ $remove_request_data->recon_details->allocation }}</td>
+                            <td>{{ $recon_data->recon_details->allocation }}</td>
                         </tr>
                     </table>
                 @endif
@@ -189,63 +209,63 @@
                     <table  style="width: 100%;">
                         <tr>
                             <td><strong>PO Date:</strong></td>
-                            <td>{{ $remove_request_data->recon_details->po_date }}</td>
+                            <td>{{ $recon_data->recon_details->po_date }}</td>
                             <td><strong>PO Number:</strong></td>
-                            <td>{{ $remove_request_data->recon_details->po_num }}</td>
+                            <td>{{ $recon_data->recon_details->po_num }}</td>
                         </tr>
                         <tr>
                             <td><strong>PR Number:</strong></td>
-                            <td>{{ $remove_request_data->recon_details->pr_num }}</td>
+                            <td>{{ $recon_data->recon_details->pr_num }}</td>
                             <td><strong>Received Number:</strong></td>
-                            <td>{{ $remove_request_data->recon_details->rcv_no }}</td>
+                            <td>{{ $recon_data->recon_details->rcv_no }}</td>
                         </tr>
                         <tr>
                             <td><strong>Code:</strong></td>
-                            <td>{{ $remove_request_data->recon_details->prod_code }}</td>
+                            <td>{{ $recon_data->recon_details->prod_code }}</td>
                             <td><strong>Name:</strong></td>
-                            <td>{{ $remove_request_data->recon_details->prod_name }}</td>
+                            <td>{{ $recon_data->recon_details->prod_name }}</td>
                         </tr>
                         <tr>
                             <td><strong>Supplier:</strong></td>
-                            <td>{{ $remove_request_data->recon_details->supplier }}</td>
+                            <td>{{ $recon_data->recon_details->supplier }}</td>
                             <td><strong>Description:</strong></td>
-                            <td>{{ $remove_request_data->recon_details->prod_desc }}</td>
+                            <td>{{ $recon_data->recon_details->prod_desc }}</td>
                         </tr>
                         <tr>
                             <td><strong>Unit Price:</strong></td>
-                            <td>{{ $remove_request_data->recon_details->unit_price }}</td>
+                            <td>{{ $recon_data->recon_details->unit_price }}</td>
                             <td><strong>Currency:</strong></td>
-                            <td>{{ $remove_request_data->recon_details->currency }}</td>
+                            <td>{{ $recon_data->recon_details->currency }}</td>
                         </tr>
                         <tr>
                             <td><strong>Received Qty:</strong></td>
-                            <td>{{ $remove_request_data->recon_details->received_qty }}</td>
+                            <td>{{ $recon_data->recon_details->received_qty }}</td>
                             <td><strong>UOM:</strong></td>
-                            <td>{{ $remove_request_data->recon_details->uom }}</td>
+                            <td>{{ $recon_data->recon_details->uom }}</td>
                         </tr>
                         <tr>
                             <td><strong>PO Balance:</strong></td>
-                            <td>{{ $remove_request_data->recon_details->po_balance }}</td>
+                            <td>{{ $recon_data->recon_details->po_balance }}</td>
                             <td><strong>Delivery Date:</strong></td>
-                            <td>{{ $remove_request_data->recon_details->delivery_date }}</td>
+                            <td>{{ $recon_data->recon_details->delivery_date }}</td>
                         </tr>
                         <tr>
                             <td><strong>Received Date:</strong></td>
-                            <td>{{ $remove_request_data->recon_details->received_date }}</td>
+                            <td>{{ $recon_data->recon_details->received_date }}</td>
                             <td><strong>Person-in-charge:</strong></td>
-                            <td>{{ $remove_request_data->recon_details->pic }}</td>
+                            <td>{{ $recon_data->recon_details->pic }}</td>
                         </tr>
                         <tr>
                             <td><strong>Received By:</strong></td>
-                            <td>{{ $remove_request_data->recon_details->received_by }}</td>
+                            <td>{{ $recon_data->recon_details->received_by }}</td>
                             <td><strong>Invoice Number:</strong></td>
-                            <td>{{ $remove_request_data->recon_details->invoice_no }}</td>
+                            <td>{{ $recon_data->recon_details->invoice_no }}</td>
                         </tr>
                         <tr>
                             <td><strong>Classification:</strong></td>
-                            <td>{{ $remove_request_data->recon_details->classification }}</td>
+                            <td>{{ $recon_data->recon_details->classification }}</td>
                             <td><strong>Allocation:</strong></td>
-                            <td>{{ $remove_request_data->recon_details->allocation }}</td>
+                            <td>{{ $recon_data->recon_details->allocation }}</td>
                         </tr>
                     </table>
                 @endif

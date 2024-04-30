@@ -179,6 +179,8 @@ class RequestController extends Controller
 
             $admin_email = collect($get_user_admin)->pluck('rapidx_user_details.email')->flatten(0)->filter()->toArray();
             $user_email = collect($get_user_per_cat)->pluck('rapidx_user_details.email')->flatten(0)->filter()->toArray();
+            // $admin_email = ['cpagtalunan@pricon.ph'];
+            // $user_email = ['jdomingo@pricon.ph'];
 
             // * END
 
@@ -372,7 +374,8 @@ class RequestController extends Controller
                         'type' => "Disapproved",
                         'function' => 'remove',
                         'control' => $request->dtParams['ctrl_number']."-".$request->dtParams['ctrl_ext'], // change to $control-$control_ext
-                        'remove_request_data' => $recon_remove_req,
+                        // 'remove_request_data' => $recon_remove_req,
+                        'recon_data' => $recon_remove_req,
                         'user_remarks' => $request->adminDisRemarks,
                         // 'cutoff_date_req' => $request->cutoff_date,
                         'requestor' => $_SESSION['rapidx_name']
