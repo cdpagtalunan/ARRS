@@ -329,7 +329,8 @@
    
     const options = {
         responsive: true,
-        serverSide: true
+        serverSide: true,
+        order: [[1, 'desc']]
     }; 
 
     const removeColumns = [
