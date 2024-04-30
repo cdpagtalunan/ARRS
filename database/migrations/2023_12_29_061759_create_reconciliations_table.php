@@ -47,6 +47,7 @@ class CreateReconciliationsTable extends Migration
             $table->string('recon_remove_remarks')->nullable();
             $table->string('ship_to')->nullable()->comment = "factory";
             $table->string('requisitioner')->nullable();
+            $table->tinyInteger('logdel')->default(0)->comment = "0-active, 1-totally removed";
             $table->timestamps();
             $table->softDeletes();
         });
