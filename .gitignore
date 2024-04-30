@@ -2,3 +2,4 @@
 /vendor
 /public/js/app.js
 /.vscode
+/.env

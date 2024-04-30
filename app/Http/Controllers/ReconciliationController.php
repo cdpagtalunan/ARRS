@@ -71,6 +71,7 @@ class ReconciliationController extends Controller
                 // ^ NOTE: THIS WILL ONLY WORK FOR NEW CUTOFF ONLY
     
                 Reconciliation::where('recon_status', 2)
+                ->where('logdel', 0)
                 ->whereNotNull('deleted_at')
                 ->update([
                     'recon_status' => 0,
