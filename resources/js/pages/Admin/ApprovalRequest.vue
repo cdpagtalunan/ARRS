@@ -13,7 +13,7 @@
                         <template #body>
                             <ul class="nav nav-tabs">
                                 <li class="nav-item">
-                                    <a class="nav-link active" data-bs-toggle="tab" href="#uRequestAdd" @click="dtTableRequest.ajax.reload()" role="tab" aria-selected="true">Add Request</a>
+                                    <a class="nav-link active" data-bs-toggle="tab" href="#uRequestAdd" @click="dt.ajax.reload()" role="tab" aria-selected="true">Add Request</a>
                                 </li>
                                 <li class="nav-item">
                                     <a class="nav-link" data-bs-toggle="tab" href="#uRequestRemove" @click="dtTableRemove.ajax.reload()" role="tab" aria-selected="true">Remove Request</a>

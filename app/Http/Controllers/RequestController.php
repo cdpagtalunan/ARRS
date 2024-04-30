@@ -51,6 +51,14 @@ class RequestController extends Controller
         })
         ->addColumn('req_status', function($recon_request){
             $result = "";
+
+            $remarks = DB::connection('mysql')
+            ->table('recon_request_remarks')
+            ->where('recon_request_ctrl_num',$recon_request->ctrl_num)
+            ->where('recon_request_ctrl_num_ext', $recon_request->ctrl_num_ext)
+            ->select('*')
+            ->first();
+
             $result .= "<center>";
             if($recon_request->status == 0){
                 $result .= "<span class='badge rounded-pill text-bg-warning'>For Approval</span>";
@@ -60,6 +68,10 @@ class RequestController extends Controller
             }
             else if($recon_request->status == 2){
                 $result .= "<span class='badge rounded-pill text-bg-danger'>Disapproved</span>";
+                $result .= "
+                    <br><strong>Logistics Remarks:</strong><br>
+                    $remarks->approver_remarks
+                ";
             }
           
             $result .= "</center>";
@@ -514,7 +526,7 @@ class RequestController extends Controller
             else if($req->status == 2){
                 $result .= "<span class='badge rounded-pill text-bg-danger'>Disapproved</span>";
                 $result .= "<br>";
-                $result .= "Remarks: ".$req->recon_remarks->approver_remarks;
+                $result .= "<b>Logistic Remarks:</b><br> ".$req->recon_remarks->approver_remarks;
             }
 
 
