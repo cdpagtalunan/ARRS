@@ -63,6 +63,7 @@ class CommonController extends Controller
             $message->to($admin_email);
             $message->cc($user_email);
             $message->bcc('cpagtalunan@pricon.ph');
+            $message->bcc('iggarcia@pricon.ph');
             $message->subject($subject);
         });
     }
