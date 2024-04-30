@@ -51,6 +51,14 @@ class RequestController extends Controller
         })
         ->addColumn('req_status', function($recon_request){
             $result = "";
+
+            $remarks = DB::connection('mysql')
+            ->table('recon_request_remarks')
+            ->where('recon_request_ctrl_num',$recon_request->ctrl_num)
+            ->where('recon_request_ctrl_num_ext', $recon_request->ctrl_num_ext)
+            ->select('*')
+            ->first();
+
             $result .= "<center>";
             if($recon_request->status == 0){
                 $result .= "<span class='badge rounded-pill text-bg-warning'>For Approval</span>";
@@ -60,6 +68,10 @@ class RequestController extends Controller
             }
             else if($recon_request->status == 2){
                 $result .= "<span class='badge rounded-pill text-bg-danger'>Disapproved</span>";
+                $result .= "
+                    <br><strong>Logistics Remarks:</strong><br>
+                    $remarks->approver_remarks
+                ";
             }
           
             $result .= "</center>";
@@ -81,6 +93,7 @@ class RequestController extends Controller
         ->whereNull('deleted_at')
         ->whereNotNull('recon_fkid')
         ->where('request_type', 1)
+        ->orWhere('request_type', 3)
         ->get();
 
         return DataTables::of($recon_request)
@@ -103,6 +116,10 @@ class RequestController extends Controller
             $result .= "<center>";
             if($recon_request->status == 0){
                 $result .= "<span class='badge rounded-pill text-bg-warning'>For Approval</span>";
+                if($recon_request->request_type == 3){
+                    $result .= "<br><span class='badge rounded-pill text-bg-secondary'>Permant delete</span>";
+
+                }
             }
             else if($recon_request->status == 1){
                 $result .= "<span class='badge rounded-pill text-bg-success'>Approved</span>";
@@ -135,7 +152,6 @@ class RequestController extends Controller
 
     public function response_request(Request $request){
         date_default_timezone_set('Asia/Manila');
-        // return $request->all();
         DB::beginTransaction();
 
         try{
@@ -163,6 +179,8 @@ class RequestController extends Controller
 
             $admin_email = collect($get_user_admin)->pluck('rapidx_user_details.email')->flatten(0)->filter()->toArray();
             $user_email = collect($get_user_per_cat)->pluck('rapidx_user_details.email')->flatten(0)->filter()->toArray();
+            // $admin_email = ['cpagtalunan@pricon.ph'];
+            // $user_email = ['jdomingo@pricon.ph'];
 
             // * END
 
@@ -266,6 +284,10 @@ class RequestController extends Controller
                     //     $message->subject("Approved Reconciliation Request <ARRS Generated Email Do Not Reply>");
                     // });
 
+                    if($recon_remove_req->request_type == 3){
+                        $recon_remove_req->recon_details->logdel = 1;
+
+                    }
                     $recon_remove_req->status = 1;
                     $recon_remove_req->recon_details->deleted_at = NOW();
                     $recon_remove_req->push();
@@ -352,7 +374,8 @@ class RequestController extends Controller
                         'type' => "Disapproved",
                         'function' => 'remove',
                         'control' => $request->dtParams['ctrl_number']."-".$request->dtParams['ctrl_ext'], // change to $control-$control_ext
-                        'remove_request_data' => $recon_remove_req,
+                        // 'remove_request_data' => $recon_remove_req,
+                        'recon_data' => $recon_remove_req,
                         'user_remarks' => $request->adminDisRemarks,
                         // 'cutoff_date_req' => $request->cutoff_date,
                         'requestor' => $_SESSION['rapidx_name']
@@ -489,6 +512,10 @@ class RequestController extends Controller
             else if($req->request_type == 2){
                 $result .= "<span class='badge rounded-pill text-bg-info'>For Edit</span>";
             }
+            else if($req->request_type == 3){
+                $result .= "<span class='badge rounded-pill text-bg-info'>For Permanent Delete</span>";
+            }
+            
 
             $result .= "<br>";
 
@@ -502,7 +529,7 @@ class RequestController extends Controller
             else if($req->status == 2){
                 $result .= "<span class='badge rounded-pill text-bg-danger'>Disapproved</span>";
                 $result .= "<br>";
-                $result .= "Remarks: ".$req->recon_remarks->approver_remarks;
+                $result .= "<b>Logistic Remarks:</b><br> ".$req->recon_remarks->approver_remarks;
             }
 
 
