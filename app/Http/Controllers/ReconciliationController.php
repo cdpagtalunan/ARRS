@@ -516,17 +516,21 @@ class ReconciliationController extends Controller
                     $result .= "<br><span class='badge text-bg-danger mt-1'>Logistics Disapproved</span>";
                 }
 
-                if($approved_request_remarks[0]->request_type == 1){
+                if(
+                    $approved_request_remarks[0]->request_type == 1 || 
+                    $approved_request_remarks[0]->request_type == 2 ||
+                    $approved_request_remarks[0]->request_type == 3
+                ){
                     $result .= "";
                 }
-                else if($approved_request_remarks[0]->request_type == 2){
-                    $result .= "";
+                // else if($approved_request_remarks[0]->request_type == 2){
+                //     $result .= "";
                     
-                }
-                else if($approved_request_remarks[0]->request_type == 3){
-                    $result .= "";
+                // }
+                // else if($approved_request_remarks[0]->request_type == 3){
+                //     $result .= "";
 
-                }
+                // }
 
                 $result .= "<br><span class='badge  text-bg-light text-dark text-break text-wrap mt-1'><strong>Remarks:</strong> <br>".$approved_request_remarks[0]->request_remarks."</span>";
 
@@ -620,6 +624,7 @@ class ReconciliationController extends Controller
             // * For Email
             $recon_details = Reconciliation::where('id', $decrypt_id)
             ->first();
+
             $data = array(
                 'type' => "Removal",
                 'control' => $control."~".$control_ext, // change to $control-$control_ext
@@ -628,7 +633,7 @@ class ReconciliationController extends Controller
                 // 'cutoff_date_req' => $request->cutoff_date,
                 'requestor' => $_SESSION['rapidx_name']
             );
-            // return $data['request_data'];
+
             $get_cat = UserCategory::where('classification', $request->extraParams['classification'])
             ->where('department', $request->extraParams['department'])
             ->whereNull('deleted_at')
@@ -650,14 +655,8 @@ class ReconciliationController extends Controller
             ->get();
 
             $admin_email = collect($get_admin_user)->pluck('rapidx_user_details.email')->flatten(0)->filter()->toArray();
-           
-            
             $user_email = collect($get_user)->pluck('rapidx_user_details.email')->flatten(0)->filter()->toArray();
-           
-
             $subject = "Reconciliation Request For Removal <ARRS Generated Email Do Not Reply>";
-
-            // return $user_email;
 
             $this->mailSender->send_mail('user_request', $data, $request, $admin_email, $user_email, $subject);
             // Mail::send('mail.user_request', $data, function($message) use ($request, $admin_email, $user_email){
@@ -668,14 +667,23 @@ class ReconciliationController extends Controller
             // });
             // * End Email
             
-            $recon_request_id = ReconRequest::insertGetId([
-                'request_type'      => 1,
+            $request_array = array(
                 'recon_fkid'        => $decrypt_id,
                 'ctrl_num'          => $control,
                 'ctrl_num_ext'      => $control_ext,
                 'created_by'        => $_SESSION['rapidx_user_id'],
                 'created_at'        => NOW()
-            ]);
+            );
+
+            if($request->removeType == 0){
+                $request_array['request_type'] = 1;
+            }
+            else if($request->removeType == 1){
+                $request_array['request_type'] = 3;
+            }
+            
+            $recon_request_id = ReconRequest::insertGetId($request_array);
+
             ReconRequestRemarks::insert([
                 'recon_request_id'           => $recon_request_id,
                 'recon_request_ctrl_num'     => $control,

@@ -230,6 +230,20 @@
         <template #body v-else-if="modalData.viewing == 4">  <!-- 4-remove -->
             <input type="hidden" v-model="removeReconData.reconId">
             <div>
+                <label>Remove Type: 
+                    <icons icon="fas fa-circle-question" tabindex="0" data-bs-toggle="tooltip" data-bs-html="true" class="text-left"
+                    title="
+Cutoff Removal - will be removed to current cutoff and be inserted to the next cutoff
+Permanent Delete - will be removed to current cutoff and will not insert to the next cutoff
+                    "></icons>
+                </label>
+                <select id="selRemoveType" v-model="removeReconData.removeType" class="form-control" placeholder="Select">
+                    <option value="" disabled>--Select--</option>
+                    <option value="0">Cutoff Removal</option>
+                    <option value="1">Permanent Delete</option>
+                </select>
+            </div>
+            <div>
                 <label>Reasons:</label>
                 <textarea id="txtRemoveReasons" rows="5" class="form-control" v-model="removeReconData.reasons" required></textarea>
             </div>
@@ -280,7 +294,7 @@
             </div>
            
         </template>
-        <template #body v-else-if="modalData.viewing == 6">
+        <template #body v-else-if="modalData.viewing == 6"> <!-- 6- Edit data from arrs -->
             <input type="hidden" v-model="requestEditData.reconId">
             <div>
                 <label>Reasons:</label>
@@ -674,6 +688,13 @@
                     }
                     else{
                         document.querySelector('#txtRemoveReasons').classList.remove('is-invalid');
+                    }
+
+                    if(err.response.data.errors.removeType != undefined){
+                        document.querySelector('#selRemoveType').classList.add('is-invalid');
+                    }
+                    else{
+                        document.querySelector('#selRemoveType').classList.remove('is-invalid');
                     }
                     toastr.error('Please fill-up required fields.')
                     

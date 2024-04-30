@@ -81,6 +81,7 @@ class RequestController extends Controller
         ->whereNull('deleted_at')
         ->whereNotNull('recon_fkid')
         ->where('request_type', 1)
+        ->orWhere('request_type', 3)
         ->get();
 
         return DataTables::of($recon_request)
@@ -103,6 +104,10 @@ class RequestController extends Controller
             $result .= "<center>";
             if($recon_request->status == 0){
                 $result .= "<span class='badge rounded-pill text-bg-warning'>For Approval</span>";
+                if($recon_request->request_type == 3){
+                    $result .= "<br><span class='badge rounded-pill text-bg-secondary'>Permant delete</span>";
+
+                }
             }
             else if($recon_request->status == 1){
                 $result .= "<span class='badge rounded-pill text-bg-success'>Approved</span>";
@@ -135,7 +140,6 @@ class RequestController extends Controller
 
     public function response_request(Request $request){
         date_default_timezone_set('Asia/Manila');
-        // return $request->all();
         DB::beginTransaction();
 
         try{
@@ -266,6 +270,10 @@ class RequestController extends Controller
                     //     $message->subject("Approved Reconciliation Request <ARRS Generated Email Do Not Reply>");
                     // });
 
+                    if($recon_remove_req->request_type == 3){
+                        $recon_remove_req->recon_details->logdel = 1;
+
+                    }
                     $recon_remove_req->status = 1;
                     $recon_remove_req->recon_details->deleted_at = NOW();
                     $recon_remove_req->push();
@@ -489,6 +497,10 @@ class RequestController extends Controller
             else if($req->request_type == 2){
                 $result .= "<span class='badge rounded-pill text-bg-info'>For Edit</span>";
             }
+            else if($req->request_type == 3){
+                $result .= "<span class='badge rounded-pill text-bg-info'>For Permanent Delete</span>";
+            }
+            
 
             $result .= "<br>";
 

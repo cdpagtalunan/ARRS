@@ -24,7 +24,8 @@ class RemoveReconRequest extends FormRequest
     public function rules()
     {
         return [
-            'reasons' => 'required'
+            'reasons' => 'required',
+            'removeType' => 'required'
         ];
     }
 }
