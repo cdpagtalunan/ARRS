@@ -25,12 +25,12 @@
                                     </div>
                                 </div>
                                 <!-- <div class="col-3 d-flex flex-row justify-content-between align-items-center"> -->
-                                <div class="col-sm-3">
-                                    <strong>Status: </strong>
+                                <div class="col-sm-4">
+                                    <!-- <strong>Status: </strong>
                                     <strong :class="{
                                             'text-success': catStatus.status,
                                             'text-danger': !catStatus.status
-                                    }">{{ catStatus.label }}</strong>
+                                    }">{{ catStatus.label }}</strong> -->
                                     <!-- <strong>Status: {{ catStatus }}</strong> -->
                                     <router-link :to="{ name: 'UserRequest' }" class="float-end">
                                         <button class="btn btn-primary btn-sm"><icons icon="fas fa-clipboard-list"></icons> See Request List</button>
@@ -47,11 +47,22 @@
                             <div class="tab-content">
                                 <div class="tab-pane fade" id="reconDataTable" role="tabpanel" aria-labelledby="reconDataTable-tab">
                                     <div class="mt-3 overflow-x-auto">
-                                        <button type="button" class="btn btn-primary float-end" @click="btnAddRecon(dtParams)"><icons icon="fas fa-plus"></icons> Add Recon</button>
-                                        <br>
-                                        <br>
-                                        
-                                        <DataTable
+                                        <div class="row">
+                                            <div class="col-sm-12 d-flex align-items-center justify-content-between">
+                                            <div>
+                                                <strong>Status: </strong>
+                                            <strong :class="{
+                                                    'text-success': catStatus.status,
+                                                    'text-danger': !catStatus.status
+                                            }">{{ catStatus.label }}</strong>
+                                            </div>
+                                            
+                                            <button type="button" class="btn btn-primary float-end" @click="btnAddRecon(dtParams)"><icons icon="fas fa-plus"></icons> Add Recon</button>
+                                            </div>
+                                        </div>
+                                        <div class="row mt-2">
+                                            <div class="col-sm-12">
+                                                <DataTable
                                             class="table table-sm table-bordered table-hover text-wrap display tableRecon"
                                             :columns="columns"
                                             :ajax="{
@@ -66,6 +77,10 @@
                                             ref="table"
                                             :options="options"
                                         />
+                                            </div>
+                                        </div>
+                                        
+                                        
                                     </div>
                                 </div>
                             </div>
@@ -466,21 +481,31 @@ Permanent Delete - will be removed to current cutoff and will not insert to the 
         'drawCallback': function( settings ) {
             let dtApi = this.api();
             let dtDatas = dtApi.rows( {page:'current'} ).data();
-            let dtArray = [];
+            let dtArrayStatus = [];
+            let dtArrayFinalReconStatus = [];
             if(dtDatas.length>0){
                 for(let x = 0; x < dtDatas.length; x++){
-                    dtArray.push(dtDatas[x]['recon_status'])
+                    dtArrayStatus.push(dtDatas[x]['recon_status'])
+                    dtArrayFinalReconStatus.push(dtDatas[x]['final_recon_status'])
                 }
 
-                console.log('dtArray', dtArray)
-                // let index = dtArray.indexOf(0);
-                // let index = dtArray.indexOf(0);
-                let index =  dtArray.every(v => v === 1)
+                console.log('dtArrayStatus', dtArrayStatus)
+                console.log('dtArrayStatus', dtArrayFinalReconStatus)
+                // let index = dtArrayStatus.indexOf(0);
+                // let index = dtArrayStatus.indexOf(0);
+                let index =  dtArrayStatus.every(v => v === 1)
+                let index1 =  dtArrayFinalReconStatus.every(v => v === 0)
 
-                console.log('idex', index);
-                if(index){
+                console.log('index', index);
+                console.log('index1', index1);
+                if(index == true && index1 == true){
                     catStatus.status = true;
-                    catStatus.label = "Complete";
+                    catStatus.label = "Tally";
+
+                }
+                else if(index == true && index1 == false){
+                    catStatus.status = false;
+                    catStatus.label = "Pending on logistics";
 
                 }
                 else{
