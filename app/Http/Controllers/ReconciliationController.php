@@ -656,7 +656,7 @@ class ReconciliationController extends Controller
 
             $subject = "Reconciliation Request For Removal <ARRS Generated Email Do Not Reply>";
 
-            return $user_email;
+            // return $user_email;
 
             $this->mailSender->send_mail('user_request', $data, $request, $admin_email, $user_email, $subject);
             // Mail::send('mail.user_request', $data, function($message) use ($request, $admin_email, $user_email){
