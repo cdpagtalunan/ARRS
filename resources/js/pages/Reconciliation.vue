@@ -448,6 +448,7 @@
         responsive: true,
         serverSide: true,
         processing: true,
+        order: [[1, 'asc']],
         'drawCallback': function( settings ) {
             let dtApi = this.api();
             let dtDatas = dtApi.rows( {page:'current'} ).data();
