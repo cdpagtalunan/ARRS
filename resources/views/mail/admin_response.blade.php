@@ -35,7 +35,8 @@
                     </tr>
 
                     @if ($type == 'Disapproved')
-                        @if ($function == 'add')   <tr>
+                        @if ($function == 'add')
+                        <tr>
                             <td><strong>Requestor remarks:</strong></td>
                                 <td>{{ $recon_data[0]['recon_remarks']['remarks'] }}</td>
                             </tr>
@@ -53,20 +54,20 @@
                                 <td>{{ $recon_data->recon_remarks->approver_remarks }}</td>
                             </tr>
                         @endif
-
-                    {{-- <tr>
-                        <td><strong>Logistics remarks:</strong></td>
-                        <td>{{ $recon_data }}</td>
-                    </tr> --}}
+                    @else
+                        @if ($function == 'add')
+                        <tr>
+                            <td><strong>Requestor remarks:</strong></td>
+                                <td>{{ $recon_data[0]['recon_remarks']['remarks'] }}</td>
+                            </tr>
+                        @else
+                        <tr>
+                            <td><strong>Requestor remarks:</strong></td>
+                                <td>{{ $recon_data->recon_remarks->remarks }}</td>
+                            </tr>
+                        @endif
                     @endif
-                    {{-- <tr>
-                        <td><strong>Requestor remarks:</strong></td>
-                        <td>{{ $user_remarks }}</td>
-                    </tr> --}}
-                    {{-- <tr>
-                        <td><strong>Requestor:</strong></td>
-                        <td>{{ $requestor }}</td>
-                    </tr> --}}
+                    
                 </tbody>
             </table>
             <br>
