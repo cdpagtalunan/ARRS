@@ -688,7 +688,7 @@ class ReconciliationController extends Controller
             ]);
 
 
-            // DB::commit();
+            DB::commit();
 
             return response()->json([
                 'result' => 1,
@@ -811,7 +811,7 @@ class ReconciliationController extends Controller
         $req_to = $to->format('Y-m-d');
 
         // return;
-        $recon_control = ReconRequest::orderBy('ctrl_num_ext', 'DESC')->first();
+        $recon_control = ReconRequest::orderBy('id', 'DESC')->first();
         
         $control = $request->addEprpoData['reconClassification']['department'] . "~" . $request->addEprpoData['reconClassification']['classification'];
 
@@ -1025,7 +1025,7 @@ class ReconciliationController extends Controller
         try{
             $decrypt_id = Helpers::decryptId($request->reconId);
 
-            $recon_control = ReconRequest::orderBy('ctrl_num_ext', 'DESC')->first();
+            $recon_control = ReconRequest::orderBy('id', 'DESC')->first();
             $control_ext = 0;
             if(isset($recon_control)){
                 $control_ext = $recon_control->ctrl_num_ext + 1;
