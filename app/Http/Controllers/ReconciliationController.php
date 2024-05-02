@@ -763,11 +763,21 @@ class ReconciliationController extends Controller
             $eprpo_data[$i]->received_by = $this->getPoAssignedTo($eprpo_data[$i]->reference_po_number);
             $eprpo_data[$i]->description = $eprpo_data[$i]->long_description == '' ? $eprpo_data[$i]->long_description1 : $eprpo_data[$i]->long_description;
             $eprpo_data[$i]->allocation     = $this->getAllocation($eprpo_data[$i]->po_number);
+            $ship_to                        = $this->getShipTo($eprpo_data[$i]->po_number);
+            // $ship_to1; // String only
+            // return $ship_to->facshipto;
+            if($ship_to->facshipto == 0){
+                $eprpo_data[$i]->ship_to = "Factory 1";
+            }
+            else{
+                $eprpo_data[$i]->ship_to = $ship_to->facshipto;
+            }
+
+
+            $eprpo_data[$i]->requisitioner         = "$ship_to->first_name $ship_to->last_name";
 
             // return $eprpo_data[$i];
         }
-        // $collection = collect($eprpo_data)->where('classification_code', $request->param['classification'])
-        // ->flatten(0);
 
         $collection = collect($eprpo_data)->filter(
             function($item) use ($request){
@@ -869,6 +879,8 @@ class ReconciliationController extends Controller
                             'allocation'         => $jsn_decoded_recon_req->allocation,
                             'po_remarks'         => $jsn_decoded_recon_req->po_remarks,
                             'hold_remarks'       => $jsn_decoded_recon_req->hold_remarks,
+                            'ship_to'            => $jsn_decoded_recon_req->ship_to,
+                            'requisitioner'      => $jsn_decoded_recon_req->requisitioner,
                             'recon_date_from'    => $req_from,
                             'recon_date_to'      => $req_to,
                             'created_by'         => $_SESSION['rapidx_user_id'],

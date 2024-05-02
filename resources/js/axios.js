@@ -39,8 +39,8 @@ axios.interceptors.response.use(
 
 const api = {... axios}
 // api.defaults.baseURL = import.meta.env.VITE_APP_LARAVEL_SERVER
-api.defaults.baseURL = 'http://rapidx/ARRS_rev/';
-// api.defaults.baseURL = 'http://rapidx/ARRS/';
+// api.defaults.baseURL = 'http://rapidx/ARRS_rev/';
+api.defaults.baseURL = 'http://rapidx/ARRS/';
 // api.get('/csrf-cookie')
 
 export default api
