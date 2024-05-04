@@ -440,14 +440,28 @@ class ReconciliationController extends Controller
             // ->where('allocation', 'NOT LIKE', '%stamping%')
             // ->select('*')
             // ->get();
-            
         }
 
-        
 
         return DataTables::of($recon_data)
+        ->addColumn('raw_final_status', function($recon_data1) use ($recon_data){
+            $result = "";
+            $data = collect($recon_data)->where('recon_status',"<>", 1)->flatten(1);
+            $data1 = collect($recon_data)->where('final_recon_status',"<>", 1)->flatten(1);
+            if(count($data) > 0 && count($data1) > 0){
+                $result = 1;
+            }
+            else if(count($data) == 0 && count($data1) > 0){
+                $result = 2;
+            }
+            else{
+                $result = 0;
+            }
+            return $result;
+        })
         ->addColumn('action', function($recon_data) use ($request){
             
+
             $encrypt_id = Helpers::encryptId($recon_data->id);
             $result = "";
 
@@ -539,7 +553,7 @@ class ReconciliationController extends Controller
             $result .= "</center>";
             return $result;
         })
-        ->rawColumns(['action', 'status'])
+        ->rawColumns(['action', 'status', 'raw_final_status'])
         ->make(true);
     }
 
