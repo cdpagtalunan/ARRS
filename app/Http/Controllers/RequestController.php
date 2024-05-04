@@ -209,14 +209,14 @@ class RequestController extends Controller
                             `supplier`,`currency`,`uom`,`unit_price`,`received_qty`,`po_balance`,
                             `pic`,`received_date`,`delivery_date`,`received_by`,`invoice_no`,`rcv_no`,
                             `classification`,`allocation`,`po_remarks`,`hold_remarks`,
-                            `recon_date_from`,`recon_date_to`
+                            `recon_date_from`,`recon_date_to`, `ship_to`, `requisitioner`
                         )
                         SELECT
                         `po_date`,`po_num`,`pr_num`,`prod_code`,`prod_name`,`prod_desc`,
                         `supplier`,`currency`,`uom`,`unit_price`,`received_qty`,`po_balance`,
                         `pic`,`received_date`,`delivery_date`,`received_by`,`invoice_no`,`rcv_no`,
                         `classification`,`allocation`,`po_remarks`,`hold_remarks`,
-                        `recon_date_from`,`recon_date_to`
+                        `recon_date_from`,`recon_date_to`, `ship_to`, `requisitioner`
                         FROM recon_requests WHERE ctrl_num = "'.$request->dtParams['ctrl_number'].'" 
                         AND ctrl_num_ext = "'.$request->dtParams['ctrl_ext'].'"
                     ');
