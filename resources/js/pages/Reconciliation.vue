@@ -573,7 +573,7 @@ Permanent Delete - will be removed to current cutoff and will not insert to the 
          injectSess = inject('store');
 
         await setTimeout( async () => {
-        await api.get('api/get_category_of_user', {params: {access: injectSess.access}} ).then((result) => {
+            await api.get('api/get_category_of_user', {params: {access: injectSess.access}} ).then((result) => {
                 userAccesses.value = result.data.uAccess;
                 // console.log(result.data.uAccess);
             }).catch((err) => {

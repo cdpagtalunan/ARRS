@@ -807,7 +807,8 @@ class ReconciliationController extends Controller
         return DataTables::of($collection)
         ->addColumn('action', function($collection){
             $result = "";
-            $result .= "<input type='checkbox' class='checkedRecon' data-eprpo='".json_encode($collection)."' name='checking[]' checked disabled>";
+            // $result .= "<input type='checkbox' class='checkedRecon' data-eprpo='".json_encode($collection)."' name='checking[]' checked disabled>";
+            $result .= "<input type='checkbox' class='checkedRecon' data-eprpo='".json_encode($collection)."' name='checking[]'>";
             return $result;
         })
         // ->addColumn('po_number', function($collection){
