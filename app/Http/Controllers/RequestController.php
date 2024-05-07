@@ -663,9 +663,10 @@ class RequestController extends Controller
                 AND item.id=receiving_details.item_id 
                 AND item.unit_of_measure_id=unit_of_measure.id
                 AND other_reference = "'.$request_data->invoice_no.'"
-                AND item.item_name = "'.$request_data->prod_name.'"
+                AND receiving_details.item_name = "'.$request_data->prod_name.'"
                 AND receiving_details.unit_price = "'.$request_data->unit_price.'"
             ');
+            // return $eprpo_data;
     
             if(count($eprpo_data) == 1){
                 $po_number      = ReconciliationController::getRefReqNum($eprpo_data[0]->reference_po_number);
