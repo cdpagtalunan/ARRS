@@ -397,6 +397,7 @@ class ReconciliationController extends Controller
             ->where('recon_date_from', '>=', $dtFrom)
             ->where('recon_date_to', '<=', $dtTo)
             ->where('allocation', 'LIKE', '%stamping%')
+            ->where('logdel', 0)
             ->select('*')
             ->get();
         }
@@ -412,6 +413,7 @@ class ReconciliationController extends Controller
                 ->where('recon_date_from', '>=', $dtFrom)
                 ->where('recon_date_to', '<=', $dtTo)
                 ->where('allocation', 'NOT LIKE', '%stamping%')
+                ->where('logdel', 0)
                 ->select('*')
                 ->get();
             }
@@ -425,6 +427,7 @@ class ReconciliationController extends Controller
                 ->where('recon_date_from', '>=', $dtFrom)
                 ->where('recon_date_to', '<=', $dtTo)
                 ->where('allocation', 'NOT LIKE', '%stamping%')
+                ->where('logdel', 0)
                 ->select('*')
                 ->get();
             }
@@ -448,6 +451,7 @@ class ReconciliationController extends Controller
             $result = "";
             $data = collect($recon_data)->where('recon_status',"<>", 1)->flatten(1);
             $data1 = collect($recon_data)->where('final_recon_status',"<>", 1)->flatten(1);
+            // dd($data1);
             if(count($data) > 0 && count($data1) > 0){
                 $result = 1;
             }
@@ -809,6 +813,7 @@ class ReconciliationController extends Controller
             $result = "";
             // $result .= "<input type='checkbox' class='checkedRecon' data-eprpo='".json_encode($collection)."' name='checking[]' checked disabled>";
             $result .= "<input type='checkbox' class='checkedRecon' data-eprpo='".json_encode($collection)."' name='checking[]'>";
+
             return $result;
         })
         // ->addColumn('po_number', function($collection){
