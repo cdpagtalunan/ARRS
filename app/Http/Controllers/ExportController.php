@@ -64,6 +64,7 @@ class ExportController extends Controller
                 ->where('recon_date_from', '>=', $rec_from)
                 ->where('recon_date_to', '<=', $rec_to)
                 ->where('allocation', 'LIKE', '%stamping%')
+                ->orderBy('supplier', 'ASC')
                 ->select('*')
                 ->get();
             }
@@ -77,6 +78,7 @@ class ExportController extends Controller
                     ->where('recon_date_from', '>=', $rec_from)
                     ->where('recon_date_to', '<=', $rec_to)
                     ->where('allocation', 'NOT LIKE', '%stamping%')
+                    ->orderBy('supplier', 'ASC')
                     ->select('*')
                     ->get();
                 }
@@ -90,6 +92,7 @@ class ExportController extends Controller
                     ->where('recon_date_from', '>=', $rec_from)
                     ->where('recon_date_to', '<=', $rec_to)
                     ->where('allocation', 'NOT LIKE', '%stamping%')
+                    ->orderBy('supplier', 'ASC')
                     ->select('*')
                     ->get();
                 }
@@ -154,6 +157,7 @@ class ExportController extends Controller
                 ->where('recon_date_from', '>=', $rec_from)
                 ->where('recon_date_to', '<=', $rec_to)
                 ->where('allocation', 'LIKE', '%stamping%')
+                ->orderBy('supplier', 'ASC')
                 ->select('*')
                 ->get();
             }
@@ -168,6 +172,7 @@ class ExportController extends Controller
                     ->where('recon_date_from', '>=', $rec_from)
                     ->where('recon_date_to', '<=', $rec_to)
                     ->where('allocation', 'NOT LIKE', '%stamping%')
+                    ->orderBy('supplier', 'ASC')
                     ->select('*')
                     ->get();
                 }
@@ -181,6 +186,7 @@ class ExportController extends Controller
                     ->where('recon_date_from', '>=', $rec_from)
                     ->where('recon_date_to', '<=', $rec_to)
                     ->where('allocation', 'NOT LIKE', '%stamping%')
+                    ->orderBy('supplier', 'ASC')
                     ->select('*')
                     ->get();
                 }
