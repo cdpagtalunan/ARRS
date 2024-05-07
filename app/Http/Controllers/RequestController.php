@@ -465,7 +465,9 @@ class RequestController extends Controller
         // ->whereIn('id', $request->access)
         // ->get();
 
-        if($_SESSION['rapidx_username'] != 'cpagtalunan'){
+        
+        if(!in_array($_SESSION['rapidx_username'],['cpagtalunan', 'mspenaflorida'])){
+            // dd($_SESSION);
             $category_access->whereIn('id', $request->access);
         }
 
