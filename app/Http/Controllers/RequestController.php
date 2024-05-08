@@ -827,15 +827,69 @@ class RequestController extends Controller
 
     public function update_user_reconciliation(Request $request){
         DB::beginTransaction();
+        // Reconciliation::whereNull('deleted_at')
+                // ->where('recon_date_from', '>=', $request->from)
+                // ->where('recon_date_to', '<=', $request->to)
+                // ->where('pr_num', 'LIKE', "%".$request->dept."%")
+                // ->where('classification', $request->classification)
+                // ->update([
+                //     'final_recon_status' => 1
+                // ]);
         try{
-            Reconciliation::whereNull('deleted_at')
-            ->where('recon_date_from', '>=', $request->from)
-            ->where('recon_date_to', '<=', $request->to)
-            ->where('pr_num', 'LIKE', "%".$request->dept."%")
-            ->where('classification', $request->classification)
-            ->update([
-                'final_recon_status' => 1
-            ]);
+            if(strtoupper($request->dept) == 'STAMPING'){
+                $data = DB::connection('mysql')
+                ->table('reconciliations')
+                // ->where('pr_num', 'LIKE', "%".$request->param['department']."%")
+                ->where('classification', $request->classification)
+                ->where('recon_date_from', '>=', $request->from)
+                ->where('recon_date_to', '<=', $request->to)
+                ->where('allocation', 'LIKE', '%stamping%')
+                ->update([
+                    'final_recon_status' => 1
+                ]);
+            }
+            else{
+                // ! Remove IfElse and uncomment the query below when carlo olanga is already using the new user with section ppd-grinding
+                if($department == 'PPD-GRIN'){
+                    $data = DB::connection('mysql')
+                    ->table('reconciliations')
+                    // ->where('pr_num', 'LIKE', "%".$request->param['department']."%")
+                    ->where('requisitioner', "Carlo Olanga")
+                    ->where('classification', $request->classification)
+                    ->where('recon_date_from', '>=', $request->from)
+                    ->where('recon_date_to', '<=', $request->to)
+                    ->where('allocation', 'NOT LIKE', '%stamping%')
+                    ->update([
+                        'final_recon_status' => 1
+                    ]);
+                }
+                else{
+                    $data = DB::connection('mysql')
+                    ->table('reconciliations')
+                    ->where('pr_num', 'LIKE', "%".$request->dept."%")
+                    ->where('classification', $request->classification)
+                    ->where('requisitioner',"<>", "Carlo Olanga")
+                    ->where('recon_date_from', '>=', $request->from)
+                    ->where('recon_date_to', '<=', $request->to)
+                    ->where('allocation', 'NOT LIKE', '%stamping%')
+                    ->update([
+                        'final_recon_status' => 1
+                    ]);
+                }
+    
+                // ! Uncomment this MF.
+                // Reconciliation::whereNull('deleted_at')
+                // ->where('recon_date_from', '>=', $request->from)
+                // ->where('recon_date_to', '<=', $request->to)
+                // ->where('pr_num', 'LIKE', "%".$request->dept."%")
+                // ->where('classification', $request->classification)
+                // ->update([
+                //     'final_recon_status' => 1
+                // ]);
+            }
+
+
+          
 
             DB::commit();
 
