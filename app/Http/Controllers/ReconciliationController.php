@@ -797,11 +797,82 @@ class ReconciliationController extends Controller
             // return $eprpo_data[$i];
         }
 
-        $collection = collect($eprpo_data)->filter(
-            function($item) use ($request){
-                return ($item->classification_code == $request->param['classification'] && str_contains($item->po_number, $request->param['department']));
-            })
-        ->flatten(0);
+        if(strtoupper($request->param['department']) == 'STAMPING'){
+            // $recon_data = DB::connection('mysql')
+            // ->table('reconciliations')
+            // ->whereNull('deleted_at')
+            // ->where('classification', $request->param['classification'])
+            // ->where('recon_date_from', '>=', $dtFrom)
+            // ->where('recon_date_to', '<=', $dtTo)
+            // ->where('allocation', 'LIKE', '%stamping%')
+            // ->where('logdel', 0)
+            // ->select('*')
+            // ->get();'
+            // dd($eprpo_data);
+            $collection = collect($eprpo_data)->filter(
+                function($item) use ($request){
+                    return ($item->classification_code == $request->param['classification'] && str_contains($item->allocation, 'STAMPING'));
+                })
+            ->flatten(0);
+
+        }
+        else{
+            // ! Remove IfElse and uncomment the query below when carlo olanga is already using the new user with section ppd-grinding
+            if($request->param['department'] == 'PPD-GRIN'){
+                // $recon_data = DB::connection('mysql')
+                // ->table('reconciliations')
+                // ->whereNull('deleted_at')
+                // // ->where('pr_num', 'LIKE', "%".$request->param['department']."%")
+                // ->where('requisitioner', "Carlo Olanga")
+                // ->where('classification', $request->param['classification'])
+                // ->where('recon_date_from', '>=', $dtFrom)
+                // ->where('recon_date_to', '<=', $dtTo)
+                // ->where('allocation', 'NOT LIKE', '%stamping%')
+                // ->where('logdel', 0)
+                // ->select('*')
+                // ->get();
+                $collection = collect($eprpo_data)->filter(
+                    function($item) use ($request){
+                        return (
+                            $item->classification_code == $request->param['classification'] && 
+                            !str_contains($item->allocation, 'STAMPING')
+                        );
+                    })
+                ->flatten(0);
+            }
+            else{
+                // $recon_data = DB::connection('mysql')
+                // ->table('reconciliations')
+                // ->whereNull('deleted_at')
+                // ->where('pr_num', 'LIKE', "%".$request->param['department']."%")
+                // ->where('classification', $request->param['classification'])
+                // ->where('requisitioner',"<>", "Carlo Olanga")
+                // ->where('recon_date_from', '>=', $dtFrom)
+                // ->where('recon_date_to', '<=', $dtTo)
+                // ->where('allocation', 'NOT LIKE', '%stamping%')
+                // ->where('logdel', 0)
+                // ->select('*')
+                // ->get();
+
+                $collection = collect($eprpo_data)->filter(
+                    function($item) use ($request){
+                        return (
+                            $item->classification_code == $request->param['classification'] && 
+                            str_contains($item->po_number, $request->param['department']) &&
+                            !str_contains($item->allocation, 'STAMPING')
+                        );
+                    })
+                ->flatten(0);
+            }
+        }
+
+        // dd($collection);
+
+        // $collection = collect($eprpo_data)->filter(
+        //     function($item) use ($request){
+        //         return ($item->classification_code == $request->param['classification'] && str_contains($item->po_number, $request->param['department']));
+        //     })
+        // ->flatten(0);
 
         // ->where('pr_num', 'LIKE', "%".$request->param['department']."%")
         // ->where('classification', $request->param['classification'])
