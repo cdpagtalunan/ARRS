@@ -773,7 +773,9 @@ class RequestController extends Controller
 
             $disabled = "";
 
-            if($recon_data != 0 || $recon_data === false || $count_logstc_done != 0){
+            // dd($count_logstc_done);
+
+            if($recon_data != 0 || $recon_data === false || $count_logstc_done == 0){
                 $disabled = "disabled";
             }
 
@@ -797,7 +799,7 @@ class RequestController extends Controller
 
             $count_logstc_done = $this->count_logstc_finished_recon($categories->department, $categories->classification, $dateFrom, $dateTo);
 
-            // return $recon_data;
+            // dd($count_logstc_done);
             $result .= "<center>";
             if($recon_data === false){
                 $result .= "<span class='badge bg-secondary'>No Data</span>";
@@ -805,7 +807,7 @@ class RequestController extends Controller
             else if($recon_data != 0){
                 $result .= "<span class='badge bg-warning'>Has Pending</span>";
             }
-            else if($count_logstc_done == 0){
+            else if($count_logstc_done != 0){
                 $result .= "<span class='badge bg-info text-dark'>For Logistic Recon</span>";
             }
             else{
@@ -908,7 +910,7 @@ class RequestController extends Controller
             }
 
             // ! Uncomment this MF.
-             // $data = DB::connection('mysql')
+            //  $data = DB::connection('mysql')
             // ->table('reconciliations')
             // ->whereNull('deleted_at')
             // ->where('pr_num', 'LIKE', "%".$department."%")
@@ -921,9 +923,11 @@ class RequestController extends Controller
             // ->get();
         }
 
-        if(!$data->isEmpty()){
-            $get_rec_status = $data->where('recon_status', '<>', 1);
 
+        if(!$data->isEmpty()){
+            
+            
+            $get_rec_status = $data->where('recon_status', '<>', 1);
             return count($get_rec_status);
         }
         else{
@@ -943,7 +947,8 @@ class RequestController extends Controller
             ->where('recon_date_to', '<=', $dateTo)
             ->where('allocation', 'LIKE', '%stamping%')
             ->where('logdel', 0)
-            ->where('final_recon_status', 1)
+            // ->where('final_recon_status', 1)
+            ->where('final_recon_status', 0)
             ->select('final_recon_status')
             ->count('final_recon_status');
         }
@@ -960,7 +965,8 @@ class RequestController extends Controller
                 ->where('recon_date_to', '<=', $dateTo)
                 ->where('allocation', 'NOT LIKE', '%stamping%')
                 ->where('logdel', 0)
-                ->where('final_recon_status', 1)
+                // ->where('final_recon_status', 1)
+                ->where('final_recon_status', 0)
                 ->select('final_recon_status')
                 ->count('final_recon_status');
             }
@@ -975,7 +981,8 @@ class RequestController extends Controller
                 ->where('recon_date_to', '<=', $dateTo)
                 ->where('allocation', 'NOT LIKE', '%stamping%')
                 ->where('logdel', 0)
-                ->where('final_recon_status', 1)
+                // ->where('final_recon_status', 1)
+                ->where('final_recon_status', 0)
                 ->select('final_recon_status')
                 ->count('final_recon_status');
             }
