@@ -57,7 +57,7 @@
                                             }">{{ catStatus.label }}</strong>
                                             </div>
                                             
-                                            <button type="button" class="btn btn-primary float-end" @click="btnAddRecon(dtParams)"><icons icon="fas fa-plus"></icons> Add Recon</button>
+                                            <button type="button" class="btn btn-primary float-end" id="btnRequestAddRecon" @click="btnAddRecon(dtParams)"><icons icon="fas fa-plus"></icons> Add Recon</button>
                                             </div>
                                         </div>
                                         <div class="row mt-2">
@@ -746,7 +746,16 @@ Permanent Delete - will be removed to current cutoff and will not insert to the 
     }
 
     const btnAddRecon = async (params) => {
-
+        if(catStatus.label == 'Tally'){
+            Swal.fire({
+                title: `Invalid`,
+                text: `Reconciliation is tally on logistics`,
+                icon: "error",
+                position: "top",
+            })
+            return;
+        }
+        
         modalData.viewing = 5;
         modalData.styleSize = 'max-width: 1750px !important; min-width: 1100px;';
         modalData.size = '';
