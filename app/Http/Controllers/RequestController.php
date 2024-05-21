@@ -153,7 +153,6 @@ class RequestController extends Controller
     public function response_request(Request $request){
         date_default_timezone_set('Asia/Manila');
         DB::beginTransaction();
-
         try{
             // * Get Email recipient
             $exploded_data = explode('~', $request->dtParams['ctrl_number']);
@@ -268,13 +267,15 @@ class RequestController extends Controller
                         'type' => "Approved",
                         'function' => 'remove',
                         'control' => $request->dtParams['ctrl_number']."-".$request->dtParams['ctrl_ext'], // change to $control-$control_ext
-                        'remove_request_data' => $recon_remove_req,
+                        'recon_data' => $recon_remove_req,
                     //  'user_remarks' => $request->reasons,
                         // 'cutoff_date_req' => $request->cutoff_date,
                         'requestor' => $_SESSION['rapidx_name']
                     );
                     // return $data;
                     $subject = "Approved Reconciliation Request <ARRS Generated Email Do Not Reply>";
+                    // $admin_email = "cpagtalunan@pricon.ph";
+                    // $user_email = "cpagtalunan@pricon.ph";
                     $this->mailSender->send_mail('admin_response', $data, $request, $admin_email, $user_email, $subject); 
                     
                     // Mail::send('mail.admin_response', $data, function($message) use ($request, $admin_email, $user_email){
