@@ -54,6 +54,7 @@ class ReconciliationController extends Controller
     }
 
     public function get_eprpo_data(Request $request){
+        date_default_timezone_set('Asia/Manila');
         DB::beginTransaction();
         
         try{
@@ -162,11 +163,11 @@ class ReconciliationController extends Controller
                 $ship_to        = $this->getShipTo($po_number);
                 $ship_to1; // String only
                 // return $ship_to;
-                if($ship_to->facshipto == 0){
-                    $ship_to1 = "Factory 1";
+                if($ship_to->facshipto == "Factory 3"){
+                    $ship_to1 = "Factory 3";
                 }
                 else{
-                    $ship_to1 = $ship_to;
+                    $ship_to1 = "Factory 1";
                 }
     
                 $item_name = $collection[$i]->item_name == '' ? $collection[$i]->item_name1 : $collection[$i]->item_name;
@@ -731,6 +732,8 @@ class ReconciliationController extends Controller
     }
 
     public function get_recon_for_add(Request $request){
+        date_default_timezone_set('Asia/Manila');
+
         $eprpo_data = DB::connection('mysql_eprpo')
         ->select('
             SELECT 
