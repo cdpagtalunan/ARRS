@@ -670,7 +670,6 @@ class RequestController extends Controller
                 AND receiving_details.unit_price = "'.$request_data->unit_price.'"
                 AND receiving_details.receiving_number = "'.$request_data->rcv_no.'"
             ');
-            // return $request_data;
     
             if(count($eprpo_data) == 1){
                 $po_number      = ReconciliationController::getRefReqNum($eprpo_data[0]->reference_po_number);
