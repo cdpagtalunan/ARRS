@@ -219,6 +219,9 @@ class ReconciliationController extends Controller
                     ]);
                 }
             }
+
+          
+
             $get_admin_user = UserAccess::with([
                 'rapidx_user_details'
             ])
@@ -230,7 +233,6 @@ class ReconciliationController extends Controller
                 'rapidx_user_details'
             ])
             ->whereNull('deleted_at')
-            ->whereRaw('FIND_IN_SET("'.$get_cat->id.'", category_id)')
             ->where('user_type', 2)
             ->get();
 

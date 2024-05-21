@@ -850,7 +850,7 @@ class RequestController extends Controller
             }
             else{
                 // ! Remove IfElse and uncomment the query below when carlo olanga is already using the new user with section ppd-grinding
-                if($department == 'PPD-GRIN'){
+                if($request->dept == 'PPD-GRIN'){
                     $data = DB::connection('mysql')
                     ->table('reconciliations')
                     // ->where('pr_num', 'LIKE', "%".$request->param['department']."%")
