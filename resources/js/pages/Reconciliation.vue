@@ -470,6 +470,7 @@ Permanent Delete - will be removed to current cutoff and will not insert to the 
         { data: 'item_name', title: 'Name'},
         { data: 'description', title: 'Description'},
         { data: 'supplier_name', title: 'Supplier'},
+        { data: 'quantity_received', title: 'Received Qty'},
         { data: 'classification_code', title: 'Classification'},
         
     ];
