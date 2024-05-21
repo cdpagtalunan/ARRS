@@ -786,11 +786,12 @@ class ReconciliationController extends Controller
             $ship_to                        = $this->getShipTo($eprpo_data[$i]->po_number);
             // $ship_to1; // String only
             // return $ship_to->facshipto;
-            if($ship_to->facshipto == 0){
-                $eprpo_data[$i]->ship_to = "Factory 1";
+            if($ship_to->facshipto == "Factory 3"){
+                $eprpo_data[$i]->ship_to = "Factory 3";
             }
             else{
-                $eprpo_data[$i]->ship_to = $ship_to->facshipto;
+                $eprpo_data[$i]->ship_to = "Factory 1";
+
             }
 
 
