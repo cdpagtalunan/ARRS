@@ -530,6 +530,7 @@
                         // if(result.data.result == 1){
                         dt.ajax.reload();
                         dtTableRemove.ajax.reload();
+                        dtTableEdit.ajax.reload();
                         // }
                         
                     }).catch((err) => {
