@@ -826,6 +826,7 @@ class RequestController extends Controller
     }
 
     public function update_user_reconciliation(Request $request){
+        date_default_timezone_set('Asia/Manila');
         DB::beginTransaction();
         // Reconciliation::whereNull('deleted_at')
                 // ->where('recon_date_from', '>=', $request->from)
@@ -845,7 +846,8 @@ class RequestController extends Controller
                 ->where('recon_date_to', '<=', $request->to)
                 ->where('allocation', 'LIKE', '%stamping%')
                 ->update([
-                    'final_recon_status' => 1
+                    'final_recon_status' => 1,
+                    'final_recon_date' => NOW()
                 ]);
             }
             else{
@@ -860,7 +862,8 @@ class RequestController extends Controller
                     ->where('recon_date_to', '<=', $request->to)
                     ->where('allocation', 'NOT LIKE', '%stamping%')
                     ->update([
-                        'final_recon_status' => 1
+                        'final_recon_status' => 1,
+                        'final_recon_date' => NOW()
                     ]);
                 }
                 else{
@@ -873,7 +876,8 @@ class RequestController extends Controller
                     ->where('recon_date_to', '<=', $request->to)
                     ->where('allocation', 'NOT LIKE', '%stamping%')
                     ->update([
-                        'final_recon_status' => 1
+                        'final_recon_status' => 1,
+                        'final_recon_date' => NOW()
                     ]);
                 }
     

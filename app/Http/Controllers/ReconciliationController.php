@@ -1232,6 +1232,7 @@ class ReconciliationController extends Controller
     }
 
     public function save_done_recon(Request $request){
+        date_default_timezone_set('Asia/Manila');
         DB::beginTransaction();
 
         $exploded_cutoff = explode('to', $request->cutoff_date);
@@ -1255,7 +1256,8 @@ class ReconciliationController extends Controller
     
                 Reconciliation::where('id', $decrypt_id)
                 ->update([
-                    'recon_status' => 1
+                    'recon_status'      => 1,
+                    'user_date_done'    => NOW()
                 ]);
     
                 DB::commit();
