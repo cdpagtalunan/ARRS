@@ -26,6 +26,7 @@ class ExportController extends Controller
         $exploded_access = explode(',',$access);
         $user_cat = UserCategory::whereIn('id', $exploded_access)
         ->whereNull('deleted_at')
+        ->orderBy('classification', 'ASC')
         ->get(['classification', 'department']);
 
         $recon_details = array();
@@ -127,6 +128,7 @@ class ExportController extends Controller
 
     public function export_admin(Request $request, $date){
         $user_cat = UserCategory::whereNull('deleted_at')
+        ->orderBy('classification', 'ASC')
         ->get(['classification', 'department']);
 
         $exploded_cutoff = explode('to', $date);
