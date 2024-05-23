@@ -16,7 +16,9 @@ class CreateReconciliationsTable extends Migration
         Schema::create('reconciliations', function (Blueprint $table) {
             $table->id();
             $table->integer('recon_status')->default(0)->comment = "0-not yet reconciled, 1-done reconcile, 2-for removal, 3-request for edit";
+            $table->integer('user_date_done')->nullable()->comment = "date when user done recon";
             $table->smallInteger('final_recon_status')->default(0)->comment = "0-Not, 1-Yes";
+            $table->integer('final_recon_date')->nullable()->comment = "date when logistic done final recon";
             $table->string('po_date')->nullable();
             $table->string('po_num')->nullable();
             $table->string('pr_num')->nullable();
