@@ -62,21 +62,21 @@
                                         </div>
                                         <div class="row mt-2">
                                             <div class="col-sm-12">
-                                            <DataTable
-                                                class="table table-sm table-bordered table-hover text-wrap display tableRecon"
-                                                :columns="columns"
-                                                :ajax="{
-                                                    url: 'api/get_recon',
-                                                    data: function (param){
-                                                        param.param = dtParams;
-                                                        param.cutoff_date = cutoffSelect.selected;
-                                                        param.access =  injectSess.access;
-                                                        param.user_type =  injectSess.type;
-                                                    }
-                                                }"
-                                                ref="table"
-                                                :options="options"
-                                            />
+                                                <DataTable
+                                                    class="table table-sm table-bordered table-hover text-wrap display tableRecon"
+                                                    :columns="columns"
+                                                    :ajax="{
+                                                        url: 'api/get_recon',
+                                                        data: function (param){
+                                                            param.param = dtParams;
+                                                            param.cutoff_date = cutoffSelect.selected;
+                                                            param.access =  injectSess.access;
+                                                            param.user_type =  injectSess.type;
+                                                        }
+                                                    }"
+                                                    ref="table"
+                                                    :options="options"
+                                                />
                                             </div>
                                         </div>
                                         
@@ -450,6 +450,7 @@ Permanent Delete - will be removed to current cutoff and will not insert to the 
                 return total.toFixed(2);
             }
         },
+        { data: 'user_date_done', title: 'Date/Time Done'},
         
     ];
 

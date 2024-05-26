@@ -91,6 +91,7 @@
         },
         { data: 'status', title: 'Status'},
         { data: 'general_category', title: 'Category'},
+        { data: 'date_time_done', title: 'Date/Time Done'},
     ];
 
     let injectSess;
