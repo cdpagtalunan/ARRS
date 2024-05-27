@@ -26,7 +26,7 @@
     const date = ref();
     const day = ref();
     // const timer = ref(moment().format('LTS'));
-    onMounted(() => {
+    // onMounted(() => {
         setInterval(() => {
             timer.value = moment().format('LTS');
             date.value = moment().format('l');
@@ -39,7 +39,7 @@
                 loadDataEPRPO(2)
             }
         }, 1000);
-    })
+    // })
 
     const loadDataEPRPO = async (param) => {
         await api.get('/get_eprpo_data', { params: {cutoff:param} }).then((result) => {
