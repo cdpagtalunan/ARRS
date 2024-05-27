@@ -83,9 +83,13 @@ class ReconciliationController extends Controller
             }
             else{
                 $day_to = 25;
-                $day_from = 16;
+                // $day_from = 16;
                 $date_to = $mutable->format('Y-m')."-".$day_to;
-                $date_from = $mutable->format('Y-m')."-".$day_from;
+                // $date_from = $mutable->format('Y-m')."-".$day_from;
+
+                $day_from = 26;
+                $date_from = $mutable->subMonth()->format('Y-m')."-".$day_from;
+
             }
     
             $recon_date = ReconciliationDate::firstOrCreate(
@@ -1126,7 +1130,7 @@ class ReconciliationController extends Controller
                 $day = 15;
             }
             else{
-                $day = 26;
+                $day = 25;
             }
             $dtTo = Carbon::create($year, $month, $day)->format('m-d-Y');
             $dtFrom = Carbon::create($year, $month, 26);
