@@ -127,7 +127,8 @@ const routes = [
         ]
     },
     {
-        path: '/ARRS/mailer/',
+        // path: '/ARRS/mailer/',
+        path: '/ARRS_rev/mailer/',
         component: '',
         children:  [
             {
