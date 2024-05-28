@@ -59,6 +59,7 @@
                             <th>Description</th>
                             <th>Supplier</th>
                             <th>Classification</th>
+                            <th>Delivery Date</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -75,6 +76,7 @@
                                 <td>{{ $data->description }}</td>
                                 <td>{{ $data->supplier_name }}</td>
                                 <td>{{ $data->classification_code }}</td>
+                                <td>{{ $data->actual_delivery_date }}</td>
                             </tr>
                         @endfor
                     </tbody>

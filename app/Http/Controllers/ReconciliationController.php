@@ -56,7 +56,6 @@ class ReconciliationController extends Controller
     public function get_eprpo_data(Request $request){
         date_default_timezone_set('Asia/Manila');
         DB::beginTransaction();
-        
         try{
             $mutable = Carbon::today();
             $current_year = $mutable->format('Y');
@@ -225,39 +224,40 @@ class ReconciliationController extends Controller
                 }
             }
 
-          
-
-            $get_admin_user = UserAccess::with([
-                'rapidx_user_details'
-            ])
-            ->whereNull('deleted_at')
-            ->where('user_type', 1)
-            ->get();
-
-            $get_user = UserAccess::with([
-                'rapidx_user_details'
-            ])
-            ->whereNull('deleted_at')
-            ->where('user_type', 2)
-            ->get();
-
-            $admin_email = collect($get_admin_user)->pluck('rapidx_user_details.email')->flatten(0)->filter()->toArray();
-            $user_email = collect($get_user)->pluck('rapidx_user_details.email')->flatten(0)->filter()->toArray();
-            
-            
-            $data = array(
-                // 'from'      => $date_from,
-                'from'      => Carbon::parse($date_from)->toFormattedDateString(),
-                'to'        => Carbon::parse($date_to)->toFormattedDateString()
-            );
-            $subject = "Available reconciliation dated from ".Carbon::parse($date_from)->format('m/d/Y')." to ".Carbon::parse($date_to)->format('m/d/Y')." <ARRS Generated Email Do Not Reply>";
-
-            $this->mailSender->send_mail('uploaded_recon', $data, $request, $admin_email, $user_email, $subject);
-
+            if(!isset($request->bypass)){
+                $get_admin_user = UserAccess::with([
+                    'rapidx_user_details'
+                ])
+                ->whereNull('deleted_at')
+                ->where('user_type', 1)
+                ->get();
+    
+                $get_user = UserAccess::with([
+                    'rapidx_user_details'
+                ])
+                ->whereNull('deleted_at')
+                ->where('user_type', 2)
+                ->get();
+    
+                $admin_email = collect($get_admin_user)->pluck('rapidx_user_details.email')->flatten(0)->filter()->toArray();
+                $user_email = collect($get_user)->pluck('rapidx_user_details.email')->flatten(0)->filter()->toArray();
+                
+                
+                $data = array(
+                    // 'from'      => $date_from,
+                    'from'      => Carbon::parse($date_from)->toFormattedDateString(),
+                    'to'        => Carbon::parse($date_to)->toFormattedDateString()
+                );
+                $subject = "Available reconciliation dated from ".Carbon::parse($date_from)->format('m/d/Y')." to ".Carbon::parse($date_to)->format('m/d/Y')." <ARRS Generated Email Do Not Reply>";
+    
+                $this->mailSender->send_mail('uploaded_recon', $data, $request, $admin_email, $user_email, $subject);
+    
+            }
 
             DB::commit();
     
             return response()->json([
+                'response' => true,
                 'query1' => $collection,
                 'date_from' => $date_from,
                 'date_to' => $date_to
