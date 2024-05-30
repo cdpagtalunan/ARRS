@@ -1241,7 +1241,9 @@ class ReconciliationController extends Controller
 
         $exploded_cutoff = explode('to', $request->cutoff_date);
         $from = Carbon::createFromFormat('m-d-Y', trim($exploded_cutoff[0]));
+        $to = Carbon::createFromFormat('m-d-Y', trim($exploded_cutoff[1]));
         $date_from = $from->format('Y-m-d');
+        $date_to = $to->format('Y-m-d');
 
         // return $request->dt_params['department'];
         $recon = DB::connection('mysql')
@@ -1257,19 +1259,96 @@ class ReconciliationController extends Controller
         if(count($recon) == 0){
             try{
                 $decrypt_id = Helpers::decryptId($request->rec_id);
-    
+
                 Reconciliation::where('id', $decrypt_id)
                 ->update([
                     'recon_status'      => 1,
                     'user_date_done'    => NOW()
                 ]);
+
+                if(strtoupper($request->dt_params['department']) == 'STAMPING'){
+                    $check_user_pending_recon = DB::connection('mysql')
+                    ->table('reconciliations')
+                    ->whereNull('deleted_at')
+                    ->where('classification', $request->dt_params['classification'])
+                    ->where('recon_date_from', '>=', $date_from)
+                    ->where('recon_date_to', '<=', $date_to)
+                    ->where('recon_status', 0)
+                    ->where('allocation', 'LIKE', '%stamping%')
+                    ->where('logdel', 0)
+                    ->select('*')
+                    ->get();
+                }
+                else{
+                    // ! Remove IfElse and uncomment the query below when carlo olanga is already using the new user with section ppd-grinding
+                    if($request->dt_params['department'] == 'PPD-GRIN'){
+                        $check_user_pending_recon = DB::connection('mysql')
+                        ->table('reconciliations')
+                        ->whereNull('deleted_at')
+                        // ->where('pr_num', 'LIKE', "%".$request->param['department']."%")
+                        ->where('requisitioner', "Carlo Olanga")
+                        ->where('classification', $request->dt_params['classification'])
+                        ->where('recon_date_from', '>=', $date_from)
+                        ->where('recon_date_to', '<=', $date_to)
+                        ->where('allocation', 'NOT LIKE', '%stamping%')
+                        ->where('recon_status', 0)
+                        ->where('logdel', 0)
+                        ->select('*')
+                        ->get();
+                    }
+                    else{
+                        $check_user_pending_recon = DB::connection('mysql')
+                        ->table('reconciliations')
+                        ->whereNull('deleted_at')
+                        ->where('pr_num', 'LIKE', "%".$request->dt_params['department']."%")
+                        ->where('classification', $request->dt_params['classification'])
+                        ->where('requisitioner',"<>", "Carlo Olanga")
+                        ->where('recon_date_from', '>=', $date_from)
+                        ->where('recon_date_to', '<=', $date_to)
+                        ->where('allocation', 'NOT LIKE', '%stamping%')
+                        ->where('recon_status', 0)
+                        ->where('logdel', 0)
+                        ->select('*')
+                        ->get();
+                    }
+                }
+
+                if(count($check_user_pending_recon) == 0 ){
+                    $get_admin_user = UserAccess::with([
+                        'rapidx_user_details'
+                    ])
+                    ->whereNull('deleted_at')
+                    ->where('user_type', 1)
+                    ->get();
+
+                    $admin_email = collect($get_admin_user)->pluck('rapidx_user_details.email')->flatten(0)->filter()->toArray();
+                    // $admin_email = [];
+                    $user_email = [];
+                    
+                    
+                    $data = array(
+                        'from'      => Carbon::parse($date_from)->toFormattedDateString(),
+                        'to'        => Carbon::parse($date_to)->toFormattedDateString(),
+                        'param'     => $request->dt_params
+                    );
+                    $subject = "Available for logistics reconciliation <ARRS Generated Email Do Not Reply>";
+        
+                    $this->mailSender->send_mail('final_recon', $data, $request, $admin_email, $user_email, $subject);
+        
+
+                }
+
+        
+
+
+              
     
-                DB::commit();
+                // DB::commit();
     
-                return response()->json([
-                    'result' => true,
-                    'msg' => "Transaction Success"
-                ]);
+                // return response()->json([
+                //     'result' => true,
+                //     'msg' => "Transaction Success"
+                // ]);
             
             }
             catch(Exemption $e){

@@ -69,7 +69,7 @@
         responsive: true,
         serverSide: true,
         processing: true,
-        order: [[1, 'asc']]
+        order: [[1, 'desc']]
     };
 
     const columnFinalRecon = [
