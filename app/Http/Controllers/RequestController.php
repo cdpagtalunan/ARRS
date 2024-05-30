@@ -823,12 +823,21 @@ class RequestController extends Controller
         })
         ->addColumn('date_time_done', function($categories)  use ($dateFrom, $dateTo){
             $result = "";
-            $count_logstc_done = $this->get_dt_final_recon($categories->department, $categories->classification, $dateFrom, $dateTo);
-
-
-            if(isset($count_logstc_done)){
-                $result = $count_logstc_done->final_recon_date;
+            $count_logstc_done = $this->get_count_final_recon($categories->department, $categories->classification, $dateFrom, $dateTo);
+            $dt_final_recon = "";
+            if($count_logstc_done == 0){
+                $dt_final_recon = $this->get_dt_final_recon($categories->department, $categories->classification, $dateFrom, $dateTo);
+                
+                // $result = $dt_final_recon;
+                if(count($dt_final_recon) > 0){
+                    $result = $dt_final_recon[0]->final_recon_date;
+                }
             }
+            // dd($count_logstc_done);
+            
+            // if(isset($count_logstc_done)){
+            //     $result = $count_logstc_done->final_recon_date;
+            // }
             return $result;
         })
         ->rawColumns(['action', 'status', 'general_category', 'date_time_done'])
@@ -1069,7 +1078,7 @@ class RequestController extends Controller
         }
     }
 
-    function get_dt_final_recon($department, $classification, $dateFrom, $dateTo){
+    function get_count_final_recon($department, $classification, $dateFrom, $dateTo){
         if(strtoupper($department) == 'STAMPING'){
             return DB::connection('mysql')
             ->table('reconciliations')
@@ -1081,10 +1090,10 @@ class RequestController extends Controller
             ->where('allocation', 'LIKE', '%stamping%')
             ->where('logdel', 0)
             // ->where('final_recon_status', 1)
-            ->where('final_recon_status', 1)
-            ->distinct()
-            ->select('final_recon_date')
-            ->first();
+            ->where('final_recon_status', 0)
+            // ->distinct()
+            ->select('final_recon_status')
+            ->count('final_recon_status');
         }
         else{
             // ! Remove IfElse and uncomment the query below when carlo olanga is already using the new user with section ppd-grinding
@@ -1100,10 +1109,10 @@ class RequestController extends Controller
                 ->where('allocation', 'NOT LIKE', '%stamping%')
                 ->where('logdel', 0)
                 // ->where('final_recon_status', 1)
-                ->where('final_recon_status', 1)
-                ->distinct()
-                ->select('final_recon_date')
-                ->first();
+                ->where('final_recon_status', 0)
+                // ->distinct()
+                ->select('final_recon_status')
+                ->count('final_recon_status');
             }
             else{
                 return DB::connection('mysql')
@@ -1117,10 +1126,81 @@ class RequestController extends Controller
                 ->where('allocation', 'NOT LIKE', '%stamping%')
                 ->where('logdel', 0)
                 // ->where('final_recon_status', 1)
+                ->where('final_recon_status', 0)
+                // ->distinct()
+                ->select('final_recon_status')
+                ->count('final_recon_status');
+            }
+
+            // ! Uncomment this MF.
+             // return DB::connection('mysql')
+            // ->table('reconciliations')
+            // ->whereNull('deleted_at')
+            // ->where('pr_num', 'LIKE', "%".$department."%")
+            // ->where('classification', $classification)
+            // ->where('recon_date_from', '>=', $dateFrom)
+            // ->where('recon_date_to', '<=', $dateTo)
+            // ->where('final_recon_status', 1)
+            // ->select('final_recon_status')
+            // ->count('final_recon_status');
+        }
+    }
+
+    function get_dt_final_recon($department, $classification, $dateFrom, $dateTo){
+        if(strtoupper($department) == 'STAMPING'){
+            return DB::connection('mysql')
+            ->table('reconciliations')
+            ->whereNull('deleted_at')
+            // ->where('pr_num', 'LIKE', "%".$request->param['department']."%")
+            ->where('classification', $classification)
+            ->where('recon_date_from', '>=', $dateFrom)
+            ->where('recon_date_to', '<=', $dateTo)
+            ->where('allocation', 'LIKE', '%stamping%')
+            ->where('logdel', 0)
+            ->where('final_recon_status', 1)
+            // ->where('final_recon_status', 0)
+            ->distinct()
+            ->select('final_recon_date')
+            ->get();
+            // ->count('final_recon_status');
+        }
+        else{
+            // ! Remove IfElse and uncomment the query below when carlo olanga is already using the new user with section ppd-grinding
+            if($department == 'PPD-GRIN'){
+                return DB::connection('mysql')
+                ->table('reconciliations')
+                ->whereNull('deleted_at')
+                // ->where('pr_num', 'LIKE', "%".$request->param['department']."%")
+                ->where('requisitioner', "Carlo Olanga")
+                ->where('classification', $classification)
+                ->where('recon_date_from', '>=', $dateFrom)
+                ->where('recon_date_to', '<=', $dateTo)
+                ->where('allocation', 'NOT LIKE', '%stamping%')
+                ->where('logdel', 0)
                 ->where('final_recon_status', 1)
+                // ->where('final_recon_status', 0)
                 ->distinct()
                 ->select('final_recon_date')
-                ->first();
+                ->get();
+                // ->count('final_recon_status');
+            }
+            else{
+                return DB::connection('mysql')
+                ->table('reconciliations')
+                ->whereNull('deleted_at')
+                ->where('pr_num', 'LIKE', "%".$department."%")
+                ->where('classification', $classification)
+                ->where('requisitioner',"<>", "Carlo Olanga")
+                ->where('recon_date_from', '>=', $dateFrom)
+                ->where('recon_date_to', '<=', $dateTo)
+                ->where('allocation', 'NOT LIKE', '%stamping%')
+                ->where('logdel', 0)
+                ->where('final_recon_status', 1)
+                // ->where('final_recon_status', 0)
+                ->distinct()
+                ->select('final_recon_date')
+                ->get();
+                // ->count('final_recon_status');
             }
 
             // ! Uncomment this MF.
