@@ -48,8 +48,11 @@ class AdminController extends Controller
             if($user_data->user_type == 1){
                 $result = "Admin";
             }
-            else{
+            else if($user_data->user_type == 2){
                 $result = "User";
+            }
+            else if($user_data->user_type == 3){
+                $result = "Viewer";
             }
             return $result;
         })
