@@ -31,7 +31,7 @@
                         </router-link>
                     </li>
 
-                    <li class="nav-item has-treeview" v-if="uType == 1 && uType != 3">
+                    <li class="nav-item has-treeview" v-if="uType == 1 || uType != 3">
                         <router-link :to="{ name: 'Reconciliation' }" class="nav-link">
                             <icons icon="fab fa-steam-symbol" class="nav-icon"></icons>
                             <p>Reconciliation</p>
