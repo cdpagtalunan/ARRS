@@ -501,36 +501,6 @@ Permanent Delete - will be removed to current cutoff and will not insert to the 
                     catStatus.status = true;
                     catStatus.label = "Tally";
                 }
-            //     for(let x = 0; x < dtDatas.length; x++){
-            //         dtArrayStatus.push(dtDatas[x]['recon_status'])
-            //         dtArrayFinalReconStatus.push(dtDatas[x]['final_recon_status'])
-            //     }
-
-            //     console.log('dtArrayStatus', dtArrayStatus)
-            //     console.log('dtArrayStatus', dtArrayFinalReconStatus)
-            //     // let index = dtArrayStatus.indexOf(0);
-            //     // let index = dtArrayStatus.indexOf(0);
-            //     let index =  dtArrayStatus.every(v => v === 1)
-            //     let index1 =  dtArrayFinalReconStatus.every(v => v === 1)
-
-            //     console.log('index', index);
-            //     console.log('index1', index1);
-            //     if(index == true && index1 == true){
-            //         catStatus.status = true;
-            //         catStatus.label = "Tally";
-
-            //     }
-            //     else if(index == true && index1 == false){
-            //         catStatus.status = false;
-            //         catStatus.label = "Pending on logistics";
-
-            //     }
-            //     else{
-            //         catStatus.status = false;
-            //         catStatus.label = "Pending";
-
-            //     }
-
             }
         }
     };

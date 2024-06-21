@@ -95,6 +95,9 @@
                     </VueMultiselect>
 
                     <label>Is Authorize?</label>
+                    <icons icon="fas fa-circle-info" class="ml-1" data-bs-toggle="tooltip" data-bs-placement="right" 
+                        title="If user can approve, disapprove the user request and done the final reconciliation">
+                    </icons>
                     <select id="selAuthorized" v-model="formData.auth" class="form-control">
                         <option value="0"> Not Authorize</option>
                         <option value="1">Authorize</option>
@@ -213,7 +216,8 @@
     ];
     const options = {
         responsive: true,
-        serverSide: true
+        serverSide: true,
+        
     };
     const modalDetails = reactive({
         title : ""
@@ -244,6 +248,8 @@
 
         });
         dt = table.value.dt;
+
+        // console.log(document.querySelector(html));
 
     })
 

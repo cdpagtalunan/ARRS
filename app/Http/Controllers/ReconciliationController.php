@@ -1342,13 +1342,12 @@ class ReconciliationController extends Controller
 
 
               
+                 DB::commit();
     
-                // DB::commit();
-    
-                // return response()->json([
-                //     'result' => true,
-                //     'msg' => "Transaction Success"
-                // ]);
+                 return response()->json([
+                     'result' => true,
+                     'msg' => "Transaction Success"
+                 ]);
             
             }
             catch(Exemption $e){
