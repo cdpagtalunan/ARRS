@@ -69,7 +69,7 @@
         responsive: true,
         serverSide: true,
         processing: true,
-        order: [[1, 'desc']]
+        order: [[1, 'asc']]
     };
 
     const columnFinalRecon = [
@@ -92,6 +92,7 @@
         { data: 'status', title: 'Status'},
         { data: 'general_category', title: 'Category'},
         { data: 'date_time_done', title: 'Date/Time Done'},
+        { data: 'u_charge', title: 'User in-charge'},
     ];
 
     let injectSess;

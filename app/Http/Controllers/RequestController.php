@@ -802,16 +802,16 @@ class RequestController extends Controller
             // dd($count_logstc_done);
             $result .= "<center>";
             if($recon_data === false){
-                $result .= "<span class='badge bg-secondary'>No Data</span>";
+                $result .= "<span class='c badge bg-secondary'>No Data</span>";
             }
             else if($recon_data != 0){
-                $result .= "<span class='badge bg-warning'>End-user Pending</span>";
+                $result .= "<span class='b badge bg-warning'>End user Pending</span>";
             }
             else if($count_logstc_done != 0){
-                $result .= "<span class='badge bg-info text-dark'>For Logistic Recon</span>";
+                $result .= "<span class='a badge bg-info text-dark'>For Logistic Recon</span>";
             }
             else{
-                $result .= "<span class='badge bg-success'>Done</span>";
+                $result .= "<span class='d badge bg-success'>Tally</span>";
             }
             $result .= "</center>";
             return $result;
@@ -840,7 +840,28 @@ class RequestController extends Controller
             // }
             return $result;
         })
-        ->rawColumns(['action', 'status', 'general_category', 'date_time_done'])
+        ->addColumn('u_charge', function($categories){
+            $result = "";
+            $result .= "<center>";
+            // $user_in_charge = DB::connection('mysql')
+            // ->table('user_accesses')
+            // ->whereRaw('FIND_IN_SET("'.$categories->id.'", category_id)')
+            // ->get();
+            $user_in_charge = UserAccess::with([
+                'rapidx_user_details'
+            ])
+            ->whereRaw('FIND_IN_SET("'.$categories->id.'", category_id)')
+            ->whereNull('deleted_at')
+            ->get();
+
+            for($x = 0; $x < count($user_in_charge); $x++){
+                $result .= "{$user_in_charge[$x]->rapidx_user_details->name}<br>";
+            }
+            $result .= "</center>";
+            
+            return $result;
+        })
+        ->rawColumns(['action', 'status', 'general_category', 'date_time_done', 'u_charge'])
         ->make(true);
     }
 
