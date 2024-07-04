@@ -106,11 +106,12 @@ class AdminController extends Controller
         DB::beginTransaction();
         try{
             $user_access_array = array(
-                'rapidx_emp_no'   => $request->empDetails['id'],
-                'category_id'     => implode(",",$request->uCat),
-                'user_type'       => $request->uType,
-                'user_desig'      => $request->uDesig,
-                'is_auth'         => $request->auth
+                'rapidx_emp_no' => $request->empDetails['id'],
+                'category_id'   => implode(",",$request->uCat),
+                'user_type'     => $request->uType,
+                'user_desig'    => $request->uDesig,
+                'is_auth'       => $request->auth,
+                'is_superior'   => $request->supp
             );
             
             if(isset($request->id)){ // UPDATE

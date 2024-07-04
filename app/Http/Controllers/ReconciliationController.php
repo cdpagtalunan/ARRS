@@ -113,8 +113,7 @@ class ReconciliationController extends Controller
                 // $result .= $cat_details[$x]->classification."-".$cat_details[$x]->department;
                 array_push($cat_array, $distinct_cat[$x]->classification);
             }
-    
-            // return;
+
             $eprpo_data = DB::connection('mysql_eprpo')
             ->select('
                 SELECT 
@@ -225,6 +224,45 @@ class ReconciliationController extends Controller
             }
 
             if(!isset($request->bypass)){
+                $categories = DB::connection('mysql')->table('user_categories')
+                ->whereNull('deleted_at')
+                ->get(['classification','department', 'id']);
+                
+                
+                for($x = 0; $x < count($categories); $x++){
+                    $check_recon = DB::connection('mysql')
+                    ->table('reconciliations')
+                    ->whereNull('deleted_at')
+                    // ->where('pr_num', 'LIKE', "%$categories[$x]->department %")
+                    ->where('pr_num', 'LIKE', "%".$categories[$x]->department."%")
+                    ->where('classification', $categories[$x]->classification)
+                    ->where('recon_date_from', $date_from)
+                    ->where('recon_date_to', $date_to)
+                    ->get();
+
+                    if(count($check_recon) == 0){
+                        $resulta[] = array(
+                            'dept'  => $categories[$x]->department,
+                            'class' => $categories[$x]->classification,
+                              // 'recon_date_from' => $date_from,
+                              // 'recon_date_to' => $date_to,
+                            'rslt' => 'No Delivery'
+                        );
+                    }
+                    else{
+                        $resulta[] = array(
+                            'dept'  => $categories[$x]->department,
+                            'class' => $categories[$x]->classification,
+                              // 'recon_date_from' => $date_from,
+                              // 'recon_date_to' => $date_to,
+                            'rslt' => 'Available'
+                        );
+                    }
+                }
+
+                // return $resulta[0]['rslt'];
+
+
                 $get_admin_user = UserAccess::with([
                     'rapidx_user_details'
                 ])
@@ -241,16 +279,21 @@ class ReconciliationController extends Controller
     
                 $admin_email = collect($get_admin_user)->pluck('rapidx_user_details.email')->flatten(0)->filter()->toArray();
                 $user_email = collect($get_user)->pluck('rapidx_user_details.email')->flatten(0)->filter()->toArray();
-                
+                // $admin_email = [];
+                // $user_email = [];
                 
                 $data = array(
                     // 'from'      => $date_from,
-                    'from'      => Carbon::parse($date_from)->toFormattedDateString(),
-                    'to'        => Carbon::parse($date_to)->toFormattedDateString()
+                    'from' => Carbon::parse($date_from)->toFormattedDateString(),
+                    'to'   => Carbon::parse($date_to)->toFormattedDateString(),
+                    'rslt' => $resulta
                 );
                 $subject = "Available reconciliation dated from ".Carbon::parse($date_from)->format('m/d/Y')." to ".Carbon::parse($date_to)->format('m/d/Y')." <ARRS Generated Email Do Not Reply>";
     
-                $this->mailSender->send_mail('uploaded_recon', $data, $request, $admin_email, $user_email, $subject);
+
+                
+
+                $this->mailSender->send_mail('uploaded_recon', $data, $request, $admin_email, $user_email, $subject);    
     
             }
 
@@ -1362,5 +1405,95 @@ class ReconciliationController extends Controller
             ], 422);
         }
         
+    }
+
+    public function check_recon(Request $request){
+        $mutable = Carbon::today();
+        $current_year = $mutable->format('Y');
+        $month_today = $mutable->format('m');
+
+        $cutoff = DB::connection('mysql')
+        ->table('reconciliation_dates')
+        ->where('cutoff', $request->cutoff)
+        ->whereNull('deleted_at')
+        ->orderBy('id', 'desc')
+        ->first();
+
+        if($request->cutoff == 1){
+            $day_to = 15;
+            $day_from = 26;
+            $date_to = $mutable->format('Y')."-".$cutoff->month."-".$day_to;
+            // $date_from = $mutable->format('Y')."-".$cutoff->month."-".$day_from;
+            $dt = Carbon::create($mutable->format('Y'), $cutoff->month, $day_from, 0);
+            $date_from =  $dt->subMonth()->format('Y-m-d');
+
+
+        }
+        else{
+            $day_to = 25;
+            $date_to = $mutable->format('Y')."-".$cutoff->month."-".$day_to;
+            $day_from = 26;
+            // $date_from = $mutable->format('Y')."-".$cutoff->month."-".$day_from;
+            $dt = Carbon::create($mutable->format('Y'), $cutoff->month, $day_from, 0);
+            $date_from =  $dt->subMonth()->format('Y-m-d');
+
+
+        }
+        // return $date_from." To ".$date_to;
+        $categories = DB::connection('mysql')->table('user_categories')
+        ->whereNull('deleted_at')
+        ->get(['classification','department', 'id']);
+        
+        
+        for($x = 0; $x < count($categories); $x++){
+            $check_recon = DB::connection('mysql')
+            ->table('reconciliations')
+            ->whereNull('deleted_at')
+            // ->where('pr_num', 'LIKE', "%$categories[$x]->department %")
+            ->where('pr_num', 'LIKE', "%".$categories[$x]->department."%")
+            ->where('classification', $categories[$x]->classification)
+            ->where('recon_date_from', '>=', $date_from)
+            ->where('recon_date_to', '<=', $date_to)
+            ->where('recon_status', '<>', '1')
+            ->get();
+
+            
+            if(count($check_recon) > 0){
+                // $test[] = array(
+                //     'dept' => $categories[$x]->department,
+                //     'class' => $categories[$x]->classification,
+                //     'cat_id' => $categories[$x]->id
+                // );
+
+                $get_user = UserAccess::with([
+                    'rapidx_user_details'
+                ])
+                ->whereNull('deleted_at')
+                ->whereRaw('FIND_IN_SET("'.$categories[$x]->id.'", category_id)')
+                ->where('user_type', 2)
+                ->get();
+
+                $get_admin = UserAccess::with([
+                    'rapidx_user_details'
+                ])
+                ->whereNull('deleted_at')
+                ->where('user_type', 1)
+                ->where('is_auth', 1)
+                ->get();
+                
+                $admin_email = collect($get_admin)->pluck('rapidx_user_details.email')->flatten(0)->filter()->toArray();
+                $user_email = collect($get_user)->pluck('rapidx_user_details.email')->flatten(0)->filter()->toArray();
+                // $admin_email =  [];
+                // $user_email =[];
+                $data = array(
+                    'dept'  => $categories[$x]->department,
+                    'class' => $categories[$x]->classification,
+                );
+                $subject = "Pending Reconciliation on ".$categories[$x]->classification."-".$categories[$x]->department."  <ARRS Generated Email Do Not Reply>";
+    
+                $this->mailSender->send_mail('pending_notif', $data, $request, $admin_email, $user_email, $subject);
+            }
+        }
+
     }
 }

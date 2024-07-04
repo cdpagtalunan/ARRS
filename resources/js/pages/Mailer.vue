@@ -27,6 +27,8 @@
     const day = ref();
     // const timer = ref(moment().format('LTS'));
     // onMounted(() => {
+        let today = moment().format('MM/DD/YYYY');
+
         setInterval(() => {
             timer.value = moment().format('LTS');
             date.value = moment().format('l');
@@ -38,12 +40,36 @@
             if(timer.value === "12:05:00 AM" && moment().format('D') == '26'){ // SECOND RECON
                 loadDataEPRPO(2)
             }
+
+
+            if(timer.value === "7:30:00 AM"){
+                if( ( today >= moment().format('MM/18/YYYY') ) && ( today < moment().format('MM/25/YYYY') )){ // FIRST RECON
+                    loadChecker(1)
+                }
+
+                if( ( today == moment().format('MM/28/YYYY') ) || ( today <= moment().format('MM/15/YYYY') )){ // SECOND RECON
+                    loadChecker(2)
+                }
+            }
         }, 1000);
+
+        // setTimeout(() => {
+        //     loadDataEPRPO(2)
+        // }, 500);
     // })
 
     const loadDataEPRPO = async (param) => {
         await api.get('/get_eprpo_data', { params: {cutoff:param} }).then((result) => {
             console.log(`Data has been loaded ${date.value} ${timer.value} with parameter ${param}`);
+            console.log(result);
+        }).catch((err) => {
+            
+        });
+    }
+
+    const loadChecker = async (param) => {
+        await api.get('/check_recon', { params: {cutoff:param} }).then((result) => {
+            // console.log(`Data has been loaded ${date.value} ${timer.value} with parameter ${param}`);
             console.log(result);
         }).catch((err) => {
             

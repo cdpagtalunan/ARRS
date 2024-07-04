@@ -103,6 +103,15 @@
                         <option value="1">Authorize</option>
                     </select>
 
+                    <label>Is Superior/Head?</label>
+                    <icons icon="fas fa-circle-info" class="ml-1" data-bs-toggle="tooltip" data-bs-placement="right" 
+                        title="For Superior/Heads only.">
+                    </icons>
+                    <select id="selAuthorized" v-model="formData.supp" class="form-control">
+                        <option value="0">No</option>
+                        <option value="1">Yes</option>
+                    </select>
+
                     <label class="mt-2">User Designation</label> <br>
                     <div class="form-check">
                         <input class="form-check-input" type="radio" id="selDesigF1" v-model="formData.uDesig" value="1">
@@ -224,7 +233,8 @@
     });
 
     const formData = ref({
-        auth: 0
+        auth: 0,
+        supp: 0
     });
     const selectOptions = ref([]);
     // const selectCatOptions = ref();
@@ -240,7 +250,9 @@
         modals.value = new Modal(document.querySelector('#modalComponentId'), {});
         document.getElementById("modalComponentId").addEventListener('hidden.bs.modal', event => {
             formData.value = {
-                auth: 0
+                auth: 0,
+                supp: 0
+
             };
             empMultSel.value = false
             document.querySelector('#selUType').classList.remove('is-invalid');
@@ -336,6 +348,7 @@
             formData.value.uCat = data.forSelCat;
             formData.value.uDesig = data.userData.user_desig;
             formData.value.auth = data.userData.is_auth;
+            formData.value.supp = data.userData.is_superior;
             modals.value.show();
         }).catch((err) => {
 

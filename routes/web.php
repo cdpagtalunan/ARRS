@@ -25,6 +25,7 @@ use App\Http\Controllers\ReconciliationController;
 */
 Route::view('/mailer/mail','welcome')->name('mail');
 Route::get('get_eprpo_data', [ReconciliationController::class, 'get_eprpo_data']);
+Route::get('check_recon', [ReconciliationController::class, 'check_recon']);
 
 
 Route::get('check_user', function (Request $request) {
