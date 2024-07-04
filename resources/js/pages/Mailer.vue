@@ -54,15 +54,7 @@
         }, 1000);
 
         // setTimeout(() => {
-        //     if( ( today >= moment().format('MM/18/YYYY') ) && ( today < moment().format('MM/25/YYYY') )){ // FIRST RECON
-        //         // console.log('test');
-        //         loadChecker(1)
-        //     }
-
-        //     if( ( today == moment().format('MM/28/YYYY') ) || ( today <= moment().format('MM/15/YYYY') )){ // SECOND RECON
-        //         // console.log('test1');
-        //         loadChecker(2)
-        //     }
+        //     loadDataEPRPO(2)
         // }, 500);
     // })
 

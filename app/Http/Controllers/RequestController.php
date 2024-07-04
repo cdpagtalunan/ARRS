@@ -805,10 +805,10 @@ class RequestController extends Controller
                 $result .= "<span class='c badge bg-secondary'>No Data</span>";
             }
             else if($recon_data != 0){
-                $result .= "<span class='b badge bg-warning'>End user Pending</span>";
+                $result .= "<span class='a badge bg-warning'>End user Pending</span>";
             }
             else if($count_logstc_done != 0){
-                $result .= "<span class='a badge bg-info text-dark'>For Logistic Recon</span>";
+                $result .= "<span class='b badge bg-info text-dark'>For Logistic Recon</span>";
             }
             else{
                 $result .= "<span class='d badge bg-success'>Tally</span>";
@@ -851,6 +851,7 @@ class RequestController extends Controller
                 'rapidx_user_details'
             ])
             ->whereRaw('FIND_IN_SET("'.$categories->id.'", category_id)')
+            ->where('is_superior', 0)
             ->whereNull('deleted_at')
             ->get();
 

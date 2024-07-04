@@ -25,7 +25,19 @@
             <br>
             <br>
             <label>Please be informed that data from {{ $from }} to {{ $to }} is now available for reconciliation.</label>
-            <br>
+            <br><br>
+            <label>
+                Below is the list of reconciliation: <br>
+                <table>
+                    @for ($x = 0; $x < count($rslt); $x++)
+                        <tr>
+                            <td><strong>{{ $rslt[$x]['class'] }}-{{ $rslt[$x]['dept'] }}</strong></td>
+                            <td>: {{ $rslt[$x]['rslt'] }}</td>
+                        </tr>
+                    @endfor
+                </table>
+
+            </label>
             <hr>
             <div class="col-sm-12">
                 <div class="form-group row">
