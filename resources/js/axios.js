@@ -12,7 +12,6 @@ axios.interceptors.response.use(
             Router.push({name: 'Unauthorized'})
             // window.location.href = "http://rapidx";
             console.log('401');
-            // alert('qqwe');
         }
 
         if(error.response && error.response.status === 403){
