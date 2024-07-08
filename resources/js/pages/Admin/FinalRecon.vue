@@ -87,6 +87,18 @@
 
                     updateUserReconciliation(dept, classification, dateTo, dateFrom);
                 });
+
+                if(cell.querySelector('.btnOpenRecon')){
+                    cell.querySelector('.btnOpenRecon').addEventListener('click', function(){
+                        let dept = this.getAttribute('data-dept');
+                        let classification = this.getAttribute('data-classification');
+                        let dateTo = this.getAttribute('data-to');
+                        let dateFrom = this.getAttribute('data-from');
+
+                        openUserReconciliation(dept,classification,dateTo,dateFrom)
+                    });
+                }
+             
             }
         },
         { data: 'status', title: 'Status'},
@@ -157,8 +169,40 @@
                 
             })
         }
+    }
 
-       
-       
+    const openUserReconciliation = (dept,classification,dateTo,dateFrom) => {
+        if(injectSess.isAuth == 0){
+            Swal.fire({
+                title: "Error",
+                text: "You are not authorized!",
+                icon: "error"
+            });
+        }
+        else{
+            Swal.fire({
+                title: `Are you sure you want to proceed?`,
+                // text: "This.",
+                icon: 'question',
+                position: 'top',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Yes'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    api.post('api/update_open_recon', {dept: dept,classification: classification, to: dateTo, from: dateFrom}).then((result) => {
+                        // console.log(result.data.result);
+                        if(result.data.result == true){
+                            toastr.success(result.data.msg);
+                            dtTableFinalRecon.ajax.reload();
+                        }
+                    }).catch((err) => {
+                        
+                    });
+                }
+                
+            })
+        }
     }
 </script>

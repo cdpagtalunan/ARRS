@@ -749,16 +749,6 @@ class RequestController extends Controller
             $dateTo = $dateTo->format('Y-m-d');
         }
 
-        // $recon_data = DB::connection('mysql')
-        // ->table('reconciliations')
-        // ->whereNull('deleted_at')
-        // // ->where('pr_num', 'LIKE', "%".$request->param['department']."%")
-        // // ->where('classification', $request->param['classification'])
-        // ->where('recon_date_from', '>=', $dateFrom)
-        // ->where('recon_date_to', '<=', $dateTo)
-        // ->select('*')
-        // ->get();
-
         $categories = DB::connection('mysql')
         ->table('user_categories')
         ->whereNull('deleted_at')
@@ -773,22 +763,37 @@ class RequestController extends Controller
 
             $disabled = "";
 
-            // dd($count_logstc_done);
-
             if($recon_data != 0 || $recon_data === false || $count_logstc_done == 0){
                 $disabled = "disabled";
             }
 
+
+
             $result .= "<center>";
+           
             $result .= "
             <button class='btn btn-success btn-sm btnDoneUserReconcile' $disabled
             data-from = '$dateFrom'
             data-to = '$dateTo'
             data-classification = '$categories->classification'
             data-dept = '$categories->department'
+            title='Tally Reconciliation'
             >
                 <i class='fa-regular fa-circle-check'></i>
             </button>";
+
+            if( ($recon_data == 0 && $count_logstc_done == 0) &&  $recon_data !== false ){
+                $result .= "<button class='btn btn-sm btn-warning btnOpenRecon ml-1' 
+                data-from='$dateFrom'
+                data-to = '$dateTo'
+                data-classification = '$categories->classification'
+                data-dept = '$categories->department'
+                title='Open Reconciliation'
+                >
+                <i class='fa-solid fa-lock-open'></i>
+
+                </button>";
+            }
             $result .= "</center>";
 
             return $result;
@@ -833,20 +838,11 @@ class RequestController extends Controller
                     $result = $dt_final_recon[0]->final_recon_date;
                 }
             }
-            // dd($count_logstc_done);
-            
-            // if(isset($count_logstc_done)){
-            //     $result = $count_logstc_done->final_recon_date;
-            // }
             return $result;
         })
         ->addColumn('u_charge', function($categories){
             $result = "";
             $result .= "<center>";
-            // $user_in_charge = DB::connection('mysql')
-            // ->table('user_accesses')
-            // ->whereRaw('FIND_IN_SET("'.$categories->id.'", category_id)')
-            // ->get();
             $user_in_charge = UserAccess::with([
                 'rapidx_user_details'
             ])

@@ -14,6 +14,7 @@ use Illuminate\Contracts\Encryption\DecryptException;
 // use App\Helpers\AppHelper; // This is a global helper
 
 use Helpers;
+use App\Models\Reconciliation;
 
 class AdminController extends Controller
 {
@@ -173,7 +174,6 @@ class AdminController extends Controller
     public function update_user_stat(Request $request){
         date_default_timezone_set('Asia/Manila');
         $decrypted_id = Helpers::decryptId($request->emp);
-        // return $decrypted_id;
         DB::beginTransaction();
         try{
             if($request->fn_name == 0){ // * Activate User
@@ -210,5 +210,33 @@ class AdminController extends Controller
         ->get();
         return $cat;
         // return response()->json(['res' => $cat]);
+    }
+
+    public function update_open_recon(Request $request){
+        // return $request->all();
+        DB::beginTransaction();
+        try{
+            Reconciliation::where('recon_date_from', $request->from)
+            ->where('recon_date_to', $request->to)
+            ->where('classification', $request->classification)
+            ->where('pr_num', 'LIKE',"%$request->dept%")
+            ->update([
+                'final_recon_status' => 0,
+                'final_recon_date'   => NULL
+            ]);
+
+            DB::commit();
+
+            return response()->json([
+                'result' => true,
+                'msg' => 'Transaction Successful!'
+            ]);
+            
+            
+        }
+        catch(Exemption $e){
+            DB::rollback();
+            return $e;
+        }
     }
 }
