@@ -2,22 +2,29 @@
 
 namespace App\Http\Controllers;
 
+use Helpers;
 use DataTables;
 use App\Models\RapidxUser;
 use App\Models\UserAccess;
 use App\Models\UserCategory;
 use Illuminate\Http\Request;
+use App\Models\Reconciliation;
 use App\Http\Requests\UserRequest;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Crypt;
-use Illuminate\Contracts\Encryption\DecryptException;
 // use App\Helpers\AppHelper; // This is a global helper
 
-use Helpers;
-use App\Models\Reconciliation;
+use Illuminate\Support\Facades\Crypt;
+use App\Http\Controllers\CommonController;
+use Illuminate\Contracts\Encryption\DecryptException;
 
 class AdminController extends Controller
 {
+    protected $mailSender;
+
+    public function __construct(CommonController $mailSender) {
+      $this->mailSender = $mailSender;
+    }
+    
     public function get_user(Request $request){
         $user_data = UserAccess::with([
             'rapidx_user_details'
@@ -224,6 +231,40 @@ class AdminController extends Controller
                 'final_recon_status' => 0,
                 'final_recon_date'   => NULL
             ]);
+
+            $get_cat = UserCategory::where('classification', $request->classification)
+            ->where('department', $request->dept)
+            ->whereNull('deleted_at')
+            ->first('id');
+    
+            $get_admin_user = UserAccess::with([
+                'rapidx_user_details'
+            ])
+            ->whereNull('deleted_at')
+            ->where('user_type', 1)
+            ->get();
+            
+            $get_user = UserAccess::with([
+                'rapidx_user_details'
+            ])
+            ->whereNull('deleted_at')
+            ->whereRaw('FIND_IN_SET("'.$get_cat->id.'", category_id)')
+            ->where('user_type', 2)
+            ->get();
+
+            $admin_email = collect($get_admin_user)->pluck('rapidx_user_details.email')->flatten(0)->filter()->toArray();
+            $user_email = collect($get_user)->pluck('rapidx_user_details.email')->flatten(0)->filter()->toArray();
+
+            $subject = "Open For Reconciliation <ARRS Generated Email Do Not Reply>";
+            $data = [
+                'dept'           => $request->dept,
+                'classification' => $request->classification,
+                'from'           => $request->from,
+                'to'             => $request->to
+            ];
+
+            $this->mailSender->send_mail('open_recon', $data, $request, $admin_email, $user_email, $subject);
+            
 
             DB::commit();
 
