@@ -841,7 +841,6 @@ class ReconciliationController extends Controller
             }
             else{
                 $eprpo_data[$i]->ship_to = "Factory 1";
-
             }
 
 

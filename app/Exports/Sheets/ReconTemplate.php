@@ -235,7 +235,8 @@ class ReconTemplate implements  FromView, WithTitle, WithEvents, ShouldAutoSize
                             
 
                             // if($amount == $usd_recon->recon_amount){
-                            if($usd_recon->recon_status == 1){
+                            // if($usd_recon->recon_status == 1){
+                            if($usd_recon->final_recon_status == 1){
                                 $event->sheet->setCellValue("M$start_row", "TRUE");
                             }
                             else{
@@ -364,7 +365,8 @@ class ReconTemplate implements  FromView, WithTitle, WithEvents, ShouldAutoSize
                             $event->sheet->getDelegate()->getStyle("L$start_row")->getAlignment()->setWrapText(true);
 
 
-                            if($php_recon->recon_status == 1){
+                            // if($php_recon->recon_status == 1){
+                            if($php_recon->final_recon_status == 1){
                             // if($amount == $php_recon->recon_amount){
                                 $event->sheet->setCellValue("M$start_row", "TRUE");
                             }

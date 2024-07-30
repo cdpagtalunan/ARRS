@@ -447,7 +447,10 @@ Permanent Delete - will be removed to current cutoff and will not insert to the 
             title: 'Amount',
             "render": function(data, type, row, meta) {
                 let total = row.unit_price * row.received_qty;
-                return total.toFixed(2);
+                // return total.toFixed(2);
+                let num = Math.round(total + "e" + 2);
+                let num2 =  Number(num + "e" + -2);
+                return num2.toFixed(2)
             }
         },
         { data: 'user_date_done', title: 'Date/Time Done'},
