@@ -852,9 +852,10 @@ class RequestController extends Controller
             ->whereNull('deleted_at')
             ->first();
 
-            // for($x = 0; $x < count($user_in_charge); $x++){
+            if($user_in_charge){
+
                 $result .= "{$user_in_charge->rapidx_user_details->name}";
-            // }
+            }
             $result .= "</center>";
             
             return $result;
