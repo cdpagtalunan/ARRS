@@ -39,22 +39,13 @@
                             </div>
                         </template>
                         <template #body>
-                            <ul class="nav nav-tabs justify-content-center">
-                                <div class="col-sm-4 mb-1">
-                                    <select class="form-control" @change="onChange($event)">
-                                        <option selected disabled>-- Select --</option>
-                                        <option v-for="cutOffOption in userAccesses" :key="cutOffOption.id" :classification="cutOffOption.classification" :department="cutOffOption.department">
-                                            {{ `${cutOffOption.classification}-${cutOffOption.department}` }}
-                                        </option>
-                                    </select>
-                                </div>
-                                
-                                <!-- <li class="nav-item" v-for="cutOffOption in userAccesses" :key="cutOffOption.id">
+                            <ul class="nav nav-tabs">
+                                <li class="nav-item" v-for="cutOffOption in userAccesses" :key="cutOffOption.id">
                                     <a class="nav-link" data-bs-toggle="tab" href="#reconDataTable" role="tab" aria-selected="true" @click="loadDataTable(cutOffOption.classification,cutOffOption.department)">{{ `${cutOffOption.classification}-${cutOffOption.department}` }}</a>
-                                </li> -->
+                                </li>
                             </ul>
                             <div class="tab-content">
-                                <div class="tab-pane show active fade" id="reconDataTable" role="tabpanel" aria-labelledby="reconDataTable-tab">
+                                <div class="tab-pane fade" id="reconDataTable" role="tabpanel" aria-labelledby="reconDataTable-tab">
                                     <div class="mt-3 overflow-x-auto">
                                         <div class="row">
                                             <div class="col-sm-12 d-flex align-items-center justify-content-between">
@@ -870,14 +861,6 @@ Permanent Delete - will be removed to current cutoff and will not insert to the 
             }
             
         });
-    }
-
-    const onChange = (event) => {
-        // console.log(event.target.value);
-        let classification = event.target.options[event.target.options.selectedIndex].getAttribute('classification')
-        let department = event.target.options[event.target.options.selectedIndex].getAttribute('department')
-
-        loadDataTable(classification,department)
     }
     
 </script>

@@ -671,6 +671,7 @@ class RequestController extends Controller
                 AND receiving_details.receiving_number = "'.$request_data->rcv_no.'"
             ');
     
+            // return $eprpo_data;
             if(count($eprpo_data) == 1){
                 $po_number      = ReconciliationController::getRefReqNum($eprpo_data[0]->reference_po_number);
                 $allocation     = ReconciliationController::getAllocation($po_number);
@@ -807,16 +808,16 @@ class RequestController extends Controller
             // dd($count_logstc_done);
             $result .= "<center>";
             if($recon_data === false){
-                $result .= "<span class='c badge bg-secondary'>No Data</span>";
+                $result .= "<span class='d badge bg-secondary'>No Data</span>";
             }
             else if($recon_data != 0){
-                $result .= "<span class='a badge bg-warning'>End user Pending</span>";
+                $result .= "<span class='b badge bg-warning'>End user Pending</span>";
             }
             else if($count_logstc_done != 0){
-                $result .= "<span class='b badge bg-info text-dark'>For Logistic Recon</span>";
+                $result .= "<span class='a badge bg-info text-dark'>For Logistic Recon</span>";
             }
             else{
-                $result .= "<span class='d badge bg-success'>Tally</span>";
+                $result .= "<span class='c badge bg-success'>Tally</span>";
             }
             $result .= "</center>";
             return $result;
@@ -849,11 +850,11 @@ class RequestController extends Controller
             ->whereRaw('FIND_IN_SET("'.$categories->id.'", category_id)')
             ->where('is_superior', 0)
             ->whereNull('deleted_at')
-            ->get();
+            ->first();
 
-            for($x = 0; $x < count($user_in_charge); $x++){
-                $result .= "{$user_in_charge[$x]->rapidx_user_details->name}<br>";
-            }
+            // for($x = 0; $x < count($user_in_charge); $x++){
+                $result .= "{$user_in_charge->rapidx_user_details->name}";
+            // }
             $result .= "</center>";
             
             return $result;

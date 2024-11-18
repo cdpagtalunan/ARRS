@@ -215,7 +215,7 @@ class ReconTemplate implements  FromView, WithTitle, WithEvents, ShouldAutoSize
                             $usd_recon = $recon['usd']['recons'][$x];
                             $event->sheet->setCellValue("A$start_row", $usd_recon->prod_name);
                             $event->sheet->setCellValue("B$start_row", $usd_recon->prod_desc);
-                            $event->sheet->setCellValue("C$start_row", $usd_recon->invoice_no);
+                            $event->sheet->setCellValue("C$start_row", $usd_recon->invoice_no, DataType::TYPE_STRING);
                             $event->sheet->setCellValue("D$start_row", $usd_recon->delivery_date);
                             $event->sheet->setCellValue("E$start_row", $usd_recon->received_qty);
                             $event->sheet->setCellValue("F$start_row", $usd_recon->supplier);
@@ -347,7 +347,7 @@ class ReconTemplate implements  FromView, WithTitle, WithEvents, ShouldAutoSize
                             $php_recon = $recon['php']['recons'][$y];
                             $event->sheet->setCellValue("A$start_row", $php_recon->prod_name);
                             $event->sheet->setCellValue("B$start_row", $php_recon->prod_desc);
-                            $event->sheet->setCellValue("C$start_row", $php_recon->invoice_no);
+                            $event->sheet->setCellValue("C$start_row", $php_recon->invoice_no, DataType::TYPE_STRING);
                             $event->sheet->setCellValue("D$start_row", $php_recon->delivery_date);
                             $event->sheet->setCellValue("E$start_row", $php_recon->received_qty);
                             $event->sheet->setCellValue("F$start_row", $php_recon->supplier);

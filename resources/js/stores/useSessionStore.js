@@ -14,7 +14,7 @@ export const useSessionStore = defineStore("session", {
     actions: {
         async checkSession(){
             await api.get('check_access').then((result) => {
-                // console.log(result);
+            // console.log(result);
                 this.name = result.data.uName;
                 this.appId = result.data.appid;
                 this.access = result.data.uAccess;

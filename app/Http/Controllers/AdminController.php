@@ -223,14 +223,36 @@ class AdminController extends Controller
         // return $request->all();
         DB::beginTransaction();
         try{
-            Reconciliation::where('recon_date_from', $request->from)
-            ->where('recon_date_to', $request->to)
-            ->where('classification', $request->classification)
-            ->where('pr_num', 'LIKE',"%$request->dept%")
-            ->update([
-                'final_recon_status' => 0,
-                'final_recon_date'   => NULL
-            ]);
+            // return $request->all();
+
+            if(strtoupper($request->dept) == 'STAMPING'){
+                Reconciliation::where('recon_date_from', $request->from)
+                // ->where('recon_date_to', $request->to)
+                ->where('classification', $request->classification)
+                ->where('allocation', 'LIKE', '%stamping%')
+                ->update([
+                    'final_recon_status' => 0,
+                    'final_recon_date'   => NULL
+                ]);
+            }
+            else{
+                Reconciliation::where('recon_date_from', $request->from)
+                // ->where('recon_date_to', $request->to)
+                ->where('classification', $request->classification)
+                ->where('pr_num', 'LIKE',"%$request->dept%")
+                ->update([
+                    'final_recon_status' => 0,
+                    'final_recon_date'   => NULL
+                ]);
+            }
+            // Reconciliation::where('recon_date_from', $request->from)
+            // // ->where('recon_date_to', $request->to)
+            // ->where('classification', $request->classification)
+            // ->where('pr_num', 'LIKE',"%$request->dept%")
+            // ->update([
+            //     'final_recon_status' => 0,
+            //     'final_recon_date'   => NULL
+            // ]);
 
             $get_cat = UserCategory::where('classification', $request->classification)
             ->where('department', $request->dept)

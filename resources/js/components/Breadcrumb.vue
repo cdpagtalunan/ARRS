@@ -8,8 +8,6 @@
                 <div class="col-sm-6">
                     <ol class="breadcrumb float-sm-right">
                         <slot name="breadcrumbs"></slot>
-                        <!-- <li class="breadcrumb-item"><a href="">Dashboard</a></li>
-                        <li class="breadcrumb-item active">Cut-off</li> -->
                     </ol>
                 </div>
             </div>

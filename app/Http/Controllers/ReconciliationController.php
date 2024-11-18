@@ -58,6 +58,7 @@ class ReconciliationController extends Controller
         DB::beginTransaction();
         try{
             $mutable = Carbon::today();
+
             $current_year = $mutable->format('Y');
             $month_today = $mutable->format('m');
     
@@ -87,7 +88,9 @@ class ReconciliationController extends Controller
                 // $date_from = $mutable->format('Y-m')."-".$day_from;
 
                 $day_from = 26;
-                $date_from = $mutable->subMonth()->format('Y-m')."-".$day_from;
+                $month_sub_1 = (int)$month_today - 1;
+                // $date_from = $mutable->subMonth()->format('Y-m')."-".$day_from;
+                $date_from = "{$current_year}-{$month_sub_1}-{$day_from}";
 
             }
     
@@ -154,6 +157,8 @@ class ReconciliationController extends Controller
             ');
     
             $collection = collect($eprpo_data)->whereIn('classification_code', $cat_array)->flatten(0);
+
+            // return $date_from;
     
             for ($i=0; $i < count($collection); $i++) { 
     
@@ -1477,7 +1482,7 @@ class ReconciliationController extends Controller
                 ])
                 ->whereNull('deleted_at')
                 ->where('user_type', 1)
-                ->where('is_auth', 1)
+                // ->where('is_auth', 1)
                 ->get();
                 
                 $admin_email = collect($get_admin)->pluck('rapidx_user_details.email')->flatten(0)->filter()->toArray();
@@ -1488,7 +1493,7 @@ class ReconciliationController extends Controller
                     'dept'  => $categories[$x]->department,
                     'class' => $categories[$x]->classification,
                 );
-                $subject = "Pending Reconciliation on ".$categories[$x]->classification."-".$categories[$x]->department."  <ARRS Generated Email Do Not Reply>";
+                $subject = "PENDING Reconciliation on ".$categories[$x]->classification."-".$categories[$x]->department."  <ARRS Generated Email Do Not Reply>";
     
                 $this->mailSender->send_mail('pending_notif', $data, $request, $admin_email, $user_email, $subject);
             }

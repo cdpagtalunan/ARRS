@@ -1,5 +1,5 @@
 <template>
-    <Breadcrumb title="Admin">
+    <Breadcrumb title="Export">
         <template #breadcrumbs>
             <li class="breadcrumb-item"><a href="">Dashboard</a></li>
             <li class="breadcrumb-item active">Export</li>

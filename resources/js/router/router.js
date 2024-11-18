@@ -2,6 +2,7 @@ import {createRouter, createWebHistory} from 'vue-router';
 import AdminLayout from '../layout/AdminLayout/AdminLayout.vue' // ^ Main Template
 import Dashboard from '../pages/Dashboard.vue';
 import Reconciliation from '../pages/Reconciliation.vue';
+// import Reconciliation_v2 from '../pages/Reconciliation_v2.vue';
 import UserRequest from '../pages/UserRequest.vue';
 
 // ^ Setting Pages
@@ -62,6 +63,12 @@ const routes = [
                 beforeEnter: isLoggedIn,
                 component: Reconciliation
             },
+            // {
+            //     path: 'recon2',
+            //     name: 'Reconciliation2',
+            //     beforeEnter: isLoggedIn,
+            //     component: Reconciliation_v2
+            // },
             {
                 path: 'request_list',
                 name: 'UserRequest',
