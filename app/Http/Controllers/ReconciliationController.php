@@ -90,7 +90,8 @@ class ReconciliationController extends Controller
                 $day_from = 26;
                 $month_sub_1 = (int)$month_today - 1;
                 // $date_from = $mutable->subMonth()->format('Y-m')."-".$day_from;
-                $date_from = "{$current_year}-{$month_sub_1}-{$day_from}";
+                // $date_from = "{$current_year}-{$month_sub_1}-{$day_from}";
+                $date_from = "{$current_year}-".str_pad($month_sub_1, 2, '0', STR_PAD_LEFT)."-{$day_from}";
 
             }
     

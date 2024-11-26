@@ -45,7 +45,7 @@
             </table>
             <br>
             {{-- Addition Email Template --}}
-            @if ($type == 'Addition') 
+            @if ($type == 'Addition')
                 <strong>List of requested reconciliation for addition</strong>
 
                 <table id="tableAdd" class="table" style="width: 100%;">
