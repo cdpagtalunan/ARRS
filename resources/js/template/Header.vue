@@ -9,7 +9,6 @@
                     <!-- <i class="fas fa-bars"></i> -->
                     <icons icon="fas fa-bars" class="nav-icon"></icons>
                     
-                    <!-- <font-awesome-icon :icon="['fas', 'bars']" class="nav-icon"></font-awesome-icon> -->
                 </a>
             </li>
             <li class="nav-item d-none d-sm-inline-block">
