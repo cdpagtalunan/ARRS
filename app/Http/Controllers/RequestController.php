@@ -886,7 +886,8 @@ class RequestController extends Controller
                 ->where('allocation', 'LIKE', '%stamping%')
                 ->update([
                     'final_recon_status' => 1,
-                    'final_recon_date' => NOW()
+                    'final_recon_date' => NOW(),
+                    'final_recon_user'=> $_SESSION['rapidx_user_id']
                 ]);
             }
             else{
@@ -902,7 +903,8 @@ class RequestController extends Controller
                     ->where('allocation', 'NOT LIKE', '%stamping%')
                     ->update([
                         'final_recon_status' => 1,
-                        'final_recon_date' => NOW()
+                        'final_recon_date' => NOW(),
+                        'final_recon_user'=> $_SESSION['rapidx_user_id']
                     ]);
                 }
                 else{
@@ -916,7 +918,8 @@ class RequestController extends Controller
                     ->where('allocation', 'NOT LIKE', '%stamping%')
                     ->update([
                         'final_recon_status' => 1,
-                        'final_recon_date' => NOW()
+                        'final_recon_date' => NOW(),
+                        'final_recon_user'=> $_SESSION['rapidx_user_id']
                     ]);
                 }
     

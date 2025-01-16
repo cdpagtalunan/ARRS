@@ -1310,8 +1310,9 @@ class ReconciliationController extends Controller
 
                 Reconciliation::where('id', $decrypt_id)
                 ->update([
-                    'recon_status'      => 1,
-                    'user_date_done'    => NOW()
+                    'recon_status'   => 1,
+                    'user_date_done' => NOW(),
+                    'user_date_done' => $_SESSION['rapidx_user_id']
                 ]);
 
                 if(strtoupper($request->dt_params['department']) == 'STAMPING'){
@@ -1385,17 +1386,12 @@ class ReconciliationController extends Controller
         
 
                 }
+                DB::commit();
 
-        
-
-
-              
-                 DB::commit();
-    
-                 return response()->json([
-                     'result' => true,
-                     'msg' => "Transaction Success"
-                 ]);
+                return response()->json([
+                    'result' => true,
+                    'msg' => "Transaction Success"
+                ]);
             
             }
             catch(Exemption $e){
