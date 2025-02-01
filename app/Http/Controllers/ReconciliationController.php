@@ -55,6 +55,7 @@ class ReconciliationController extends Controller
 
     public function get_eprpo_data(Request $request){
         date_default_timezone_set('Asia/Manila');
+
         DB::beginTransaction();
         try{
             $mutable = Carbon::today();
@@ -88,13 +89,19 @@ class ReconciliationController extends Controller
                 // $date_from = $mutable->format('Y-m')."-".$day_from;
 
                 $day_from = 26;
+                // Subtract 1 month from the month
                 $month_sub_1 = (int)$month_today - 1;
-                // $date_from = $mutable->subMonth()->format('Y-m')."-".$day_from;
-                // $date_from = "{$current_year}-{$month_sub_1}-{$day_from}";
-                $date_from = "{$current_year}-".str_pad($month_sub_1, 2, '0', STR_PAD_LEFT)."-{$day_from}";
+                $current_year1 = $current_year;
 
+                // Adjust if the month is January (i.e., 1 -> 12)
+                if ($month_sub_1 < 1) {
+                    $month_sub_1 = 12;
+                    $current_year1 = $current_year - 1;
+                }
+
+                $date_from = "{$current_year1}-".str_pad($month_sub_1, 2, '0', STR_PAD_LEFT)."-{$day_from}";
             }
-    
+
             $recon_date = ReconciliationDate::firstOrCreate(
                 ['month' => $month_today],
                 ['year' => $current_year, 'cutoff' => $request->cutoff ]
@@ -548,6 +555,20 @@ class ReconciliationController extends Controller
 
             return $result;
 
+        })
+        ->addColumn('user_done', function($recon_data){
+            $result = "";
+
+            $user_in_charge = UserAccess::with([
+                'rapidx_user_details'
+            ])
+            ->where('rapidx_emp_no', $recon_data->user_id_done)
+            ->first();
+            
+            if(isset($user_in_charge)){
+                $result = $user_in_charge->rapidx_user_details->name;
+            }
+            return $result;
         })
         ->addColumn('status', function($recon_data){
             $result = "";
@@ -1312,7 +1333,7 @@ class ReconciliationController extends Controller
                 ->update([
                     'recon_status'   => 1,
                     'user_date_done' => NOW(),
-                    'user_date_done' => $_SESSION['rapidx_user_id']
+                    'user_id_done'   => $_SESSION['rapidx_user_id']
                 ]);
 
                 if(strtoupper($request->dt_params['department']) == 'STAMPING'){

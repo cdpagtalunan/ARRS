@@ -463,6 +463,7 @@ Permanent Delete - will be removed to current cutoff and will not insert to the 
             }
         },
         { data: 'user_date_done', title: 'Date/Time Done'},
+        { data: 'user_done', title: 'Done PIC'},
         
     ];
 

@@ -83,7 +83,7 @@
                         </router-link>
                     </li>
                     <li class="nav-header font-weight-bold" style="font-size: 1rem" v-if="uType == 1 || uType == 3">Export</li>
-                    <li class="nav-item">
+                    <li class="nav-item"  v-if="uType == 1 || uType == 3">
                         <router-link :to="{ name: 'AdminExport' }" class="nav-link" >
 
                             <icons icon="fas fa-file-excel" class="nav-icon"></icons>
