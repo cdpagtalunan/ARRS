@@ -103,9 +103,10 @@ class ReconciliationController extends Controller
             }
 
             $recon_date = ReconciliationDate::firstOrCreate(
-                ['month' => $month_today],
-                ['year' => $current_year, 'cutoff' => $request->cutoff ]
+                ['month' => $month_today, 'year' => $current_year],
+                ['cutoff' => $request->cutoff ]
             );
+
             if($recon_date->cutoff != $request->cutoff){
                 // return "hindi equal";
                 ReconciliationDate::where('id', $recon_date->id)
