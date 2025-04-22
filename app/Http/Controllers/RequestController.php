@@ -545,12 +545,12 @@ class RequestController extends Controller
         })
         ->addColumn('po', function($req){
             $result = "";
-            if($req->po_num == null){
-                $result .= $req->recon_details->po_num;
-            }
-            else{
-                $result .= $req->po_num;
-            }
+            // if($req->po_num == null){
+            //     $result .= $req->recon_details->po_num;
+            // }
+            // else{
+                $result .= $req['po_num'] == null ? $req->recon_details['po_num'] : $req->po_num;
+            // }
             return $result;
         })
         ->addColumn('invoice_no', function($req){
