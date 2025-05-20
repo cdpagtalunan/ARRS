@@ -9,6 +9,7 @@ export const useSessionStore = defineStore("session", {
         access: [],
         type: null,
         isAuth: null,
+        sendTo: null,
         error: null
     }),
     actions: {
@@ -20,6 +21,7 @@ export const useSessionStore = defineStore("session", {
                 this.access = result.data.uAccess;
                 this.type = result.data.uType;
                 this.isAuth = result.data.isAuth;
+                this.sendTo = result.data.sendTo;
             }).catch((err) => {
                 this.error = err;
             });

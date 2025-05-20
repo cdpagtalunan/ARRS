@@ -114,13 +114,13 @@
 
                     <label class="mt-2">User Designation</label> <br>
                     <div class="form-check">
-                        <input class="form-check-input" type="radio" id="selDesigF1" v-model="formData.uDesig" value="1">
+                        <input class="form-check-input" type="radio" id="selDesigF1" v-model="formData.uDesig" value="Factory 1">
                         <label class="form-check-label" for="selDesigF1">
                             Factory 1
                         </label>
                     </div>
                     <div class="form-check">
-                        <input class="form-check-input" type="radio" id="selDesigF3" v-model="formData.uDesig" value="2">
+                        <input class="form-check-input" type="radio" id="selDesigF3" v-model="formData.uDesig" value="Factory 3">
                         <label class="form-check-label" for="selDesigF3">
                             Factory 3
                         </label>
@@ -200,14 +200,14 @@
         { 
             data: 'user_desig',
             title: 'Designation',
-            render: function(data){
-                if(data == 1){
-                    return "Factory 1";
-                }
-                else{
-                    return "Factory 3"
-                }
-            }
+            // render: function(data){
+            //     if(data == 1){
+            //         return "Factory 1";
+            //     }
+            //     else{
+            //         return "Factory 3"
+            //     }
+            // }
         },
         { 
             data: 'is_auth',

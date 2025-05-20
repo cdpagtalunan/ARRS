@@ -87,7 +87,7 @@ use App\Http\Controllers\ReconciliationController;
         Route::get('decrypt_id', [CommonController::class, 'decrypt_id']);
 
         // ^ EXPORT ROUTE
-        Route::get('export/{u_id}/{date_range}/{access}', [ExportController::class, 'export']);
+        Route::get('export/{u_id}/{date_range}/{access}/{ship_to}', [ExportController::class, 'export']);
         Route::get('export_admin/{date_range}', [ExportController::class, 'export_admin']);
 
 
