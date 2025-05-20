@@ -47,8 +47,14 @@
                                             {{ `${cutOffOption.classification}-${cutOffOption.department}` }}
                                         </option>
                                     </select>
+                                    
                                 </div>
-                                
+                                <div class="col-sm-2" v-if="injectSess.type == 1">
+                                    <select class="form-control" v-model="adminSelectFactory" @change="()=>{ dt.ajax.reload() }">
+                                        <option>Factory 1</option>
+                                        <option>Factory 3</option>
+                                    </select>
+                                </div>
                                 <!-- <li class="nav-item" v-for="cutOffOption in userAccesses" :key="cutOffOption.id">
                                     <a class="nav-link" data-bs-toggle="tab" href="#reconDataTable" role="tab" aria-selected="true" @click="loadDataTable(cutOffOption.classification,cutOffOption.department)">{{ `${cutOffOption.classification}-${cutOffOption.department}` }}</a>
                                 </li> -->
@@ -80,6 +86,7 @@
                                                             param.param = dtParams;
                                                             param.cutoff_date = cutoffSelect.selected;
                                                             param.access =  injectSess.access;
+                                                            param.sendTo =  injectSess.type == 1 ? adminSelectFactory : injectSess.sendTo;
                                                             param.user_type =  injectSess.type;
                                                         }
                                                     }"
@@ -352,6 +359,7 @@ Permanent Delete - will be removed to current cutoff and will not insert to the 
     import DataTablesCore from 'datatables.net-bs5';
     DataTable.use(DataTablesCore);
 
+    const adminSelectFactory = ref('Factory 1');
     const userAccesses = ref();
     const cutoffSelect = reactive({
         option: [],
@@ -817,7 +825,7 @@ Permanent Delete - will be removed to current cutoff and will not insert to the 
             toastr.error('Please Select Cutoff');
         }
         else{
-            window.open(`api/export/${injectSess.appId}/${cutoffSelect.selected}/${injectSess.access}`, '_blank');
+            window.open(`api/export/${injectSess.appId}/${cutoffSelect.selected}/${injectSess.access}/${injectSess.sendTo}`, '_blank');
         }
 
         

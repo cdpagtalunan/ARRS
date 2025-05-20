@@ -43,6 +43,7 @@ class CommonController extends Controller
                     'uName' => $_SESSION['rapidx_name'], 
                     'appid' => $encrypt_id, 
                     'uType' => $user_system_access_check->user_type, 
+                    'sendTo' => $user_system_access_check->user_desig, 
                     'isAuth' => $user_system_access_check->is_auth ]);
             }
             else{

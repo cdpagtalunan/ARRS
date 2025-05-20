@@ -20,7 +20,7 @@ use Maatwebsite\Excel\Concerns\FromCollection;
 use Maatwebsite\Excel\Concerns\ShouldAutoSize;
 use PhpOffice\PhpSpreadsheet\Worksheet\Drawing;
 
-class ReconTemplate implements  FromView, WithTitle, WithEvents, ShouldAutoSize
+class ReconTemplateAdmin implements  FromView, WithTitle, WithEvents, ShouldAutoSize
 {
     /**
     * @return \Illuminate\Support\Collection
@@ -52,7 +52,8 @@ class ReconTemplate implements  FromView, WithTitle, WithEvents, ShouldAutoSize
 
     public function title(): string
     {
-        return $this->recon_cat['classification'].'-'.$this->recon_cat['department'];
+        // return $this->recon_cat['classification'].'-'.$this->recon_cat['department'];
+        return $this->recon_cat;
     }
 
 
@@ -88,7 +89,7 @@ class ReconTemplate implements  FromView, WithTitle, WithEvents, ShouldAutoSize
             AfterSheet::class => function(AfterSheet $event) use ($center_center, $bold, $styleBorderAll, $left_center)  {
                 $recon = $this->recon_details;
                 // json_decode($recon_details['DPI-PPSCN']['valid'], true)
-         
+                
                     $event->sheet->setCellValue('A1', 'Summary of Received Invoices');
                     $event->sheet->getDelegate()->mergeCells('A1:M1');
                     $event->sheet->getDelegate()->getStyle('A1:M1')->applyFromArray($center_center);
@@ -123,12 +124,14 @@ class ReconTemplate implements  FromView, WithTitle, WithEvents, ShouldAutoSize
 
 
                     $event->sheet->setCellValue('A3', 'Section');
-                    $event->sheet->setCellValue('B3', $this->recon_cat['department']);
+                    // $event->sheet->setCellValue('B3', $this->recon_cat['department']);
+                    $event->sheet->setCellValue('B3', $recon['department']);
 
                     // $event->sheet->setCellValue('I3', 'Prepared by:');
                     
                     $event->sheet->setCellValue('A4', 'Classification Code');
-                    $event->sheet->setCellValue('B4', $this->recon_cat['classification']);
+                    // $event->sheet->setCellValue('B4', $this->recon_cat['classification']);
+                    $event->sheet->setCellValue('B4', $recon['classification']);
 
                     // $event->sheet->setCellValue('I4', 'Checked by:');
 

@@ -756,11 +756,13 @@ class RequestController extends Controller
         ->select('*')
         ->get();
 
+        // return $categories;
+
         return DataTables::of($categories)
         ->addColumn('action', function($categories) use ($dateFrom, $dateTo, $request){
             $result = "";
-            $recon_data = $this->count_not_finished_user_recon($categories->department, $categories->classification, $dateFrom, $dateTo);
-            $count_logstc_done = $this->count_logstc_finished_recon($categories->department, $categories->classification, $dateFrom, $dateTo);
+            $recon_data = $this->count_not_finished_user_recon($categories->department, $categories->classification, $dateFrom, $dateTo, $request->shipTo);
+            $count_logstc_done = $this->count_logstc_finished_recon($categories->department, $categories->classification, $dateFrom, $dateTo, $request->shipTo);
 
             $disabled = "";
 
@@ -799,11 +801,11 @@ class RequestController extends Controller
 
             return $result;
         })
-        ->addColumn('status', function($categories) use ($dateFrom, $dateTo){
+        ->addColumn('status', function($categories) use ($dateFrom, $dateTo, $request){
             $result = "";
-            $recon_data = $this->count_not_finished_user_recon($categories->department, $categories->classification, $dateFrom, $dateTo);
+            $recon_data = $this->count_not_finished_user_recon($categories->department, $categories->classification, $dateFrom, $dateTo, $request->shipTo);
 
-            $count_logstc_done = $this->count_logstc_finished_recon($categories->department, $categories->classification, $dateFrom, $dateTo);
+            $count_logstc_done = $this->count_logstc_finished_recon($categories->department, $categories->classification, $dateFrom, $dateTo, $request->shipTo);
 
             // dd($count_logstc_done);
             $result .= "<center>";
@@ -827,12 +829,12 @@ class RequestController extends Controller
             $result = "$categories->classification-$categories->department";
             return $result;
         })
-        ->addColumn('date_time_done', function($categories)  use ($dateFrom, $dateTo){
+        ->addColumn('date_time_done', function($categories)  use ($dateFrom, $dateTo, $request){
             $result = "";
-            $count_logstc_done = $this->get_count_final_recon($categories->department, $categories->classification, $dateFrom, $dateTo);
+            $count_logstc_done = $this->get_count_final_recon($categories->department, $categories->classification, $dateFrom, $dateTo, $request->shipTo);
             $dt_final_recon = "";
             if($count_logstc_done == 0){
-                $dt_final_recon = $this->get_dt_final_recon($categories->department, $categories->classification, $dateFrom, $dateTo);
+                $dt_final_recon = $this->get_dt_final_recon($categories->department, $categories->classification, $dateFrom, $dateTo, $request->shipTo);
                 
                 // $result = $dt_final_recon;
                 if(count($dt_final_recon) > 0){
@@ -952,7 +954,7 @@ class RequestController extends Controller
         }
     }
 
-    function count_not_finished_user_recon($department, $classification, $dateFrom, $dateTo){
+    function count_not_finished_user_recon($department, $classification, $dateFrom, $dateTo, $shipTo){
         // $data = DB::connection('mysql')
         // ->table('reconciliations')
         // ->whereNull('deleted_at')
@@ -976,6 +978,7 @@ class RequestController extends Controller
             ->where('recon_date_to', '<=', $dateTo)
             ->where('allocation', 'LIKE', '%stamping%')
             ->where('logdel', '0')
+            ->where('ship_to', $shipTo)
             ->select('recon_status')
             ->get();
         }
@@ -992,6 +995,7 @@ class RequestController extends Controller
                 ->where('recon_date_to', '<=', $dateTo)
                 ->where('allocation', 'NOT LIKE', '%stamping%')
                 ->where('logdel', '0')
+                ->where('ship_to', $shipTo)
                 ->select('recon_status')
                 ->get();
             }
@@ -1006,6 +1010,7 @@ class RequestController extends Controller
                 ->where('recon_date_to', '<=', $dateTo)
                 ->where('allocation', 'NOT LIKE', '%stamping%')
                 ->where('logdel', '0')
+                ->where('ship_to', $shipTo)
                 ->select('recon_status')
                 ->get();
             }
@@ -1036,7 +1041,7 @@ class RequestController extends Controller
         }
     }
 
-    function count_logstc_finished_recon($department, $classification, $dateFrom, $dateTo){
+    function count_logstc_finished_recon($department, $classification, $dateFrom, $dateTo, $shipTo){
 
         if(strtoupper($department) == 'STAMPING'){
             return DB::connection('mysql')
@@ -1050,6 +1055,7 @@ class RequestController extends Controller
             ->where('logdel', 0)
             // ->where('final_recon_status', 1)
             ->where('final_recon_status', 0)
+            ->where('ship_to', $shipTo)
             ->select('final_recon_status')
             ->count('final_recon_status');
         }
@@ -1068,6 +1074,7 @@ class RequestController extends Controller
                 ->where('logdel', 0)
                 // ->where('final_recon_status', 1)
                 ->where('final_recon_status', 0)
+                ->where('ship_to', $shipTo)
                 ->select('final_recon_status')
                 ->count('final_recon_status');
             }
@@ -1084,6 +1091,7 @@ class RequestController extends Controller
                 ->where('logdel', 0)
                 // ->where('final_recon_status', 1)
                 ->where('final_recon_status', 0)
+                ->where('ship_to', $shipTo)
                 ->select('final_recon_status')
                 ->count('final_recon_status');
             }
@@ -1102,7 +1110,7 @@ class RequestController extends Controller
         }
     }
 
-    function get_count_final_recon($department, $classification, $dateFrom, $dateTo){
+    function get_count_final_recon($department, $classification, $dateFrom, $dateTo, $shipTo){
         if(strtoupper($department) == 'STAMPING'){
             return DB::connection('mysql')
             ->table('reconciliations')
@@ -1115,6 +1123,7 @@ class RequestController extends Controller
             ->where('logdel', 0)
             // ->where('final_recon_status', 1)
             ->where('final_recon_status', 0)
+            ->where('ship_to', $shipTo)
             // ->distinct()
             ->select('final_recon_status')
             ->count('final_recon_status');
@@ -1134,6 +1143,7 @@ class RequestController extends Controller
                 ->where('logdel', 0)
                 // ->where('final_recon_status', 1)
                 ->where('final_recon_status', 0)
+                ->where('ship_to', $shipTo)
                 // ->distinct()
                 ->select('final_recon_status')
                 ->count('final_recon_status');
@@ -1151,6 +1161,7 @@ class RequestController extends Controller
                 ->where('logdel', 0)
                 // ->where('final_recon_status', 1)
                 ->where('final_recon_status', 0)
+                ->where('ship_to', $shipTo)
                 // ->distinct()
                 ->select('final_recon_status')
                 ->count('final_recon_status');
@@ -1170,7 +1181,7 @@ class RequestController extends Controller
         }
     }
 
-    function get_dt_final_recon($department, $classification, $dateFrom, $dateTo){
+    function get_dt_final_recon($department, $classification, $dateFrom, $dateTo, $shipTo){
         if(strtoupper($department) == 'STAMPING'){
             return DB::connection('mysql')
             ->table('reconciliations')
@@ -1182,6 +1193,7 @@ class RequestController extends Controller
             ->where('allocation', 'LIKE', '%stamping%')
             ->where('logdel', 0)
             ->where('final_recon_status', 1)
+            ->where('ship_to', $shipTo)
             // ->where('final_recon_status', 0)
             ->distinct()
             ->select('final_recon_date')
@@ -1202,6 +1214,7 @@ class RequestController extends Controller
                 ->where('allocation', 'NOT LIKE', '%stamping%')
                 ->where('logdel', 0)
                 ->where('final_recon_status', 1)
+                ->where('ship_to', $shipTo)
                 // ->where('final_recon_status', 0)
                 ->distinct()
                 ->select('final_recon_date')
@@ -1220,6 +1233,7 @@ class RequestController extends Controller
                 ->where('allocation', 'NOT LIKE', '%stamping%')
                 ->where('logdel', 0)
                 ->where('final_recon_status', 1)
+                ->where('ship_to', $shipTo)
                 // ->where('final_recon_status', 0)
                 ->distinct()
                 ->select('final_recon_date')

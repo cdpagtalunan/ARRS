@@ -468,6 +468,7 @@ class ReconciliationController extends Controller
             ->where('recon_date_to', '<=', $dtTo)
             ->where('allocation', 'LIKE', '%stamping%')
             ->where('logdel', 0)
+            ->where('ship_to', $request->sendTo)
             ->select('*')
             ->get();
         }
@@ -484,6 +485,7 @@ class ReconciliationController extends Controller
                 ->where('recon_date_to', '<=', $dtTo)
                 ->where('allocation', 'NOT LIKE', '%stamping%')
                 ->where('logdel', 0)
+                ->where('ship_to', $request->sendTo)
                 ->select('*')
                 ->get();
             }
@@ -498,6 +500,7 @@ class ReconciliationController extends Controller
                 ->where('recon_date_to', '<=', $dtTo)
                 ->where('allocation', 'NOT LIKE', '%stamping%')
                 ->where('logdel', 0)
+                ->where('ship_to', $request->sendTo)
                 ->select('*')
                 ->get();
             }

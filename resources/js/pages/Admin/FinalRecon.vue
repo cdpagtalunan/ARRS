@@ -12,7 +12,7 @@
                     <Card :card-body="true" :card-header="true">
                         <template #header>
                             <div class="row justify-content-between">
-                                <div class="col-sm-4">
+                                <div class="col-sm-5">
                                     <div class="input-group">
                                         <div class="input-group-prepend" width="50px">
                                             <span class="input-group-text w-100" id="basic-addon1" style="background-color: #3154b6; color: white;">Select Cut-off</span>
@@ -20,6 +20,11 @@
                                         <select class="form-control w-25" v-model="cutoffSelect.selected" @change="()=>{ dtTableFinalRecon.ajax.reload() }">
                                             <option v-for="cutOffSelOption in cutoffSelect.option">{{ cutOffSelOption }}</option>
                                         </select>
+                                        <select class="form-control w-25" v-model="shipTo" @change="()=>{ dtTableFinalRecon.ajax.reload() }">
+                                            <option>Factory 1</option>
+                                            <option>Factory 3</option>
+                                        </select>
+                                        
                                     </div>
                                 </div>
                             </div>
@@ -32,6 +37,7 @@
                                     url: 'api/get_all_recon_cat',
                                     data: function (param){ 
                                         param.cutoff_date = cutoffSelect.selected;
+                                        param.shipTo = shipTo;
                                         // param.is_auth = injectSess.isAuth;
                                     }
                                 }"
@@ -56,7 +62,7 @@
 
     const toastr = inject('toastr');
     const Swal = inject('Swal');
-
+    const shipTo = ref('Factory 1');
 
     let dtTableFinalRecon;
     const tableFinalRecon = ref();
