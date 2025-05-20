@@ -457,8 +457,8 @@ Permanent Delete - will be removed to current cutoff and will not insert to the 
             "render": function(data, type, row, meta) {
                 let total = row.unit_price * row.received_qty;
                 // return total.toFixed(2);
-                let num = Math.round(total + "e" + 2);
-                let num2 =  Number(num + "e" + -2);
+                let num = Math.round(total + "e" + 3);
+                let num2 =  Number(num + "e" + -3);
                 return num2.toFixed(2)
             }
         },

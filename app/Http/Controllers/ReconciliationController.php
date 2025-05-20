@@ -344,22 +344,28 @@ class ReconciliationController extends Controller
     }
     function getAllocation($prnumber){
         $allocation = '';
-        // $rs = query("SELECT 
-		// 			(SELECT section_department_name FROM section_department WHERE section_department.id = purchase_requisition_allocation.department_id LIMIT 0,1) as allocation, percentage 
-		// 				FROM `purchase_requisition_allocation` 
-		// 				WHERE purchase_requisition_allocation.requisition_number = '".$prnumber."'");
-        // while($obj=fetch($rs)){
-        //     $allocation .= $obj->allocation.' ('.$obj->percentage.' %)<br>';
+        // $query = DB::connection('mysql_eprpo')
+        // ->select("
+        //     SELECT 
+        //     (SELECT section_department_name FROM section_department WHERE section_department.id = purchase_requisition_allocation.department_id LIMIT 0,1) as allocation, percentage 
+        //     FROM `purchase_requisition_allocation` 
+        //     WHERE purchase_requisition_allocation.requisition_number = '$prnumber'
+        // ");
+        // if(count($query) > 0){
+        //     $allocation .= $query[0]->allocation.' ('.$query[0]->percentage.' %)'.PHP_EOL;
         // }
         $query = DB::connection('mysql_eprpo')
         ->select("
             SELECT 
-            (SELECT section_department_name FROM section_department WHERE section_department.id = purchase_requisition_allocation.department_id LIMIT 0,1) as allocation, percentage 
+            (SELECT section_department_name FROM section_department WHERE section_department.id = purchase_requisition_allocation.department_id LIMIT 0,1) as allocation,
+            (SELECT section_department_name FROM section_department WHERE section_department.id = purchase_requisition_allocation.business_unit LIMIT 0,1) as allocation_bu,
+            (SELECT section_department_name FROM section_department WHERE section_department.id = purchase_requisition_allocation.product_line LIMIT 0,1) as allocation_pl,
+            percentage 
             FROM `purchase_requisition_allocation` 
             WHERE purchase_requisition_allocation.requisition_number = '$prnumber'
         ");
         if(count($query) > 0){
-            $allocation .= $query[0]->allocation.' ('.$query[0]->percentage.' %)'.PHP_EOL;
+            $allocation .= $query[0]->allocation.' '. $query[0]->allocation_bu .' '. $query[0]->allocation_pl .' ('.$query[0]->percentage.' %)'.PHP_EOL;
         }
         return $allocation;
     }
