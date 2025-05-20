@@ -46,8 +46,8 @@ const hasAccess =  () => { // * TO VALIDATE USER HAS ACCESS ON SYSTEM
 
 const routes = [
     {
-        path: "/ARRS_dev/",
-        // path: "/ARRS_dev/",
+        path: "/ARRS/",
+        // path: "/ARRS/",
         component: AdminLayout,
         // beforeEnter: hasAccess,
         children: [
@@ -117,8 +117,8 @@ const routes = [
         ]
     },
     {
-        path: '/ARRS_dev/',
-        // path: '/ARRS_dev/',
+        path: '/ARRS/',
+        // path: '/ARRS/',
         component: '',
         children:  [
             {
@@ -134,8 +134,8 @@ const routes = [
         ]
     },
     {
-        path: '/ARRS_dev/mailer/',
-        // path: '/ARRS_dev/mailer/',
+        path: '/ARRS/mailer/',
+        // path: '/ARRS/mailer/',
         component: '',
         children:  [
             {
