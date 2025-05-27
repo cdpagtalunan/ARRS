@@ -195,13 +195,28 @@ class ReconciliationController extends Controller
                     * this is done for adding and removing of invoices from next month.
                     * this will prevent multiple input.
                 */ 
-                if(
-                    !Reconciliation::where('po_num',$collection[$i]->reference_po_number)
+                DB::table('reconciliations')
+                    ->where('po_num',$collection[$i]->reference_po_number)
                     ->where('pr_num', $po_number)
                     ->where('prod_code', $collection[$i]->item_code)
                     ->where('rcv_no', $collection[$i]->receiving_number)
-                    ->exists()
-                ){
+                    ->lockForUpdate()
+                    ->get();
+
+                // Double-check for existence inside the lock
+                $exists = Reconciliation::where('po_num',$collection[$i]->reference_po_number)
+                    ->where('pr_num', $po_number)
+                    ->where('prod_code', $collection[$i]->item_code)
+                    ->where('rcv_no', $collection[$i]->receiving_number)
+                    ->exists();
+                // if(
+                //     !Reconciliation::where('po_num',$collection[$i]->reference_po_number)
+                //     ->where('pr_num', $po_number)
+                //     ->where('prod_code', $collection[$i]->item_code)
+                //     ->where('rcv_no', $collection[$i]->receiving_number)
+                //     ->exists()
+                // ){
+                if(!$exists){
                     Reconciliation::insert([
                         'po_date'           => $po_date,
                         'po_num'            => $collection[$i]->reference_po_number,
@@ -235,6 +250,7 @@ class ReconciliationController extends Controller
                         'created_at'        => NOW()
                     ]);
                 }
+
             }
 
             if(!isset($request->bypass)){
@@ -498,7 +514,7 @@ class ReconciliationController extends Controller
                 ->where('requisitioner',"<>", "Carlo Olanga")
                 ->where('recon_date_from', '>=', $dtFrom)
                 ->where('recon_date_to', '<=', $dtTo)
-                ->where('allocation', 'NOT LIKE', '%stamping%')
+                // ->where('allocation', 'NOT LIKE', '%stamping%')
                 ->where('logdel', 0)
                 ->where('ship_to', $request->sendTo)
                 ->select('*')
@@ -514,10 +530,12 @@ class ReconciliationController extends Controller
             // ->where('recon_date_from', '>=', $dtFrom)
             // ->where('recon_date_to', '<=', $dtTo)
             // ->where('allocation', 'NOT LIKE', '%stamping%')
+            // ->where('ship_to', $request->sendTo)
             // ->select('*')
             // ->get();
         }
 
+        // dd($recon_data);
 
         return DataTables::of($recon_data)
         ->addColumn('raw_final_status', function($recon_data1) use ($recon_data){

@@ -844,7 +844,7 @@ class RequestController extends Controller
             return $result;
         })
        
-        ->addColumn('u_charge', function($categories){
+        ->addColumn('u_charge', function($categories) use ($request){
             $result = "";
             $result .= "<center>";
             $user_in_charge = UserAccess::with([
@@ -852,6 +852,7 @@ class RequestController extends Controller
             ])
             ->whereRaw('FIND_IN_SET("'.$categories->id.'", category_id)')
             ->where('is_superior', 0)
+            ->where('user_desig', $request->shipTo)
             ->whereNull('deleted_at')
             ->first();
 

@@ -246,7 +246,7 @@ class ReconTemplateAdmin implements  FromView, WithTitle, WithEvents, ShouldAuto
                                 $event->sheet->setCellValue("M$start_row", "FALSE");
                             }
                             $event->sheet->getDelegate()->getStyle("M$start_row")->applyFromArray($bold);
-                            $event->sheet->setCellValue("N$start_row", $usd_recon->ship_to);
+                            // $event->sheet->setCellValue("N$start_row", $usd_recon->ship_to);
 
                             $start_row++;
                         }
@@ -379,7 +379,7 @@ class ReconTemplateAdmin implements  FromView, WithTitle, WithEvents, ShouldAuto
                                 $event->sheet->setCellValue("M$start_row", "FALSE");
                             }
                             $event->sheet->getDelegate()->getStyle("M$start_row")->applyFromArray($bold);
-                            $event->sheet->setCellValue("N$start_row", $php_recon->ship_to);
+                            // $event->sheet->setCellValue("N$start_row", $php_recon->ship_to);
 
                             $start_row++;
 
