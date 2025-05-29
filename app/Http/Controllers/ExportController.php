@@ -139,48 +139,51 @@ class ExportController extends Controller
                 }
                 else{
                     // ! Remove IfElse and uncomment the query below when carlo olanga is already using the new user with section ppd-grinding
-                    // if($user_cat[$x]->department == 'PPD-GRIN'){
-                    //     $recon_data = DB::connection('mysql')
-                    //     ->table('reconciliations')
-                    //     ->where('logdel', 0)
-                    //     ->whereNull('deleted_at')
-                    //     ->where('requisitioner', "Carlo Olanga")
-                    //     ->where('classification', $user_cat[$x]->classification)
-                    //     ->where('recon_date_from', '>=', $rec_from)
-                    //     ->where('recon_date_to', '<=', $rec_to)
-                    //     ->where('allocation', 'NOT LIKE', '%stamping%')
-                    //     ->orderBy('supplier', 'ASC')
-                    //     ->select('*')
-                    //     ->get();
-                    // }
-                    // else{
-                    //     $recon_data = DB::connection('mysql')
-                    //     ->table('reconciliations')
-                    //     ->whereNull('deleted_at')
-                    //     ->where('logdel', 0)
-                    //     ->where('pr_num', 'LIKE', "%{$user_cat[$x]->department}%")
-                    //     ->where('classification', $user_cat[$x]->classification)
-                    //     ->where('requisitioner',"<>", "Carlo Olanga")
-                    //     ->where('recon_date_from', '>=', $rec_from)
-                    //     ->where('recon_date_to', '<=', $rec_to)
-                    //     ->where('allocation', 'NOT LIKE', '%stamping%')
-                    //     ->orderBy('supplier', 'ASC')
-                    //     ->select('*')
-                    //     ->get();
-                    // }
+                    if($user_cat[$x]->department == 'PPD-GRIN'){
+                        $recon_data = DB::connection('mysql')
+                        ->table('reconciliations')
+                        ->where('logdel', 0)
+                        ->whereNull('deleted_at')
+                        ->where('requisitioner', "Carlo Olanga")
+                        ->where('classification', $user_cat[$x]->classification)
+                        ->where('recon_date_from', '>=', $rec_from)
+                        ->where('recon_date_to', '<=', $rec_to)
+                        ->where('allocation', 'NOT LIKE', '%stamping%')
+                        ->where('ship_to', $factory[$i])
+                        ->orderBy('supplier', 'ASC')
+                        ->select('*')
+                        ->get();
+                    }
+                    else{
+                        $recon_data = DB::connection('mysql')
+                        ->table('reconciliations')
+                        ->whereNull('deleted_at')
+                        ->where('logdel', 0)
+                        ->where('pr_num', 'LIKE', "%{$user_cat[$x]->department}%")
+                        ->where('classification', $user_cat[$x]->classification)
+                        ->where('requisitioner',"<>", "Carlo Olanga")
+                        ->where('recon_date_from', '>=', $rec_from)
+                        ->where('recon_date_to', '<=', $rec_to)
+                        ->where('allocation', 'NOT LIKE', '%stamping%')
+                        ->where('ship_to', $factory[$i])
+                        ->orderBy('supplier', 'ASC')
+                        ->select('*')
+                        ->get();
+                    }
                     // ! Uncomment this
-                    $recon_data = DB::connection('mysql')
-                    ->table('reconciliations')
-                    ->whereNull('deleted_at')
-                    ->where('pr_num', 'LIKE', "%{$user_cat[$x]->department}%")
-                    ->where('classification', $user_cat[$x]->classification)
-                    ->where('requisitioner',"<>", "Carlo Olanga")
-                    ->where('recon_date_from', '>=', $rec_from)
-                    ->where('recon_date_to', '<=', $rec_to)
-                    ->where('allocation', 'NOT LIKE', '%stamping%')
-                    ->where('ship_to', $factory[$i])
-                    ->select('*')
-                    ->get();
+                    // $recon_data = DB::connection('mysql')
+                    // ->table('reconciliations')
+                    // ->whereNull('deleted_at')
+                    // ->where('logdel', 0)
+                    // ->where('pr_num', 'LIKE', "%{$user_cat[$x]->department}%")
+                    // ->where('classification', $user_cat[$x]->classification)
+                    // ->where('requisitioner',"<>", "Carlo Olanga")
+                    // ->where('recon_date_from', '>=', $rec_from)
+                    // ->where('recon_date_to', '<=', $rec_to)
+                    // ->where('allocation', 'NOT LIKE', '%stamping%')
+                    // ->where('ship_to', $factory[$i])
+                    // ->select('*')
+                    // ->get();
                 }
                 if($factory[$i] == 'Factory 1'){
                     array_push($recon_cat, $user_cat[$x]->classification."-".$user_cat[$x]->department."-".$factory[$i]);
