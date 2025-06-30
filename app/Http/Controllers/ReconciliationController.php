@@ -1066,7 +1066,17 @@ class ReconciliationController extends Controller
                         ->where('rcv_no', $jsn_decoded_recon_req->receiving_number)
                         ->where('invoice_no', $jsn_decoded_recon_req->other_reference)
                         ->get();
-                    if(count($existing_data) == 0){
+
+                    $existing_data_recon_request = ReconRequest::where('po_num', $jsn_decoded_recon_req->reference_po_number)
+                        ->where('pr_num', $jsn_decoded_recon_req->po_number)
+                        ->where('prod_code', $jsn_decoded_recon_req->item_code)
+                        ->where('rcv_no', $jsn_decoded_recon_req->receiving_number)
+                        ->where('invoice_no', $jsn_decoded_recon_req->other_reference)
+                        ->whereNull('deleted_at')
+                        ->where('status', '<>', '2')
+                        ->get();
+
+                    if(count($existing_data) == 0 && count($existing_data_recon_request) == 0){
                         ReconRequest::insert([
                             'ctrl_num'           => $control,
                             'ctrl_num_ext'       => $control_ext,
