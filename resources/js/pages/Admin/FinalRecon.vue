@@ -91,7 +91,7 @@
                     let dateTo = this.getAttribute('data-to');
                     let dateFrom = this.getAttribute('data-from');
 
-                    updateUserReconciliation(dept, classification, dateTo, dateFrom);
+                    updateUserReconciliation(dept, classification, dateTo, dateFrom, shipTo.value);
                 });
 
                 if(cell.querySelector('.btnOpenRecon')){
@@ -141,7 +141,7 @@
         });
     }
 
-    const updateUserReconciliation = (dept, classification, dateTo, dateFrom) => {
+    const updateUserReconciliation = (dept, classification, dateTo, dateFrom, shipTo) => {
 
         if(injectSess.isAuth == 0){
             Swal.fire({
@@ -162,7 +162,7 @@
                 confirmButtonText: 'Yes'
             }).then((result) => {
                 if (result.isConfirmed) {
-                    api.post('api/update_user_reconciliation', {dept: dept,classification: classification, to: dateTo, from: dateFrom}).then((result) => {
+                    api.post('api/update_user_reconciliation', {dept: dept,classification: classification, to: dateTo, from: dateFrom, ship_to: shipTo}).then((result) => {
                         // console.log(result.data.result);
                         if(result.data.result == true){
                             toastr.success(result.data.msg);
@@ -197,7 +197,7 @@
                 confirmButtonText: 'Yes'
             }).then((result) => {
                 if (result.isConfirmed) {
-                    api.post('api/update_open_recon', {dept: dept,classification: classification, to: dateTo, from: dateFrom}).then((result) => {
+                    api.post('api/update_open_recon', {dept: dept,classification: classification, to: dateTo, from: dateFrom, ship_to: shipTo.value}).then((result) => {
                         // console.log(result.data.result);
                         if(result.data.result == true){
                             toastr.success(result.data.msg);

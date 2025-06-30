@@ -888,6 +888,7 @@ class RequestController extends Controller
                 ->where('recon_date_from', '>=', $request->from)
                 ->where('recon_date_to', '<=', $request->to)
                 ->where('allocation', 'LIKE', '%stamping%')
+                ->where('ship_to', $request->ship_to)
                 ->update([
                     'final_recon_status' => 1,
                     'final_recon_date' => NOW(),
@@ -905,6 +906,7 @@ class RequestController extends Controller
                     ->where('recon_date_from', '>=', $request->from)
                     ->where('recon_date_to', '<=', $request->to)
                     ->where('allocation', 'NOT LIKE', '%stamping%')
+                    ->where('ship_to', $request->ship_to)
                     ->update([
                         'final_recon_status' => 1,
                         'final_recon_date' => NOW(),
@@ -920,6 +922,7 @@ class RequestController extends Controller
                     ->where('recon_date_from', '>=', $request->from)
                     ->where('recon_date_to', '<=', $request->to)
                     ->where('allocation', 'NOT LIKE', '%stamping%')
+                    ->where('ship_to', $request->ship_to)
                     ->update([
                         'final_recon_status' => 1,
                         'final_recon_date' => NOW(),
@@ -992,6 +995,21 @@ class RequestController extends Controller
                 // ->where('pr_num', 'LIKE', "%".$request->param['department']."%")
                 ->where('requisitioner', "Carlo Olanga")
                 ->where('classification', $classification)
+                ->where('recon_date_from', '>=', $dateFrom)
+                ->where('recon_date_to', '<=', $dateTo)
+                ->where('allocation', 'NOT LIKE', '%stamping%')
+                ->where('logdel', '0')
+                ->where('ship_to', $shipTo)
+                ->select('recon_status')
+                ->get();
+            }
+            else if($department == 'PPC'){
+                $data = DB::connection('mysql')
+                ->table('reconciliations')
+                ->whereNull('deleted_at')
+                ->where('pr_num', 'LIKE', "PPC%")
+                ->where('classification', $classification)
+                ->where('requisitioner',"<>", "Carlo Olanga")
                 ->where('recon_date_from', '>=', $dateFrom)
                 ->where('recon_date_to', '<=', $dateTo)
                 ->where('allocation', 'NOT LIKE', '%stamping%')
@@ -1079,6 +1097,23 @@ class RequestController extends Controller
                 ->select('final_recon_status')
                 ->count('final_recon_status');
             }
+            else if($department == 'PPC'){
+                 return DB::connection('mysql')
+                ->table('reconciliations')
+                ->whereNull('deleted_at')
+                ->where('pr_num', 'LIKE', "PPC%")
+                ->where('classification', $classification)
+                ->where('requisitioner',"<>", "Carlo Olanga")
+                ->where('recon_date_from', '>=', $dateFrom)
+                ->where('recon_date_to', '<=', $dateTo)
+                ->where('allocation', 'NOT LIKE', '%stamping%')
+                ->where('logdel', 0)
+                // ->where('final_recon_status', 1)
+                ->where('final_recon_status', 0)
+                ->where('ship_to', $shipTo)
+                ->select('final_recon_status')
+                ->count('final_recon_status');
+            }
             else{
                 return DB::connection('mysql')
                 ->table('reconciliations')
@@ -1138,6 +1173,24 @@ class RequestController extends Controller
                 // ->where('pr_num', 'LIKE', "%".$request->param['department']."%")
                 ->where('requisitioner', "Carlo Olanga")
                 ->where('classification', $classification)
+                ->where('recon_date_from', '>=', $dateFrom)
+                ->where('recon_date_to', '<=', $dateTo)
+                ->where('allocation', 'NOT LIKE', '%stamping%')
+                ->where('logdel', 0)
+                // ->where('final_recon_status', 1)
+                ->where('final_recon_status', 0)
+                ->where('ship_to', $shipTo)
+                // ->distinct()
+                ->select('final_recon_status')
+                ->count('final_recon_status');
+            }
+            elseif ($department == 'PPC'){
+                return DB::connection('mysql')
+                ->table('reconciliations')
+                ->whereNull('deleted_at')
+                ->where('pr_num', 'LIKE', "PPC%")
+                ->where('classification', $classification)
+                ->where('requisitioner',"<>", "Carlo Olanga")
                 ->where('recon_date_from', '>=', $dateFrom)
                 ->where('recon_date_to', '<=', $dateTo)
                 ->where('allocation', 'NOT LIKE', '%stamping%')
@@ -1210,6 +1263,25 @@ class RequestController extends Controller
                 // ->where('pr_num', 'LIKE', "%".$request->param['department']."%")
                 ->where('requisitioner', "Carlo Olanga")
                 ->where('classification', $classification)
+                ->where('recon_date_from', '>=', $dateFrom)
+                ->where('recon_date_to', '<=', $dateTo)
+                ->where('allocation', 'NOT LIKE', '%stamping%')
+                ->where('logdel', 0)
+                ->where('final_recon_status', 1)
+                ->where('ship_to', $shipTo)
+                // ->where('final_recon_status', 0)
+                ->distinct()
+                ->select('final_recon_date')
+                ->get();
+                // ->count('final_recon_status');
+            }
+            else if($department == 'PPC'){
+                return DB::connection('mysql')
+                ->table('reconciliations')
+                ->whereNull('deleted_at')
+                ->where('pr_num', 'LIKE', "PPC%")
+                ->where('classification', $classification)
+                ->where('requisitioner',"<>", "Carlo Olanga")
                 ->where('recon_date_from', '>=', $dateFrom)
                 ->where('recon_date_to', '<=', $dateTo)
                 ->where('allocation', 'NOT LIKE', '%stamping%')

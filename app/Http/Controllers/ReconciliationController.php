@@ -505,6 +505,21 @@ class ReconciliationController extends Controller
                 ->select('*')
                 ->get();
             }
+            else if($request->param['department'] == 'PPC'){
+                 $recon_data = DB::connection('mysql')
+                ->table('reconciliations')
+                ->whereNull('deleted_at')
+                ->where('pr_num', 'LIKE', "PPC%")
+                ->where('classification', $request->param['classification'])
+                ->where('requisitioner',"<>", "Carlo Olanga")
+                ->where('recon_date_from', '>=', $dtFrom)
+                ->where('recon_date_to', '<=', $dtTo)
+                ->where('allocation', 'NOT LIKE', '%stamping%')
+                ->where('logdel', 0)
+                ->where('ship_to', $request->sendTo)
+                ->select('*')
+                ->get();
+            }
             else{
                 $recon_data = DB::connection('mysql')
                 ->table('reconciliations')
@@ -514,7 +529,7 @@ class ReconciliationController extends Controller
                 ->where('requisitioner',"<>", "Carlo Olanga")
                 ->where('recon_date_from', '>=', $dtFrom)
                 ->where('recon_date_to', '<=', $dtTo)
-                // ->where('allocation', 'NOT LIKE', '%stamping%')
+                ->where('allocation', 'NOT LIKE', '%stamping%')
                 ->where('logdel', 0)
                 ->where('ship_to', $request->sendTo)
                 ->select('*')

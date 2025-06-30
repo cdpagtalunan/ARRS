@@ -230,6 +230,7 @@ class AdminController extends Controller
                 // ->where('recon_date_to', $request->to)
                 ->where('classification', $request->classification)
                 ->where('allocation', 'LIKE', '%stamping%')
+                ->where('ship_to', $request->ship_to)
                 ->update([
                     'final_recon_status' => 0,
                     'final_recon_date'   => NULL
@@ -240,6 +241,7 @@ class AdminController extends Controller
                 // ->where('recon_date_to', $request->to)
                 ->where('classification', $request->classification)
                 ->where('pr_num', 'LIKE',"%$request->dept%")
+                ->where('ship_to', $request->ship_to)
                 ->update([
                     'final_recon_status' => 0,
                     'final_recon_date'   => NULL
