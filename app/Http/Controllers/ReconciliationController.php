@@ -892,8 +892,6 @@ class ReconciliationController extends Controller
             // AND reference_po_number = "'.$request->po_number.'"
 
 
-        // return $eprpo_data;
-
         for ($i=0; $i < count($eprpo_data) ; $i++) {
             // $test = $eprpo_data[$i]->item_name1;
             // return $test;
@@ -905,7 +903,6 @@ class ReconciliationController extends Controller
             $eprpo_data[$i]->allocation     = $this->getAllocation($eprpo_data[$i]->po_number);
             $ship_to                        = $this->getShipTo($eprpo_data[$i]->po_number);
             // $ship_to1; // String only
-            // return $ship_to->facshipto;
             if($ship_to->facshipto == "Factory 3"){
                 $eprpo_data[$i]->ship_to = "Factory 3";
             }
@@ -918,7 +915,7 @@ class ReconciliationController extends Controller
 
             // return $eprpo_data[$i];
         }
-
+        // return $request->param['department'];
         if(strtoupper($request->param['department']) == 'STAMPING'){
             // $recon_data = DB::connection('mysql')
             // ->table('reconciliations')
@@ -930,13 +927,14 @@ class ReconciliationController extends Controller
             // ->where('logdel', 0)
             // ->select('*')
             // ->get();'
-            // dd($eprpo_data);
+            // return $eprpo_data;
             $collection = collect($eprpo_data)->filter(
                 function($item) use ($request){
-                    return ($item->classification_code == $request->param['classification'] && str_contains($item->allocation, 'STAMPING'));
+                    return ($item->classification_code == $request->param['classification'] && str_contains(strtoupper($item->allocation), 'STAMPING'));
                 })
             ->flatten(0);
 
+            // return $eprpo_data->classification_code;;
         }
         else{
             // ! Remove IfElse and uncomment the query below when carlo olanga is already using the new user with section ppd-grinding
@@ -957,7 +955,7 @@ class ReconciliationController extends Controller
                     function($item) use ($request){
                         return (
                             $item->classification_code == $request->param['classification'] && 
-                            !str_contains($item->allocation, 'STAMPING')
+                            !str_contains(strtoupper($item->allocation), 'STAMPING')
                         );
                     })
                 ->flatten(0);
@@ -981,7 +979,7 @@ class ReconciliationController extends Controller
                         return (
                             $item->classification_code == $request->param['classification'] && 
                             str_contains($item->po_number, $request->param['department']) &&
-                            !str_contains($item->allocation, 'STAMPING')
+                            !str_contains(strtoupper($item->allocation), 'STAMPING')
                         );
                     })
                 ->flatten(0);
