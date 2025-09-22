@@ -153,6 +153,7 @@ class ReconciliationController extends Controller
                 FROM `purchase_order_details` 
                 WHERE purchase_order_details.`order_number` = receiving_header.reference_po_number and 
                 receiving_header.receiving_number = receiving_details.receiving_number and
+
                 receiving_details.item_id = purchase_order_details.item_id LIMIT 0,1) as po_balance,
                 (SELECT hold_invoice_remarks.`remarks` FROM `hold_invoice_remarks` WHERE hold_invoice_remarks.`reference_po_number` = receiving_header.reference_po_number LIMIT 0,1) as hold_remarks
     
@@ -163,6 +164,7 @@ class ReconciliationController extends Controller
                 AND item.id=receiving_details.item_id 
                 AND item.unit_of_measure_id=unit_of_measure.id
                 AND date(actual_delivery_date) BETWEEN "'.$date_from.'" AND "'.$date_to.'"
+                AND (receiving_header.receiving_status = "N/A" OR receiving_header.receiving_status = "ACCEPTED")
             ');
     
             $collection = collect($eprpo_data)->whereIn('classification_code', $cat_array)->flatten(0);
