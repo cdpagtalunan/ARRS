@@ -511,7 +511,7 @@ class ReconciliationController extends Controller
                  $recon_data = DB::connection('mysql')
                 ->table('reconciliations')
                 ->whereNull('deleted_at')
-                ->where('pr_num', 'LIKE', "PPC%")
+                ->where('pr_num', 'LIKE', "PPC-PR%")
                 ->where('classification', $request->param['classification'])
                 ->where('requisitioner',"<>", "Carlo Olanga")
                 ->where('recon_date_from', '>=', $dtFrom)
