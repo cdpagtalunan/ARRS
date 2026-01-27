@@ -679,6 +679,15 @@ class ReconciliationController extends Controller
             $result .= "</center>";
             return $result;
         })
+        ->addColumn('amount', function($recond_data){
+            $total = $recond_data->unit_price * $recond_data->received_qty;
+
+            // Round to 3 decimal places
+            $num = round($total, 3);
+
+            // Format to 2 decimal places (returns string, like JS toFixed)
+            return number_format($num, 2, '.', '');
+        })
         ->rawColumns(['action', 'status', 'raw_final_status'])
         ->make(true);
     }

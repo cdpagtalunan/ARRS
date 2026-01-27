@@ -459,17 +459,18 @@ Permanent Delete - will be removed to current cutoff and will not insert to the 
         { data: 'received_qty', title: 'Received Qty'},
         { data: 'supplier', title: 'Supplier'},
         { data: 'unit_price', title: 'Unit Price'},
-        { 
-            data: 'unit_price',
-            title: 'Amount',
-            "render": function(data, type, row, meta) {
-                let total = row.unit_price * row.received_qty;
-                // return total.toFixed(2);
-                let num = Math.round(total + "e" + 3);
-                let num2 =  Number(num + "e" + -3);
-                return num2.toFixed(2)
-            }
-        },
+        { data: 'amount', title: 'Unit Price'},
+        // { 
+        //     data: 'unit_price',
+        //     title: 'Amount',
+        //     "render": function(data, type, row, meta) {
+        //         let total = row.unit_price * row.received_qty;
+        //         // return total.toFixed(2);
+        //         let num = Math.round(total + "e" + 3);
+        //         let num2 =  Number(num + "e" + -3);
+        //         return num2.toFixed(2)
+        //     }
+        // },
         { data: 'user_date_done', title: 'Date/Time Done'},
         { data: 'user_done', title: 'Done PIC'},
         
