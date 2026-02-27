@@ -459,7 +459,7 @@ Permanent Delete - will be removed to current cutoff and will not insert to the 
         { data: 'received_qty', title: 'Received Qty'},
         { data: 'supplier', title: 'Supplier'},
         { data: 'unit_price', title: 'Unit Price'},
-        { data: 'amount', title: 'Unit Price'},
+        { data: 'amount', title: 'Amount'},
         // { 
         //     data: 'unit_price',
         //     title: 'Amount',

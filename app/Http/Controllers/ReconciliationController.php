@@ -67,8 +67,11 @@ class ReconciliationController extends Controller
                 $day_to = 15;
                 $day_from = 26;
                 $date_to = $mutable->format('Y-m')."-".$day_to;
-                $date_from = $mutable->subMonth()->format('Y-m')."-".$day_from;
+                // $date_from = $mutable->subMonth()->format('Y-m')."-".$day_from;
     
+                $date_from_query = $mutable->subMonth()->format('Y-m')."-".$day_from;
+                $date_from = $mutable->subMonth()->format('Y-m')."-".$day_from;
+
                 // * TO INSERT ALL REMOVED RECON TO NEW RECON MONTH
                 // ^ NOTE: THIS WILL ONLY WORK FOR NEW CUTOFF ONLY
     
@@ -84,13 +87,11 @@ class ReconciliationController extends Controller
             }
             else{
                 $day_to = 25;
-                // $day_from = 16;
                 $date_to = $mutable->format('Y-m')."-".$day_to;
-                // $date_from = $mutable->format('Y-m')."-".$day_from;
 
                 $day_from = 26;
-                // Subtract 1 month from the month
-                $month_sub_1 = (int)$month_today - 1;
+                $month_sub_1_tosave = (int)$month_today - 1;
+                $month_sub_1 = (int)$month_today - 2;
                 $current_year1 = $current_year;
 
                 // Adjust if the month is January (i.e., 1 -> 12)
@@ -99,7 +100,8 @@ class ReconciliationController extends Controller
                     $current_year1 = $current_year - 1;
                 }
 
-                $date_from = "{$current_year1}-".str_pad($month_sub_1, 2, '0', STR_PAD_LEFT)."-{$day_from}";
+                $date_from_query = "{$current_year1}-".str_pad($month_sub_1, 2, '0', STR_PAD_LEFT)."-{$day_from}";
+                $date_from = "{$current_year1}-".str_pad($month_sub_1_tosave, 2, '0', STR_PAD_LEFT)."-{$day_from}";
             }
 
             $recon_date = ReconciliationDate::firstOrCreate(
@@ -163,13 +165,11 @@ class ReconciliationController extends Controller
                 AND receiving_header.currency=currency.id
                 AND item.id=receiving_details.item_id 
                 AND item.unit_of_measure_id=unit_of_measure.id
-                AND date(actual_delivery_date) BETWEEN "'.$date_from.'" AND "'.$date_to.'"
+                AND date(actual_delivery_date) BETWEEN "'.$date_from_query.'" AND "'.$date_to.'"
                 AND (receiving_header.receiving_status = "N/A" OR receiving_header.receiving_status = "ACCEPTED")
             ');
     
             $collection = collect($eprpo_data)->whereIn('classification_code', $cat_array)->flatten(0);
-
-            // return $date_from;
     
             for ($i=0; $i < count($collection); $i++) { 
     
@@ -202,6 +202,8 @@ class ReconciliationController extends Controller
                     ->where('pr_num', $po_number)
                     ->where('prod_code', $collection[$i]->item_code)
                     ->where('rcv_no', $collection[$i]->receiving_number)
+                    ->whereNull('deleted_at')
+                    ->where('logdel', 0)
                     ->lockForUpdate()
                     ->get();
 
@@ -210,6 +212,8 @@ class ReconciliationController extends Controller
                     ->where('pr_num', $po_number)
                     ->where('prod_code', $collection[$i]->item_code)
                     ->where('rcv_no', $collection[$i]->receiving_number)
+                    ->whereNull('deleted_at')
+                    ->where('logdel', 0)
                     ->exists();
                 // if(
                 //     !Reconciliation::where('po_num',$collection[$i]->reference_po_number)
@@ -252,7 +256,6 @@ class ReconciliationController extends Controller
                         'created_at'        => NOW()
                     ]);
                 }
-
             }
 
             if(!isset($request->bypass)){
