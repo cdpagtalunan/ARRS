@@ -95,7 +95,7 @@ class ReconciliationController extends Controller
                 $current_year1 = $current_year;
 
                 // Adjust if the month is January (i.e., 1 -> 12)
-                if ($month_sub_1 < 1) {
+                if ($month_sub_1_tosave < 1) {
                     $month_sub_1 = 12;
                     $current_year1 = $current_year - 1;
                 }
