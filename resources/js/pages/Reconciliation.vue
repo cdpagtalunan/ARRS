@@ -49,7 +49,8 @@
                                     </select>
                                     
                                 </div>
-                                <div class="col-sm-2" v-if="injectSess.type == 1">
+                                <!-- <div class="col-sm-2" v-if="injectSess.type == 1"> -->
+                                <div class="col-sm-2" v-if="hasManyAccess">
                                     <select class="form-control" v-model="adminSelectFactory" @change="()=>{ dt.ajax.reload() }">
                                         <option>Factory 1</option>
                                         <option>Factory 3</option>
@@ -86,7 +87,8 @@
                                                             param.param = dtParams;
                                                             param.cutoff_date = cutoffSelect.selected;
                                                             param.access =  injectSess.access;
-                                                            param.sendTo =  injectSess.type == 1 ? adminSelectFactory : injectSess.sendTo;
+                                                            // param.sendTo =  injectSess.type == 1 ? adminSelectFactory : injectSess.sendTo;
+                                                            param.sendTo =  hasManyAccess ? adminSelectFactory : injectSess.sendTo;
                                                             param.user_type =  injectSess.type;
                                                         }
                                                     }"
@@ -359,6 +361,7 @@ Permanent Delete - will be removed to current cutoff and will not insert to the 
     import DataTablesCore from 'datatables.net-bs5';
     DataTable.use(DataTablesCore);
 
+    const hasManyAccess = ref(false);
     const adminSelectFactory = ref('Factory 1');
     const userAccesses = ref();
     const cutoffSelect = reactive({
@@ -444,7 +447,6 @@ Permanent Delete - will be removed to current cutoff and will not insert to the 
             },
         },
         { data: 'status', title: 'Recon Status'},
-    
         { data: 'prod_name', title: 'Item Name'},
         { data: 'prod_desc', title: 'Description'},
         { data: 'invoice_no', title: 'Invoice No.'},
@@ -547,9 +549,12 @@ Permanent Delete - will be removed to current cutoff and will not insert to the 
 
     onBeforeMount(async () => {
         console.log('before mount');
-         injectSess = inject('store');
+        injectSess = inject('store');
 
         await setTimeout( async () => {
+            if(injectSess.type == 1 || injectSess.sendTo.split(',').length > 1){
+                hasManyAccess.value = true;
+            }
             await api.get('api/get_category_of_user', {params: {access: injectSess.access}} ).then((result) => {
                 userAccesses.value = result.data.uAccess;
                 // console.log(result.data.uAccess);
@@ -630,54 +635,6 @@ Permanent Delete - will be removed to current cutoff and will not insert to the 
             
         });
     }
-
-    // const saveReconData = async () => {
-    //     await api.post('api/save_recon', uReconData.value).then((result) => {
-    //         document.querySelector('#txtAmount').classList.remove('is-invalid');
-    //         document.querySelector('#txtInvoiceNum').classList.remove('is-invalid');
-    //         document.querySelector('#txtReceivedQty').classList.remove('is-invalid');
-
-    //         let results = result.data;
-
-    //         if(results.result == 1){
-    //             toastr.success(`${results.msg}`);
-    //             modals.hide();
-    //             dt.ajax.reload();
-    //         }
-
-
-    //     }).catch((err) => {
-    //         // console.log(err.response);
-    //         if(err.response.data.errors.amount != undefined){
-    //             document.querySelector('#txtAmount').classList.add('is-invalid');
-
-    //         }
-    //         else{
-    //             document.querySelector('#txtAmount').classList.remove('is-invalid');
-
-    //         }
-
-    //         if(err.response.data.errors.invoiceNum != undefined){
-    //             document.querySelector('#txtInvoiceNum').classList.add('is-invalid');
-
-    //         }
-    //         else{
-    //             document.querySelector('#txtInvoiceNum').classList.remove('is-invalid');
-
-    //         }
-
-    //         if(err.response.data.errors.receivedQty != undefined){
-    //             document.querySelector('#txtReceivedQty').classList.add('is-invalid');
-                
-    //         }
-    //         else{
-    //             document.querySelector('#txtReceivedQty').classList.remove('is-invalid');
-                
-    //         }
-            
-    //         toastr.error('Please fill-up required fields.')
-    //     });
-    // }
     
     const requestForRemove = async () => {
         await Swal.fire({
