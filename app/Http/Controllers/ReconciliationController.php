@@ -69,7 +69,7 @@ class ReconciliationController extends Controller
                 $date_to = $mutable->format('Y-m')."-".$day_to;
                 // $date_from = $mutable->subMonth()->format('Y-m')."-".$day_from;
     
-                $date_from_query = $mutable->subMonth()->format('Y-m')."-".$day_from;
+                // $date_from_query = $mutable->subMonth()->format('Y-m')."-".$day_from;
                 $date_from = $mutable->subMonth()->format('Y-m')."-".$day_from;
 
                 // * TO INSERT ALL REMOVED RECON TO NEW RECON MONTH
@@ -90,18 +90,16 @@ class ReconciliationController extends Controller
                 $date_to = $mutable->format('Y-m')."-".$day_to;
 
                 $day_from = 26;
-                $month_sub_1_tosave = (int)$month_today - 1;
-                $month_sub_1 = (int)$month_today - 2;
+                $month_sub_1 = (int)$month_today - 1;
                 $current_year1 = $current_year;
 
                 // Adjust if the month is January (i.e., 1 -> 12)
-                if ($month_sub_1_tosave < 1) {
+                if ($month_sub_1 < 1) {
                     $month_sub_1 = 12;
                     $current_year1 = $current_year - 1;
                 }
 
-                $date_from_query = "{$current_year1}-".str_pad($month_sub_1, 2, '0', STR_PAD_LEFT)."-{$day_from}";
-                $date_from = "{$current_year1}-".str_pad($month_sub_1_tosave, 2, '0', STR_PAD_LEFT)."-{$day_from}";
+                $date_from = "{$current_year1}-".str_pad($month_sub_1, 2, '0', STR_PAD_LEFT)."-{$day_from}";
             }
 
             $recon_date = ReconciliationDate::firstOrCreate(
@@ -165,7 +163,7 @@ class ReconciliationController extends Controller
                 AND receiving_header.currency=currency.id
                 AND item.id=receiving_details.item_id 
                 AND item.unit_of_measure_id=unit_of_measure.id
-                AND date(actual_delivery_date) BETWEEN "'.$date_from_query.'" AND "'.$date_to.'"
+                AND date(actual_delivery_date) BETWEEN "'.$date_from.'" AND "'.$date_to.'"
                 AND (receiving_header.receiving_status = "N/A" OR receiving_header.receiving_status = "ACCEPTED")
             ');
     
@@ -686,8 +684,9 @@ class ReconciliationController extends Controller
             $total = $recond_data->unit_price * $recond_data->received_qty;
 
             // Round to 3 decimal places
-            $num = round($total, 3);
+            $num = round($total, 4);
 
+            // return $num;
             // Format to 2 decimal places (returns string, like JS toFixed)
             return number_format($num, 2, '.', '');
         })
