@@ -114,13 +114,13 @@
 
                     <label class="mt-2">User Designation</label> <br>
                     <div class="form-check">
-                        <input class="form-check-input" type="radio" id="selDesigF1" v-model="formData.uDesig" value="Factory 1">
+                        <input class="form-check-input" type="checkbox" id="selDesigF1" v-model="formData.uDesig" value="Factory 1">
                         <label class="form-check-label" for="selDesigF1">
                             Factory 1
                         </label>
                     </div>
                     <div class="form-check">
-                        <input class="form-check-input" type="radio" id="selDesigF3" v-model="formData.uDesig" value="Factory 3">
+                        <input class="form-check-input" type="checkbox" id="selDesigF3" v-model="formData.uDesig" value="Factory 3">
                         <label class="form-check-label" for="selDesigF3">
                             Factory 3
                         </label>
@@ -234,7 +234,8 @@
 
     const formData = ref({
         auth: 0,
-        supp: 0
+        supp: 0,
+        uDesig: []
     });
     const selectOptions = ref([]);
     // const selectCatOptions = ref();
@@ -251,8 +252,8 @@
         document.getElementById("modalComponentId").addEventListener('hidden.bs.modal', event => {
             formData.value = {
                 auth: 0,
-                supp: 0
-
+                supp: 0,
+                uDesig: []
             };
             empMultSel.value = false
             document.querySelector('#selUType').classList.remove('is-invalid');
@@ -346,7 +347,11 @@
             formData.value.empDetails = data.userData.rapidx_user_details;
             formData.value.uType = data.userData.user_type;
             formData.value.uCat = data.forSelCat;
-            formData.value.uDesig = data.userData.user_desig;
+            // formData.uDesig = data.userData.user_desig ? data.userData.user_desig.split(',') : []
+            formData.value.uDesig = data.userData.user_desig
+            ? data.userData.user_desig.split(',').map(v => v.trim())
+            : []
+            // formData.value.uDesig = data.userData.user_desig;
             formData.value.auth = data.userData.is_auth;
             formData.value.supp = data.userData.is_superior;
             modals.value.show();
