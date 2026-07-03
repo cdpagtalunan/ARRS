@@ -210,8 +210,8 @@ class ReconciliationController extends Controller
                     ->where('pr_num', $po_number)
                     ->where('prod_code', $collection[$i]->item_code)
                     ->where('rcv_no', $collection[$i]->receiving_number)
-                    ->whereNull('deleted_at')
-                    ->where('logdel', 0)
+                    // ->whereNull('deleted_at')
+                    // ->where('logdel', 0)
                     ->exists();
                 // if(
                 //     !Reconciliation::where('po_num',$collection[$i]->reference_po_number)
@@ -682,14 +682,12 @@ class ReconciliationController extends Controller
         })
         ->addColumn('amount', function($recond_data){
             $total = $recond_data->unit_price * $recond_data->received_qty;
-
             // Round to 3 decimal places
             $num = round($total, 4);
-
-            // return $num;
             // Format to 2 decimal places (returns string, like JS toFixed)
             return number_format($num, 2, '.', '');
         })
+        
         ->rawColumns(['action', 'status', 'raw_final_status'])
         ->make(true);
     }
@@ -1388,7 +1386,7 @@ class ReconciliationController extends Controller
         ->whereNull('deleted_at')
         ->select('reconciliations.*')
         ->get();
-        
+
         if(count($recon) == 0){
             try{
                 $decrypt_id = Helpers::decryptId($request->rec_id);

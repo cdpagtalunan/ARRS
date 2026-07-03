@@ -16,6 +16,7 @@ use Illuminate\Support\Facades\DB;
 use App\Models\ReconRequestRemarks;
 use App\Http\Controllers\CommonController;
 use App\Http\Controllers\ReconciliationController;
+use App\Models\RapidxUser;
 
 class RequestController extends Controller
 {
@@ -844,21 +845,34 @@ class RequestController extends Controller
             return $result;
         })
        
-        ->addColumn('u_charge', function($categories) use ($request){
+        ->addColumn('u_charge', function($categories) use ($dateFrom, $dateTo, $request){
             $result = "";
             $result .= "<center>";
-            $user_in_charge = UserAccess::with([
-                'rapidx_user_details'
-            ])
-            ->whereRaw('FIND_IN_SET("'.$categories->id.'", category_id)')
-            ->where('is_superior', 0)
-            ->where('user_desig', $request->shipTo)
-            ->whereNull('deleted_at')
-            ->first();
+            $user_in_charge = $this->get_user_in_charge($categories->department, $categories->classification, $dateFrom, $dateTo, $request->shipTo);
+            
 
-            if($user_in_charge){
+            // $user_in_charge = UserAccess::with([
+            //     'rapidx_user_details'
+            // ])
+            // ->whereRaw('FIND_IN_SET("'.$categories->id.'", category_id)')
+            // ->where('is_superior', 0)
+            // ->where('user_desig', $request->shipTo)
+            // // ->whereRaw('FIND_IN_SET("'.$request->shipTo.'", user_desig)')
+            // ->whereNull('deleted_at')
+            // ->first();
 
-                $result .= "{$user_in_charge->rapidx_user_details->name}";
+
+            // if($user_in_charge){
+            if(count($user_in_charge) > 0){
+                $userIds = $user_in_charge->pluck('user_id_done')->toArray();
+                
+
+                // $decoded_users = json_decode($user_in_charge, true);
+                $name = RapidxUser::whereIn('id', $userIds)->get('name');
+                return $name->pluck('name')->implode(', ');
+
+                // $result .= "{$user_in_charge->rapidx_user_details->name}";
+                $result .= "{$user_in_charge}";
             }
             $result .= "</center>";
             
@@ -1310,6 +1324,99 @@ class RequestController extends Controller
                 // ->where('final_recon_status', 0)
                 ->distinct()
                 ->select('final_recon_date')
+                ->get();
+                // ->count('final_recon_status');
+            }
+
+            // ! Uncomment this MF.
+             // return DB::connection('mysql')
+            // ->table('reconciliations')
+            // ->whereNull('deleted_at')
+            // ->where('pr_num', 'LIKE', "%".$department."%")
+            // ->where('classification', $classification)
+            // ->where('recon_date_from', '>=', $dateFrom)
+            // ->where('recon_date_to', '<=', $dateTo)
+            // ->where('final_recon_status', 1)
+            // ->select('final_recon_status')
+            // ->count('final_recon_status');
+        }
+    }
+
+    function get_user_in_charge($department, $classification, $dateFrom, $dateTo, $shipTo){
+        if(strtoupper($department) == 'STAMPING'){
+            return DB::connection('mysql')
+            ->table('reconciliations')
+            ->whereNull('deleted_at')
+            // ->where('pr_num', 'LIKE', "%".$request->param['department']."%")
+            ->where('classification', $classification)
+            ->where('recon_date_from', '>=', $dateFrom)
+            ->where('recon_date_to', '<=', $dateTo)
+            ->where('allocation', 'LIKE', '%stamping%')
+            ->where('logdel', 0)
+            ->where('final_recon_status', 1)
+            ->where('ship_to', $shipTo)
+            // ->where('final_recon_status', 0)
+            ->distinct()
+            ->select('user_id_done')
+            ->get();
+            // ->count('final_recon_status');
+        }
+        else{
+            // ! Remove IfElse and uncomment the query below when carlo olanga is already using the new user with section ppd-grinding
+            if($department == 'PPD-GRIN'){
+                return DB::connection('mysql')
+                ->table('reconciliations')
+                ->whereNull('deleted_at')
+                // ->where('pr_num', 'LIKE', "%".$request->param['department']."%")
+                ->where('requisitioner', "Carlo Olanga")
+                ->where('classification', $classification)
+                ->where('recon_date_from', '>=', $dateFrom)
+                ->where('recon_date_to', '<=', $dateTo)
+                ->where('allocation', 'NOT LIKE', '%stamping%')
+                ->where('logdel', 0)
+                ->where('final_recon_status', 1)
+                ->where('ship_to', $shipTo)
+                // ->where('final_recon_status', 0)
+                ->distinct()
+                ->select('user_id_done')
+                ->get();
+                // ->count('final_recon_status');
+            }
+            else if($department == 'PPC'){
+                return DB::connection('mysql')
+                ->table('reconciliations')
+                ->whereNull('deleted_at')
+                ->where('pr_num', 'LIKE', "PPC%")
+                ->where('classification', $classification)
+                ->where('requisitioner',"<>", "Carlo Olanga")
+                ->where('recon_date_from', '>=', $dateFrom)
+                ->where('recon_date_to', '<=', $dateTo)
+                ->where('allocation', 'NOT LIKE', '%stamping%')
+                ->where('logdel', 0)
+                ->where('final_recon_status', 1)
+                ->where('ship_to', $shipTo)
+                // ->where('final_recon_status', 0)
+                ->distinct()
+                ->select('user_id_done')
+                ->get();
+                // ->count('final_recon_status');
+            }
+            else{
+                return DB::connection('mysql')
+                ->table('reconciliations')
+                ->whereNull('deleted_at')
+                ->where('pr_num', 'LIKE', "%".$department."%")
+                ->where('classification', $classification)
+                ->where('requisitioner',"<>", "Carlo Olanga")
+                ->where('recon_date_from', '>=', $dateFrom)
+                ->where('recon_date_to', '<=', $dateTo)
+                ->where('allocation', 'NOT LIKE', '%stamping%')
+                ->where('logdel', 0)
+                ->where('final_recon_status', 1)
+                ->where('ship_to', $shipTo)
+                // ->where('final_recon_status', 0)
+                ->distinct()
+                ->select('user_id_done')
                 ->get();
                 // ->count('final_recon_status');
             }
