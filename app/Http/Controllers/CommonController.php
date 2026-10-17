@@ -32,25 +32,25 @@ class CommonController extends Controller
                 $exploded_category =  explode(",", $user_system_access_check->category_id);
 
                 $uAccessArray = [];
-                for ($i=0; $i <count($exploded_category) ; $i++) { 
+                for ($i=0; $i <count($exploded_category) ; $i++) {
                     array_push($uAccessArray, $exploded_category[$i]);
                 }
 
                 $encrypt_id = Helpers::encryptId($user_system_access_check->id);
 
                 return response()->json([
-                    'uAccess' => $uAccessArray, 
-                    'uName' => $_SESSION['rapidx_name'], 
-                    'appid' => $encrypt_id, 
-                    'uType' => $user_system_access_check->user_type, 
-                    'sendTo' => $user_system_access_check->user_desig, 
+                    'uAccess' => $uAccessArray,
+                    'uName' => $_SESSION['rapidx_name'],
+                    'appid' => $encrypt_id,
+                    'uType' => $user_system_access_check->user_type,
+                    'sendTo' => $user_system_access_check->user_desig,
                     'isAuth' => $user_system_access_check->is_auth ]);
             }
             else{
                 return response()->json(['msg' => 'User Dont Have Access '], 401);
 
             }
-        
+
 
         }
     }
@@ -60,10 +60,11 @@ class CommonController extends Controller
     }
 
     public function send_mail($mail_filename, $data, $request, $admin_email, $user_email, $subject){
+        $admin_email = ['cpagtalunan@pricon.ph','mclegaspi@pricon.ph'];
         Mail::send("mail.{$mail_filename}", $data, function($message) use ($request, $admin_email, $user_email, $subject){
             $message->to($admin_email);
             $message->cc($user_email);
-            $message->bcc('cpagtalunan@pricon.ph');
+            $message->bcc($admin_email);
             $message->bcc('iggarcia@pricon.ph');
             $message->subject($subject);
         });
