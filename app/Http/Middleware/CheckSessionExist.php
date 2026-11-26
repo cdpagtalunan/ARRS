@@ -17,7 +17,7 @@ class CheckSessionExist
     public function handle(Request $request, Closure $next)
     {
         session_start();
-        if (!$_SESSION) {
+        if (!isset($_SESSION['rapidx_user_level_id'])) {
             return redirect('../');
         }
         return $next($request);
