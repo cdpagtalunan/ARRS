@@ -29,8 +29,8 @@ class ReconciliationController extends Controller
       $this->mailSender = $mailSender;
     }
     public function get_category_of_user(Request $request){
-        $user_cat;
-
+        $user_cat = [];
+    
         if(in_array(0, $request->access)){
             $user_cat = DB::connection('mysql')
             ->table('user_categories')
@@ -58,7 +58,7 @@ class ReconciliationController extends Controller
 
         DB::beginTransaction();
         try{
-            $mutable = Carbon::today();
+            $mutable = Carbon::today()->setTimezone('Asia/Manila');
 
             $current_year = $mutable->format('Y');
             $month_today = $mutable->format('m');
@@ -177,7 +177,7 @@ class ReconciliationController extends Controller
                 $assigned_to    = $this->getPoAssignedTo($collection[$i]->reference_po_number);
                 $received_by    = $this->getFullName($collection[$i]->received_by);
                 $ship_to        = $this->getShipTo($po_number);
-                $ship_to1; // String only
+                $ship_to1 = ''; // String only
                 // return $ship_to;
                 if($ship_to->facshipto == "Factory 3"){
                     $ship_to1 = "Factory 3";
@@ -257,6 +257,7 @@ class ReconciliationController extends Controller
             }
 
             if(!isset($request->bypass)){
+                $resulta = [];
                 $categories = DB::connection('mysql')->table('user_categories')
                 ->whereNull('deleted_at')
                 ->get(['classification','department', 'id']);

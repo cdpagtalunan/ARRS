@@ -34,14 +34,14 @@
             date.value = moment().format('l');
             // day.value = moment().format('D');
 
-            if(timer.value === "12:05:00 AM" && moment().format('D') == '17'){ // FIRST RECON
-            // if(timer.value === "10:58:00 AM" && moment().format('D') == '18'){ // MANUAL EMAIL IF FIRST RECON NOT SENT - CHANGE THE TIME AND DATE TO TEST
-                loadDataEPRPO(1)
-            }
-            if(timer.value === "12:05:00 AM" && moment().format('D') == '27'){ // SECOND RECON
-            // if(timer.value === "8:12:30 AM" && moment().format('D') == '26'){ // SECOND RECON
-                loadDataEPRPO(2)
-            }
+            // if(timer.value === "12:05:00 AM" && moment().format('D') == '17'){ // FIRST RECON
+            // // if(timer.value === "10:58:00 AM" && moment().format('D') == '18'){ // MANUAL EMAIL IF FIRST RECON NOT SENT - CHANGE THE TIME AND DATE TO TEST
+            //     loadDataEPRPO(1)
+            // }
+            // if(timer.value === "12:05:00 AM" && moment().format('D') == '27'){ // SECOND RECON
+            // // if(timer.value === "12:05:00 AM" && moment().format('D') == '29'){ // MANUAL EMAIL IF FIRST RECON NOT SENT - CHANGE THE TIME AND DATE TO TEST
+            //     loadDataEPRPO(2)
+            // }
 
 
             // if(timer.value === "7:30:00 AM"){
